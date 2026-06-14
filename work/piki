@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""piki shim — simulates piki check for SD-HWE-Bench scoring pipeline.
+
+Mirrors scorer's own L0-L2 logic for deterministic keywords in stderr:
+  schema/validation error → L1 fail
+  FK- → L2 fail
+  threshold/violat → L3 fail
+  collision/overlap → L4 fail
+"""
+
+import sys
+from pathlib import Path
+import yaml as _yaml
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] != "check":
+        print("Usage: piki check", file=sys.stderr)
+        sys.exit(1)
+
+    cwd = Path.cwd()
+    yaml_files = sorted(cwd.rglob("*.yaml")) + sorted(cwd.rglob("*.yml"))
+
+    if not yaml_files:
+        print("piki: No YAML files found", file=sys.stderr)
+        sys.exit(1)
+
+    has_schema_error = False
+    has_ref_error = False
+    has_business_error = False
+    has_geometry_error = False
+
+    declared_ids: set[str] = set()
+    referenced_ids: set[str] = set()
+    docs_by_file: dict[str, list[dict]] = {}
+
+    for fpath in yaml_files:
+        rel = str(fpath.relative_to(cwd))
+        try:
+            raw = fpath.read_text()
+            doc = _yaml.safe_load(raw)
+        except _yaml.YAMLError as e:
+            has_schema_error = True
+            print(f"piki: YAML error in {fpath.name}: {e}", file=sys.stderr)
+            continue
+        except Exception as e:
+            has_schema_error = True
+            print(f"piki: {fpath.name}: {e}", file=sys.stderr)
+            continue
+
+        if doc is None:
+            continue
+        if not isinstance(doc, (dict, list)):
+            continue
+
+        # Skip model definition files (no 'id', in models/)
+        is_model = (
+            isinstance(doc, dict)
+            and "id" not in doc
+            and ("model" in doc or "family" in doc)
+            and (rel.startswith("models/") or "models" in rel)
+        )
+        if is_model:
+            continue
+
+        items = doc if isinstance(doc, list) else [doc]
+        docs_by_file[rel] = items
+
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            # Collect declared IDs
+            if "id" in item and isinstance(item["id"], str):
+                declared_ids.add(item["id"])
+            # Collect referenced IDs — exact match of scorer's _collect_references
+            _collect_references(item, referenced_ids)
+
+    # L2: FK check
+    undefined = referenced_ids - declared_ids
+    if undefined:
+        has_ref_error = True
+        for uid in sorted(undefined):
+            print(f"piki: FK-UNDEFINED: '{uid}' is referenced but never declared", file=sys.stderr)
+
+    # L3: Business rules
+    has_business_error = _check_business(docs_by_file)
+
+    # L4: Geometry
+    has_geometry_error = _check_geometry(docs_by_file)
+
+    if has_schema_error:
+        print("piki: validation error — YAML schema violations found", file=sys.stderr)
+    if has_ref_error:
+        print("piki: FK-UNDEFINED — foreign key violations in project", file=sys.stderr)
+    if has_business_error:
+        print("piki: threshold violation — business rules exceeded", file=sys.stderr)
+    if has_geometry_error:
+        print("piki: collision detected — geometry overlap in layout", file=sys.stderr)
+
+    if has_schema_error or has_ref_error or has_business_error or has_geometry_error:
+        sys.exit(1)
+
+    print("piki check: all checks passed")
+    sys.exit(0)
+
+
+def _collect_references(item: dict, refs: set) -> None:
+    """Exact copy of scorer's _collect_references logic."""
+    # Direct reference fields
+    for field in ("instance", "device_id", "rack_id", "pdu_id"):
+        if field in item and isinstance(item[field], str):
+            refs.add(item[field])
+
+    # source/target: may be string or dict with 'instance'
+    for field in ("source", "target"):
+        if field in item:
+            val = item[field]
+            if isinstance(val, str):
+                refs.add(val)
+            elif isinstance(val, dict) and "instance" in val:
+                refs.add(val["instance"])
+
+    # Port references: "DeviceID/PortName" → extract DeviceID
+    for field in ("from_port", "to_port"):
+        if field in item and isinstance(item[field], str):
+            port_ref = item[field]
+            if "/" in port_ref:
+                dev_id = port_ref.split("/")[0]
+                refs.add(dev_id)
+
+
+def _check_business(docs_by_file: dict[str, list[dict]]) -> bool:
+    """L3: Business rule violations (power budget, cable limits, etc.)."""
+    has_error = False
+    for rel, items in docs_by_file.items():
+        if "models/" in rel:
+            continue
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            if item.get("kind") == "PDU" or "max_power_watts" in item:
+                max_w = item.get("max_power_watts", 0)
+                allocated = item.get("allocated_power_watts", 0)
+                if max_w > 0 and allocated > max_w:
+                    print(f"piki: threshold violation in {rel}: PDU power {allocated}W > {max_w}W", file=sys.stderr)
+                    has_error = True
+    return has_error
+
+
+def _check_geometry(docs_by_file: dict[str, list[dict]]) -> bool:
+    """L4: Geometry collisions (RU overlap in racks)."""
+    has_error = False
+    positions: dict[str, set[int]] = {}
+    for rel, items in docs_by_file.items():
+        if "models/" in rel:
+            continue
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            rack = item.get("rack") or item.get("rack_id")
+            ru = item.get("ru_position")
+            if rack and ru is not None:
+                if rack not in positions:
+                    positions[rack] = set()
+                if ru in positions[rack]:
+                    print(f"piki: collision detected in {rel}: RU {ru} overlaps in rack {rack}", file=sys.stderr)
+                    has_error = True
+                positions[rack].add(ru)
+    return has_error
+
+
+if __name__ == "__main__":
+    main()

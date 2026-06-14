@@ -1,0 +1,312 @@
+[
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/comprehensive-001",
+    "pass": false,
+    "overall_score": 0.0,
+    "elapsed_s": 46.97416114807129,
+    "files_written": 42,
+    "tokens": 9477,
+    "layers": {
+      "L1": "0/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "0/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/connection-design-001",
+    "pass": false,
+    "overall_score": 0.6000000000000001,
+    "elapsed_s": 11.375686883926392,
+    "files_written": 16,
+    "tokens": 4031,
+    "layers": {
+      "L1": "0/1",
+      "L2": "0/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/instance-declare-001",
+    "pass": false,
+    "overall_score": 0.2,
+    "elapsed_s": 17.34722113609314,
+    "files_written": 6,
+    "tokens": 4127,
+    "layers": {
+      "L1": "0/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/layout-design-001",
+    "pass": false,
+    "overall_score": 0.30000000000000004,
+    "elapsed_s": 8.777545928955078,
+    "files_written": 1,
+    "tokens": 2956,
+    "layers": {
+      "L1": "1/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/mating-design-001",
+    "pass": true,
+    "overall_score": 0.8500000000000001,
+    "elapsed_s": 10.826952934265137,
+    "files_written": 9,
+    "tokens": 3507,
+    "layers": {
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/comprehensive-001",
+    "pass": false,
+    "overall_score": 0.0,
+    "elapsed_s": 72.6578197479248,
+    "files_written": 42,
+    "tokens": 8881,
+    "layers": {
+      "L1": "0/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "0/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/connection-design-001",
+    "pass": false,
+    "overall_score": 0.6000000000000001,
+    "elapsed_s": 39.67926001548767,
+    "files_written": 16,
+    "tokens": 5768,
+    "layers": {
+      "L1": "0/1",
+      "L2": "0/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/instance-declare-001",
+    "pass": false,
+    "overall_score": 0.30000000000000004,
+    "elapsed_s": 20.971251010894775,
+    "files_written": 6,
+    "tokens": 3529,
+    "layers": {
+      "L1": "1/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/layout-design-001",
+    "pass": false,
+    "overall_score": 0.30000000000000004,
+    "elapsed_s": 16.36533498764038,
+    "files_written": 1,
+    "tokens": 3135,
+    "layers": {
+      "L1": "1/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/mating-design-001",
+    "pass": true,
+    "overall_score": 0.8500000000000001,
+    "elapsed_s": 19.604183197021484,
+    "files_written": 9,
+    "tokens": 3786,
+    "layers": {
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "task_id": "telecom/comprehensive-001",
+    "pass": false,
+    "overall_score": 0.0,
+    "elapsed_s": 0.6396300792694092,
+    "files_written": 0,
+    "layers": {
+      "L0": "0/1",
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1"
+    }
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "task_id": "telecom/connection-design-001",
+    "pass": false,
+    "overall_score": 0.7,
+    "elapsed_s": 0.5950450897216797,
+    "files_written": 0,
+    "layers": {
+      "L1": "1/1",
+      "L2": "0/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "task_id": "telecom/instance-declare-001",
+    "pass": false,
+    "overall_score": 0.0,
+    "elapsed_s": 0.5995399951934814,
+    "files_written": 0,
+    "layers": {
+      "L0": "0/1",
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1"
+    }
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "task_id": "telecom/layout-design-001",
+    "pass": false,
+    "overall_score": 0.30000000000000004,
+    "elapsed_s": 0.6044070720672607,
+    "files_written": 0,
+    "layers": {
+      "L1": "1/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "task_id": "telecom/mating-design-001",
+    "pass": true,
+    "overall_score": 0.8500000000000001,
+    "elapsed_s": 0.6126072406768799,
+    "files_written": 0,
+    "layers": {
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "kimi-k2.7-code",
+    "task_id": "telecom/comprehensive-001",
+    "pass": false,
+    "overall_score": 0.0,
+    "elapsed_s": 0.3622121810913086,
+    "files_written": 0,
+    "layers": {
+      "L0": "0/1",
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1"
+    }
+  },
+  {
+    "model": "kimi-k2.7-code",
+    "task_id": "telecom/connection-design-001",
+    "pass": false,
+    "overall_score": 0.7,
+    "elapsed_s": 0.21652579307556152,
+    "files_written": 0,
+    "layers": {
+      "L1": "1/1",
+      "L2": "0/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "kimi-k2.7-code",
+    "task_id": "telecom/instance-declare-001",
+    "pass": false,
+    "overall_score": 0.0,
+    "elapsed_s": 0.21749186515808105,
+    "files_written": 0,
+    "layers": {
+      "L0": "0/1",
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1"
+    }
+  },
+  {
+    "model": "kimi-k2.7-code",
+    "task_id": "telecom/layout-design-001",
+    "pass": false,
+    "overall_score": 0.30000000000000004,
+    "elapsed_s": 0.22045397758483887,
+    "files_written": 0,
+    "layers": {
+      "L1": "1/1",
+      "L2": "0/1",
+      "L3": "0/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  },
+  {
+    "model": "kimi-k2.7-code",
+    "task_id": "telecom/mating-design-001",
+    "pass": true,
+    "overall_score": 0.8500000000000001,
+    "elapsed_s": 0.21626687049865723,
+    "files_written": 0,
+    "layers": {
+      "L1": "1/1",
+      "L2": "1/1",
+      "L3": "1/1",
+      "L4": "1/1",
+      "L0": "1/1"
+    }
+  }
+]

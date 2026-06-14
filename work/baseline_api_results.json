@@ -1,0 +1,462 @@
+[
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/comprehensive-001",
+    "pass": false,
+    "overall_score": 0.2,
+    "layers": {
+      "L1": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L2": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L3": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 45.23941898345947,
+    "tokens": 8805,
+    "files_written": 21
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/connection-design-001",
+    "pass": false,
+    "overall_score": 0.6000000000000001,
+    "layers": {
+      "L1": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L2": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L3": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 22.299857139587402,
+    "tokens": 5954,
+    "files_written": 8
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/instance-declare-001",
+    "pass": false,
+    "overall_score": 0.2,
+    "layers": {
+      "L1": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L2": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L3": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 23.102028131484985,
+    "tokens": 4946,
+    "files_written": 6
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/layout-design-001",
+    "pass": false,
+    "overall_score": 0.30000000000000004,
+    "layers": {
+      "L1": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L2": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L3": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 11.806017875671387,
+    "tokens": 3270,
+    "files_written": 0
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "task_id": "telecom/mating-design-001",
+    "pass": true,
+    "overall_score": 0.8500000000000001,
+    "layers": {
+      "L1": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L2": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L3": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 15.287251949310303,
+    "tokens": 4873,
+    "files_written": 0
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/comprehensive-001",
+    "pass": false,
+    "overall_score": 0.2,
+    "layers": {
+      "L1": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L2": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L3": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 100.7934238910675,
+    "tokens": 10243,
+    "files_written": 13
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/connection-design-001",
+    "pass": false,
+    "overall_score": 0.6000000000000001,
+    "layers": {
+      "L1": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L2": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L3": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 26.089053869247437,
+    "tokens": 4892,
+    "files_written": 8
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/instance-declare-001",
+    "pass": false,
+    "overall_score": 0.30000000000000004,
+    "layers": {
+      "L1": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L2": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L3": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 29.373777866363525,
+    "tokens": 4244,
+    "files_written": 6
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/layout-design-001",
+    "pass": false,
+    "overall_score": 0.65,
+    "layers": {
+      "L1": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L2": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L3": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L4": {
+        "passed": 0,
+        "total": 1,
+        "failed": 1
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 20.463672876358032,
+    "tokens": 3526,
+    "files_written": 1
+  },
+  {
+    "model": "deepseek-v4-pro",
+    "task_id": "telecom/mating-design-001",
+    "pass": true,
+    "overall_score": 0.8500000000000001,
+    "layers": {
+      "L1": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L2": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L3": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L4": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L0": {
+        "passed": 1,
+        "total": 1,
+        "failed": 0
+      },
+      "L5": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      },
+      "L6": {
+        "passed": 0,
+        "total": 0,
+        "failed": 0
+      }
+    },
+    "elapsed_s": 16.2861270904541,
+    "tokens": 3310,
+    "files_written": 0
+  }
+]
