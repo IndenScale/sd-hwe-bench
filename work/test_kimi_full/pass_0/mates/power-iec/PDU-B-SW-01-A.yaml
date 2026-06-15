@@ -1,0 +1,5 @@
+mate: power-iec
+  source: PDU-B
+  source_port: outlet-2
+  target: SW-01
+  target_port: power-a

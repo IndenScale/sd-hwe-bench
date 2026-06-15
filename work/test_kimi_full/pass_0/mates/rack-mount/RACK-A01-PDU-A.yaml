@@ -1,0 +1,3 @@
+mate: rack-mount-19inch
+  source: RACK-A01
+  target: PDU-A

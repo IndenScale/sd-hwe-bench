@@ -4,7 +4,6 @@ import dataclasses
 import logging
 import os
 from pathlib import Path
-from typing import Optional
 
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase
@@ -200,8 +199,8 @@ def _build_criteria(requirement: str, criterion: RubricCriterion) -> str:
 def _default_steps(criterion: RubricCriterion) -> list[str]:
     """Generate default evaluation steps for a criterion."""
     return [
-        f"Carefully read the requirement and the agent's output",
+        "Carefully read the requirement and the agent's output",
         f"Identify whether the output addresses: {criterion.description}",
-        f"Check for correctness, completeness, and consistency",
-        f"Assign a score from 0.0 to 1.0 based on compliance level",
+        "Check for correctness, completeness, and consistency",
+        "Assign a score from 0.0 to 1.0 based on compliance level",
     ]

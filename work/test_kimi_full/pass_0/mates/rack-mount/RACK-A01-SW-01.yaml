@@ -1,0 +1,5 @@
+mate: rack-mount-19inch
+  source: RACK-A01
+  target: SW-01
+  ru_position: 20
+  height_u: 1

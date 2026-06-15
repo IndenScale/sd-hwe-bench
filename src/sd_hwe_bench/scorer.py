@@ -1,27 +1,26 @@
-"""Scoring framework — computes Pass@k from piki check results.
+"""Scoring framework — computes Pass@k using deterministic critics and optional rubrics.
 
-Integrates deterministic rule checking (L0-L4) with optional
-LLM-as-Judge rubrics evaluation powered by DeepEval GEval.
-
-Piki integration: when real piki is available (piki >= 0.1.0), scorer uses
-`piki check --format json` for structured output. Otherwise falls back to
-static YAML checks (L0-L2) only.
+Architecture:
+- Critics run in sequence: Syntax (L0), Piki (L1-L4), Deliverable (L5/L6), Rubric (LLM judge).
+- score_task orchestrates critics and produces a TaskScore.
+- Legacy helper functions remain for backward compatibility and tests.
 """
 
 from __future__ import annotations
 
 import dataclasses
-import json
 import logging
-import subprocess
 from pathlib import Path
 from typing import Any
 
-from sd_hwe_bench.llm_judge import (
-    LLMJudgeResult,
-    collect_agent_output,
-    evaluate_rubric_set,
+from sd_hwe_bench.critics import (
+    CriticResult,
+    DeliverableCritic,
+    PikiCritic,
+    RubricCritic,
+    SyntaxCritic,
 )
+from sd_hwe_bench.sandbox.runner import SandboxRunner
 from sd_hwe_bench.task import RubricSet
 
 logger = logging.getLogger(__name__)
@@ -47,8 +46,9 @@ class TaskScore:
     layers: dict[str, LayerScore] = dataclasses.field(default_factory=dict)
     deliverable_scores: dict[str, bool] = dataclasses.field(default_factory=dict)
     overall_score: float = 0.0
-    rubric_results: list[LLMJudgeResult] = dataclasses.field(default_factory=list)
+    rubric_results: list[Any] = dataclasses.field(default_factory=list)
     rubric_score: float | None = None
+    critic_results: list[CriticResult] = dataclasses.field(default_factory=list)
 
 
 # Layer weights aligned with initiative doc
@@ -62,164 +62,11 @@ LAYER_WEIGHTS = {
     "L6": 0.0,
 }
 
-# ── Piki rule → layer mapping ───────────────────────────────────────────
-# When piki --format json is available, rule failures are mapped to layers.
-# Rules not explicitly listed default to L2 (reference/integrity).
-PIKI_RULE_LAYERS: dict[str, str] = {
-    # L1: Schema / validation
-    "SCHEMA-001": "L1",
-    # L3: Business / threshold / lifecycle rules
-    "TELECOM-POWER-001": "L3",      # PDU power budget
-    "TELECOM-POWER-002": "L3",      # PDU phase balance
-    "CATALOG-LIFECYCLE-001": "L3",  # EOL lifecycle check
-    # L4: Geometry / collision / spatial
-    "TELECOM-RACK-001": "L4",       # U collision
-    "TELECOM-RACK-002": "L4",       # Rack capacity
-    "TELECOM-RACK-003": "L4",       # Physical fit
-    "TELECOM-COLLISION-001": "L4",  # 3D collision
-    # L2 (explicitly listed for clarity; all others default to L2):
-    "REFS-001": "L2",
-    "REFS-002": "L2",
-    "FK-001": "L2",
-    "TAGS-001": "L2",
-    "INTERFACE-COMPAT-001": "L2",
-    "INTERFACE-CABLE-001": "L2",
-    "MATE-001": "L2",
-    "MATE-002": "L2",
-    "MATE-003": "L2",
-    "CATALOG-001": "L2",
-    "CATALOG-002": "L2",
-    "TELECOM-FK-001": "L2",
-    "TELECOM-PORT-001": "L2",
-    "TELECOM-PORT-002": "L2",
-    "TELECOM-CONN-001": "L2",
-    "TELECOM-CONN-002": "L2",
-    "TELECOM-CONN-003": "L2",
-}
-
-# ── Piki CLI ──────────────────────────────────────────────────────────────
-_PIKI_PYTHON = "/Users/indenscale/workspace/piki/.venv/bin/python"
-_PIKI_MODULE = "piki"
+DELIVERABLE_WEIGHT = 0.15
+RUBRIC_WEIGHT = 0.0  # Rubrics are optional diagnostic, not included in overall_score by default
 
 
-def run_piki_check(project_dir: Path, json_output: bool = True) -> dict[str, Any]:
-    """Run `piki check` CLI on a project directory.
-
-    When json_output=True, calls `piki check --format json` and returns
-    the parsed JSON report plus availability metadata.
-    """
-    args = ["piki", "check"]
-    if json_output:
-        args.extend(["--format", "json"])
-
-    try:
-        result = subprocess.run(
-            args,
-            cwd=project_dir,
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        if json_output:
-            try:
-                parsed = json.loads(result.stdout)
-            except json.JSONDecodeError:
-                parsed = {}
-            return {
-                "available": True,
-                "success": result.returncode == 0,
-                "parsed": parsed,
-                "stdout": result.stdout,
-                "stderr": result.stderr,
-                "returncode": result.returncode,
-            }
-        return {
-            "available": True,
-            "success": result.returncode == 0,
-            "stdout": result.stdout,
-            "stderr": result.stderr,
-            "returncode": result.returncode,
-        }
-    except subprocess.TimeoutExpired:
-        return {
-            "available": True,
-            "success": False,
-            "stdout": "",
-            "stderr": "piki check timed out",
-        }
-    except FileNotFoundError:
-        return {
-            "available": False,
-            "success": False,
-            "stdout": "",
-            "stderr": "piki not installed",
-        }
-
-
-def run_piki_check_via_python(
-    project_dir: Path,
-    json_output: bool = True,
-    piki_python: str | None = None,
-) -> dict[str, Any]:
-    """Run piki check using an explicit Python interpreter + module path.
-
-    Preferred when piki is installed as a local editable package
-    (e.g. `pip install -e /path/to/piki`) rather than a global CLI.
-    """
-    args = [
-        piki_python or _PIKI_PYTHON,
-        "-m",
-        _PIKI_MODULE,
-        "check",
-    ]
-    if json_output:
-        args.extend(["--format", "json"])
-
-    try:
-        result = subprocess.run(
-            args,
-            cwd=project_dir,
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
-        if json_output:
-            try:
-                parsed = json.loads(result.stdout)
-            except json.JSONDecodeError:
-                parsed = {}
-            return {
-                "available": True,
-                "success": result.returncode == 0,
-                "parsed": parsed,
-                "stdout": result.stdout,
-                "stderr": result.stderr,
-                "returncode": result.returncode,
-            }
-        return {
-            "available": True,
-            "success": result.returncode == 0,
-            "stdout": result.stdout,
-            "stderr": result.stderr,
-            "returncode": result.returncode,
-        }
-    except subprocess.TimeoutExpired:
-        return {
-            "available": True,
-            "success": False,
-            "stdout": "",
-            "stderr": "piki check timed out",
-        }
-    except FileNotFoundError:
-        return {
-            "available": False,
-            "success": False,
-            "stdout": "",
-            "stderr": "piki not installed",
-        }
-
-
-# ── Static YAML checks (fallback when piki is unavailable) ──────────────
+# ── Legacy static YAML checks (fallback when piki is unavailable) ─────────
 
 def _static_check_yaml(project_dir: Path) -> dict[str, Any]:
     """Run static YAML checks (L0-L2) — fallback when piki is unavailable."""
@@ -253,7 +100,6 @@ def _static_check_yaml(project_dir: Path) -> dict[str, Any]:
         if not isinstance(doc, (dict, list)):
             continue
 
-        # Detect model definition files
         is_model_file = (
             isinstance(doc, dict)
             and "id" not in doc
@@ -347,8 +193,6 @@ def _collect_references(item: dict, refs: set) -> None:
                 refs.add(dev_id)
 
 
-# ── Layer scoring from piki JSON ────────────────────────────────────────
-
 def _layer_scores_from_static(score: TaskScore, static_result: dict[str, Any]) -> None:
     """Populate layer scores from static YAML check results."""
     errors = static_result.get("errors", {})
@@ -367,273 +211,19 @@ def _layer_scores_from_static(score: TaskScore, static_result: dict[str, Any]) -
             score.overall_score += LAYER_WEIGHTS[layer]
 
 
-def _layer_scores_from_piki_json(
-    score: TaskScore, parsed: dict[str, Any]
-) -> None:
-    """Populate layer scores from parsed piki `--format json` output.
-
-    Maps piki rule failures to L1-L4 layers using PIKI_RULE_LAYERS.
-    A layer passes when ALL rules mapped to that layer pass.
-    """
-    layer_errors: dict[str, list[str]] = {
-        "L1": [], "L2": [], "L3": [], "L4": [],
-    }
-
-    # Collect failed rules from piki results
-    for result in parsed.get("results", []):
-        if result.get("passed"):
-            continue
-        rule_id = result.get("rule_id", "")
-        layer = PIKI_RULE_LAYERS.get(rule_id, "L2")
-        if layer in layer_errors:
-            layer_errors[layer].append(
-                f"{rule_id}: {result.get('message', 'failed')}"
-            )
-
-    # Collect diagnostics with severity >= ERROR
-    for diag in parsed.get("diagnostics", []):
-        severity = str(diag.get("severity", "")).upper()
-        if severity not in ("ERROR", "FATAL"):
-            continue
-        code = diag.get("code", "")
-        layer = PIKI_RULE_LAYERS.get(code, "L2")
-        if layer in layer_errors:
-            loc = diag.get("location", {})
-            uri = loc.get("uri", "") if isinstance(loc, dict) else ""
-            layer_errors[layer].append(
-                f"{code}: {diag.get('message', 'failed')}"
-                + (f" @ {uri}" if uri else "")
-            )
-
-    # Build layer scores
-    for layer in ("L1", "L2", "L3", "L4"):
-        errors = layer_errors[layer]
-        total = 1
-        passed = 0 if errors else 1
-        score.layers[layer] = LayerScore(
-            layer=layer,
-            total=total,
-            passed=passed,
-            failed=total - passed,
-            errors=errors,
-        )
-        if passed:
-            score.overall_score += LAYER_WEIGHTS[layer]
-
-    # L0: gate — fail if piki ran 0 real checks (empty project)
-    results_count = len(parsed.get("results", []))
-    l0_passed = 1
-    l0_errors: list[str] = []
-    if results_count == 0:
-        l0_passed = 0
-        l0_errors.append("Piki returned no results — project not found")
-    score.layers["L0"] = LayerScore(
-        layer="L0", total=1, passed=l0_passed, failed=1 - l0_passed, errors=l0_errors
-    )
-    # L5, L6: not scored
-    score.layers["L5"] = LayerScore(layer="L5", total=0, passed=0, failed=0)
-    score.layers["L6"] = LayerScore(layer="L6", total=0, passed=0, failed=0)
-
-
-def _layer_scores_from_piki_stderr(
-    score: TaskScore, check_result: dict[str, Any]
-) -> None:
-    """Parse piki stderr output (legacy fallback for older piki versions)."""
-    stderr = check_result.get("stderr", "")
-
-    has_schema_error = (
-        "validation error" in stderr.lower()
-        or "schema" in stderr.lower()
-        or "YAML" in stderr
-    )
-    has_ref_error = "FK-" in stderr or "not found" in stderr.lower()
-    has_business_error = "threshold" in stderr.lower() or "violat" in stderr.lower()
-    has_geometry_error = "collision" in stderr.lower() or "overlap" in stderr.lower()
-
-    for layer in LAYER_WEIGHTS:
-        total = 1
-        if layer == "L0":
-            passed = 1
-        elif layer == "L1":
-            passed = 0 if has_schema_error else 1
-        elif layer == "L2":
-            passed = 0 if has_ref_error else 1
-        elif layer == "L3":
-            passed = 0 if has_business_error else 1
-        elif layer == "L4":
-            passed = 0 if has_geometry_error else 1
-        elif layer in ("L5", "L6"):
-            passed = 1
-        else:
-            passed = 1
-
-        score.layers[layer] = LayerScore(
-            layer=layer, total=total, passed=passed, failed=total - passed
-        )
-        if passed:
-            score.overall_score += LAYER_WEIGHTS[layer]
-
-
-
-def _init_default_layers(score: TaskScore) -> None:
-    """Initialize all layers to pass (used as fallback when gates fail)."""
-    for layer in ("L1", "L2", "L3", "L4"):
-        score.layers[layer] = LayerScore(layer=layer, total=1, passed=1, failed=0, errors=[])
-    score.layers["L5"] = LayerScore(layer="L5", total=0, passed=0, failed=0)
-    score.layers["L6"] = LayerScore(layer="L6", total=0, passed=0, failed=0)
-
-
-def _piki_check_and_score(score: TaskScore, project_dir: Path) -> bool:
-    """Run piki check and score — tries JSON, falls back to stderr, then static.
-
-    Returns True if piki was available and used successfully.
-    """
-    # Quick L0 gate: are there any YAML files outside models/?
-    yaml_files = (
-        list(project_dir.rglob("*.yaml")) + list(project_dir.rglob("*.yml"))
-    )
-    instance_files = [
-        f for f in yaml_files
-        if "models/" not in str(f.relative_to(project_dir))
-        and f.name != "piki.toml"
-    ]
-    if not instance_files:
-        # No instance YAML — project is empty. L0 fails.
-        score.layers["L0"] = LayerScore(
-            layer="L0", total=1, passed=0, failed=1,
-            errors=["No YAML instance files found (empty project)"],
-        )
-        _init_default_layers(score)
-        return True
-
-    # Try piki module (local editable install) first
-    piki_result = run_piki_check_via_python(project_dir, json_output=True)
-    if piki_result.get("available"):
-        parsed = piki_result.get("parsed", {})
-        if parsed and parsed.get("results") is not None:
-            _layer_scores_from_piki_json(score, parsed)
-            return True
-        if parsed:
-            return False
-
-    # Try piki CLI (system PATH)
-    piki_result = run_piki_check(project_dir, json_output=True)
-    if piki_result.get("available"):
-        parsed = piki_result.get("parsed", {})
-        if parsed and parsed.get("results") is not None:
-            _layer_scores_from_piki_json(score, parsed)
-            return True
-        if parsed:
-            return False
-
-    return False
-
-
-# ── Rubric scoring ──────────────────────────────────────────────────────
-
-def _score_rubrics(
-    score: TaskScore,
-    rubric_sets: list[RubricSet],
-    requirement: str,
-    project_dir: Path,
-    model: str | None = None,
-) -> None:
-    """Run LLM-as-Judge rubric evaluation and attach results to the TaskScore."""
-    if not rubric_sets:
-        return
-
-    from sd_hwe_bench.llm_judge import _DEFAULT_MODEL
-
-    judge_model = model or _DEFAULT_MODEL
-    output_text = collect_agent_output(project_dir)
-
-    results: list[LLMJudgeResult] = []
-    for rubric_set in rubric_sets:
-        try:
-            result = evaluate_rubric_set(
-                rubric_set, requirement, output_text, model=judge_model
-            )
-            results.append(result)
-        except Exception as e:
-            logger.exception("Rubric set %s failed", rubric_set.name)
-            results.append(
-                LLMJudgeResult(
-                    rubric_name=rubric_set.name,
-                    overall_score=0.0,
-                    passed=False,
-                    threshold=rubric_set.threshold,
-                    criteria_scores=[],
-                    raw_errors=[str(e)],
-                )
-            )
-
-    score.rubric_results = results
-
-    if results:
-        score.rubric_score = sum(r.overall_score for r in results) / len(results)
-
-
-# ── Main entry point ────────────────────────────────────────────────────
-
-def score_task(
-    task_id: str,
-    agent_output_dir: Path,
-    expected_deliverables: list[str] | None = None,
-    rubric_sets: list[RubricSet] | None = None,
-    requirement: str = "",
-    rubrics_model: str | None = None,
-) -> TaskScore:
-    """Score a single task attempt."""
-    score = TaskScore(task_id=task_id, success=False)
-
-    # Phase 1: piki engine checks (L0-L4) — preferred path
-    piki_used = _piki_check_and_score(score, agent_output_dir)
-
-    # Phase 2: fallback to static YAML checks if piki unavailable
-    if not piki_used:
-        static_result = _static_check_yaml(agent_output_dir)
-        _layer_scores_from_static(score, static_result)
-
-    # Phase 3: Deliverable checks
-    if expected_deliverables:
-        for d in expected_deliverables:
-            score.deliverable_scores[d] = _check_deliverable(agent_output_dir, d)
-
-    # Determine success: all L0-L4 checks passed
-    critical_layers = ["L0", "L1", "L2", "L3", "L4"]
-    score.success = all(
-        score.layers.get(l) and score.layers[l].passed
-        for l in critical_layers
-    )
-
-    # Phase 4: LLM-as-Judge rubrics (optional)
-    if rubric_sets:
-        _score_rubrics(score, rubric_sets, requirement, agent_output_dir, model=rubrics_model)
-
-    return score
-
-
-# ── Deliverable checks ──────────────────────────────────────────────────
-
 def _check_deliverable(project_dir: Path, deliverable_name: str) -> bool:
     """Check if a generator deliverable was produced successfully."""
+    from sd_hwe_bench.critics.deliverable import DELIVERABLE_PATHS
+
     dist_root = _read_dist_root(project_dir)
 
-    deliverable_paths = {
-        "bom-csv": ("bom-csv", "bom.csv", "采购清单"),
-        "rack-face-panel-svg": ("rack-face-panel-svg", "rack-panel.svg", "施工图"),
-        "power-budget": ("power-budget", "power-budget.csv", "设计评审"),
-        "cable-list": ("cable-list", "cable-list.csv", "采购清单"),
-        "port-map": ("port-map", "port-map.csv", "设计评审"),
-    }
-
-    info = deliverable_paths.get(deliverable_name)
+    info = DELIVERABLE_PATHS.get(deliverable_name)
     if not info:
         return False
 
     config_key, filename, category = info
 
-    toml_config = _read_piki_toml_dist(project_dir)
+    toml_config = _read_piki_toml_targets(project_dir)
     if config_key in toml_config:
         cat = toml_config[config_key]
     else:
@@ -666,7 +256,7 @@ def _read_dist_root(project_dir: Path) -> Path:
     return project_dir / "dist"
 
 
-def _read_piki_toml_dist(project_dir: Path) -> dict[str, str]:
+def _read_piki_toml_targets(project_dir: Path) -> dict[str, str]:
     """Read generator dist targets from piki.toml."""
     piki_toml = project_dir / "piki.toml"
     if not piki_toml.exists():
@@ -682,7 +272,105 @@ def _read_piki_toml_dist(project_dir: Path) -> dict[str, str]:
         return {}
 
 
-# ── Aggregate metrics ───────────────────────────────────────────────────
+# ── Main orchestrator ────────────────────────────────────────────────────
+
+def score_task(
+    task_id: str,
+    agent_output_dir: Path,
+    expected_deliverables: list[str] | None = None,
+    rubric_sets: list[RubricSet] | None = None,
+    requirement: str = "",
+    rubrics_model: str | None = None,
+    runner: SandboxRunner | None = None,
+) -> TaskScore:
+    """Score a single task attempt using the critic pipeline."""
+    from sd_hwe_bench.task import TaskInstance
+
+    score = TaskScore(task_id=task_id, success=False)
+    project_dir = Path(agent_output_dir)
+
+    # Ensure we have task metadata; if not, create a minimal TaskInstance stub
+    try:
+        task = TaskInstance(project_dir.parent)
+    except Exception:
+        # Fallback: build a minimal task from arguments
+        import types
+        task = types.SimpleNamespace(
+            metadata=types.SimpleNamespace(
+                expected_files=[],
+                expected_deliverables=expected_deliverables or [],
+                rubrics=rubric_sets or [],
+                requirement=requirement,
+            )
+        )
+
+    # 1. Syntax critic (L0)
+    syntax = SyntaxCritic()
+    syntax_res = syntax.evaluate(project_dir, task)  # type: ignore[arg-type]
+    score.critic_results.append(syntax_res)
+    score.layers["L0"] = LayerScore(
+        layer="L0",
+        total=1,
+        passed=1 if syntax_res.passed else 0,
+        failed=0 if syntax_res.passed else 1,
+        errors=syntax_res.comments,
+    )
+
+    # 2. Piki critic (L1-L4)
+    piki = PikiCritic(runner=runner)
+    piki_res = piki.evaluate(project_dir, task)  # type: ignore[arg-type]
+    score.critic_results.append(piki_res)
+
+    layer_scores = piki_res.artifacts.get("layer_scores", {})
+    layer_errors = piki_res.artifacts.get("layer_errors", {})
+    for layer in ("L1", "L2", "L3", "L4"):
+        score.layers[layer] = LayerScore(
+            layer=layer,
+            total=1,
+            passed=1 if not layer_errors.get(layer) else 0,
+            failed=0 if not layer_errors.get(layer) else 1,
+            errors=layer_errors.get(layer, []),
+        )
+        score.overall_score += layer_scores.get(layer, 0.0)
+
+    # If piki unavailable, fall back to static checks
+    if not piki_res.available if hasattr(piki_res, "available") else False:  # noqa: SIM222
+        static_result = _static_check_yaml(project_dir)
+        _layer_scores_from_static(score, static_result)
+
+    # 3. Deliverable critic (L5/L6)
+    deliverable = DeliverableCritic()
+    deliv_res = deliverable.evaluate(project_dir, task)  # type: ignore[arg-type]
+    score.critic_results.append(deliv_res)
+
+    if expected_deliverables:
+        for d in expected_deliverables:
+            score.deliverable_scores[d] = _check_deliverable(project_dir, d)
+        delivered = sum(score.deliverable_scores.values())
+        total = len(expected_deliverables)
+        if total > 0:
+            score.overall_score += DELIVERABLE_WEIGHT * (delivered / total)
+
+    # 4. Rubric critic (optional)
+    if rubric_sets:
+        rubric = RubricCritic(model=rubrics_model)
+        rubric_res = rubric.evaluate(project_dir, task)  # type: ignore[arg-type]
+        score.critic_results.append(rubric_res)
+        score.rubric_score = rubric_res.score
+        score.rubric_results = rubric_res.comments
+
+    # Determine success: all L0-L4 + deliverables must pass
+    critical_layers = ["L0", "L1", "L2", "L3", "L4"]
+    layers_ok = all(
+        score.layers.get(layer) and score.layers[layer].passed for layer in critical_layers
+    )
+    deliverables_ok = all(score.deliverable_scores.values()) if expected_deliverables else True
+    score.success = layers_ok and deliverables_ok
+
+    return score
+
+
+# ── Aggregate metrics ────────────────────────────────────────────────────
 
 def compute_pass_at_k(scores: list[list[TaskScore]], k: int) -> float:
     """Compute Pass@k from per-attempt scores."""

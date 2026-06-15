@@ -1,0 +1,5 @@
+mate: rack-mount-19inch
+  source: RACK-A01
+  target: SRV-01
+  ru_position: 10
+  height_u: 2

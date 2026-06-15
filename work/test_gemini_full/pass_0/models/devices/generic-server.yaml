@@ -1,0 +1,13 @@
+model: generic-server
+family: ServerFamily
+
+height_u: 2
+tdp_w: 300
+psu_count: 1
+psu_redundancy: false
+
+# 物理尺寸（毫米）
+depth_mm: 715
+width_mm: 445
+height_mm: 89  # 2U ≈ 88.9mm
+weight_kg: 18.5

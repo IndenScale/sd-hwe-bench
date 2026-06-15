@@ -1,0 +1,5 @@
+mate: power-iec
+  source: PDU-B
+  source_port: outlet-1
+  target: SRV-01
+  target_port: power-b
