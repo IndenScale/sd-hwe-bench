@@ -66,6 +66,7 @@ class Harness:
                     rubric_sets=rubric_sets,
                     requirement=requirement,
                     rubrics_model=rubrics_model,
+                    task=task,
                 )
                 task_scores.append(score)
             elif agent_cmd:
@@ -98,6 +99,7 @@ class Harness:
                         rubric_sets=rubric_sets,
                         requirement=requirement,
                         rubrics_model=rubrics_model,
+                        task=task,
                     )
                     task_scores.append(score)
             else:
@@ -108,6 +110,7 @@ class Harness:
                     rubric_sets=rubric_sets,
                     requirement=requirement,
                     rubrics_model=rubrics_model,
+                    task=task,
                 )
                 task_scores.append(score)
 
@@ -188,6 +191,7 @@ class Harness:
                         rubric_sets=rubric_sets,
                         requirement=task.metadata.requirement,
                         rubrics_model=rubrics_model,
+                        task=task,
                     )
                     pass_scores.append(score)
                     logger.info(

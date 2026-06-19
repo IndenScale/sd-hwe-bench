@@ -163,21 +163,23 @@ class TestScoreTask:
         assert score.layers["L1"].passed == 1
         assert score.layers["L2"].passed == 1
 
-    def test_scores_all_reference_solutions(self, tasks_dir):
-        """Every task's reference solution should pass L0-L2."""
-        task_ids = [
+    @pytest.mark.parametrize(
+        "tid",
+        [
             "telecom/comprehensive-001",
             "telecom/connection-design-001",
             "telecom/instance-declare-001",
             "telecom/layout-design-001",
             "telecom/mating-design-001",
-        ]
-        for tid in task_ids:
-            task_dir = tasks_dir / tid / "solution"
-            score = score_task(tid, task_dir)
-            assert score.layers["L0"].passed == 1, f"{tid}: L0 failed"
-            assert score.layers["L1"].passed == 1, f"{tid}: L1 failed"
-            assert score.layers["L2"].passed == 1, f"{tid}: L2 failed"
+        ],
+    )
+    def test_scores_all_reference_solutions(self, tasks_dir, tid):
+        """Every task's reference solution should pass L0-L2."""
+        task_dir = tasks_dir / tid / "solution"
+        score = score_task(tid, task_dir)
+        assert score.layers["L0"].passed == 1, f"{tid}: L0 failed"
+        assert score.layers["L1"].passed == 1, f"{tid}: L1 failed"
+        assert score.layers["L2"].passed == 1, f"{tid}: L2 failed"
 
     def test_empty_output_scores_zero(self):
         with tempfile.TemporaryDirectory() as td:

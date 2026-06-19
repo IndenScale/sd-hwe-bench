@@ -175,6 +175,7 @@ def run_task(
                 requirement=task.metadata.requirement,
                 rubrics_model=rubrics_model,
                 runner=runner,
+                task=task,
             )
 
             ws.update_manifest(
@@ -233,6 +234,7 @@ def score_command(
         requirement=task.metadata.requirement,
         rubrics_model=rubrics_model,
         runner=runner,
+        task=task,
     )
     _print_score(score)
 

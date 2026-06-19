@@ -1,4 +1,9 @@
-"""Gemini CLI actor."""
+"""Gemini CLI actor.
+
+Gemini's ``--yolo`` mode mutates the working directory directly.  We keep the
+stdout/stderr transcript for traceability but score the files it actually
+wrote to disk.
+"""
 
 from __future__ import annotations
 
@@ -8,14 +13,13 @@ import subprocess
 import time
 from pathlib import Path
 
-from sd_hwe_bench.actors.base import Actor, ActorResult
-from sd_hwe_bench.sandbox.parser import YamlBlockParser
+from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
 
 logger = logging.getLogger(__name__)
 
 
 class GeminiActor(Actor):
-    """Run Google Gemini CLI in one-shot prompt mode."""
+    """Run Google Gemini CLI in one-shot prompt mode and inspect files it created."""
 
     name = "gemini"
 
@@ -65,6 +69,8 @@ class GeminiActor(Actor):
             "--output-format", "text",
         ]
 
+        before = list_yaml_files(workspace_root)
+
         start = time.time()
         try:
             result = subprocess.run(
@@ -94,16 +100,12 @@ class GeminiActor(Actor):
                 error=str(exc),
             )
 
-        parser = YamlBlockParser(workspace_root)
-        written, errors = parser.parse_and_write(raw)
-        if errors:
-            logger.debug("Gemini parse errors: %s", errors)
-
-        yaml_files = list(workspace_root.rglob("*.yaml")) + list(workspace_root.rglob("*.yml"))
+        after = list_yaml_files(workspace_root)
+        new_files = after - before
 
         return ActorResult(
             success=True,
             raw_output=raw,
-            files_written=written or len(yaml_files),
+            files_written=len(new_files),
             elapsed_s=elapsed,
         )

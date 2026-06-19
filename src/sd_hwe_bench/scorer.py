@@ -11,7 +11,7 @@ from __future__ import annotations
 import dataclasses
 import logging
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sd_hwe_bench.critics import (
     CriticResult,
@@ -22,6 +22,9 @@ from sd_hwe_bench.critics import (
 )
 from sd_hwe_bench.sandbox.runner import SandboxRunner
 from sd_hwe_bench.task import RubricSet
+
+if TYPE_CHECKING:
+    from sd_hwe_bench.task import TaskInstance
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +215,13 @@ def _layer_scores_from_static(score: TaskScore, static_result: dict[str, Any]) -
 
 
 def _check_deliverable(project_dir: Path, deliverable_name: str) -> bool:
-    """Check if a generator deliverable was produced successfully."""
+    """Check if a generator deliverable was produced successfully.
+
+    The filename in DELIVERABLE_PATHS may be a glob pattern (e.g.
+    ``rack-panel*.svg``) because some generators emit per-instance filenames.
+    """
+    import fnmatch
+
     from sd_hwe_bench.critics.deliverable import DELIVERABLE_PATHS
 
     dist_root = _read_dist_root(project_dir)
@@ -221,7 +230,7 @@ def _check_deliverable(project_dir: Path, deliverable_name: str) -> bool:
     if not info:
         return False
 
-    config_key, filename, category = info
+    config_key, filename_pattern, category = info
 
     toml_config = _read_piki_toml_targets(project_dir)
     if config_key in toml_config:
@@ -229,13 +238,11 @@ def _check_deliverable(project_dir: Path, deliverable_name: str) -> bool:
     else:
         cat = category
 
-    target = dist_root / cat / filename
-    if target.exists():
-        return True
-
-    if dist_root.exists():
-        for f in dist_root.rglob(filename):
-            return True
+    category_dir = dist_root / cat
+    if category_dir.exists():
+        for f in category_dir.rglob("*"):
+            if f.is_file() and fnmatch.fnmatch(f.name, filename_pattern):
+                return True
 
     return False
 
@@ -282,6 +289,7 @@ def score_task(
     requirement: str = "",
     rubrics_model: str | None = None,
     runner: SandboxRunner | None = None,
+    task: TaskInstance | None = None,
 ) -> TaskScore:
     """Score a single task attempt using the critic pipeline."""
     from sd_hwe_bench.task import TaskInstance
@@ -289,20 +297,22 @@ def score_task(
     score = TaskScore(task_id=task_id, success=False)
     project_dir = Path(agent_output_dir)
 
-    # Ensure we have task metadata; if not, create a minimal TaskInstance stub
-    try:
-        task = TaskInstance(project_dir.parent)
-    except Exception:
-        # Fallback: build a minimal task from arguments
-        import types
-        task = types.SimpleNamespace(
-            metadata=types.SimpleNamespace(
-                expected_files=[],
-                expected_deliverables=expected_deliverables or [],
-                rubrics=rubric_sets or [],
-                requirement=requirement,
+    # Prefer the caller-supplied task instance so expected_files/rubrics/requirement
+    # are authoritative.  Only fall back when none is provided.
+    if task is None:
+        try:
+            task = TaskInstance(project_dir.parent)
+        except Exception:
+            # Fallback: build a minimal task from arguments
+            import types
+            task = types.SimpleNamespace(
+                metadata=types.SimpleNamespace(
+                    expected_files=[],
+                    expected_deliverables=expected_deliverables or [],
+                    rubrics=rubric_sets or [],
+                    requirement=requirement,
+                )
             )
-        )
 
     # 1. Syntax critic (L0)
     syntax = SyntaxCritic()
@@ -334,7 +344,7 @@ def score_task(
         score.overall_score += layer_scores.get(layer, 0.0)
 
     # If piki unavailable, fall back to static checks
-    if not piki_res.available if hasattr(piki_res, "available") else False:  # noqa: SIM222
+    if not piki_res.artifacts.get("available", True):
         static_result = _static_check_yaml(project_dir)
         _layer_scores_from_static(score, static_result)
 

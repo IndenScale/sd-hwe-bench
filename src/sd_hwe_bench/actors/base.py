@@ -32,3 +32,12 @@ class Actor:
         The actor should write YAML/design files into workspace_root.
         """
         raise NotImplementedError
+
+
+def list_yaml_files(root: Path) -> set[Path]:
+    """Return the set of YAML files under root, relative to root."""
+    return {
+        p.relative_to(root)
+        for p in root.rglob("*")
+        if p.is_file() and p.suffix in (".yaml", ".yml")
+    }

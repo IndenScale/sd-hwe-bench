@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import fnmatch
 from pathlib import Path
 
 from sd_hwe_bench.critics.base import Critic, CriticResult
 from sd_hwe_bench.task import TaskInstance
 
+# (config_key, filename_glob, default_category)
 DELIVERABLE_PATHS: dict[str, tuple[str, str, str]] = {
     "bom-csv": ("bom-csv", "bom.csv", "采购清单"),
-    "rack-face-panel-svg": ("rack-face-panel-svg", "rack-panel.svg", "施工图"),
+    "rack-face-panel-svg": ("rack-face-panel-svg", "rack-panel*.svg", "施工图"),
     "power-budget": ("power-budget", "power-budget.csv", "设计评审"),
     "cable-list": ("cable-list", "cable-list.csv", "采购清单"),
     "port-map": ("port-map", "port-map.csv", "设计评审"),
@@ -45,20 +47,26 @@ class DeliverableCritic(Critic):
                 comments.append(f"Unknown deliverable type: {deliverable}")
                 continue
 
-            config_key, filename, default_category = info
+            config_key, filename_pattern, default_category = info
             category = toml_targets.get(config_key, default_category)
-            target = dist_root / category / filename
+            category_dir = dist_root / category
 
-            exists = target.exists()
-            if not exists and dist_root.exists():
-                # Fallback: search recursively
-                exists = any(dist_root.rglob(filename))
+            exists = False
+            matched_file: str | None = None
+            if category_dir.exists():
+                for f in category_dir.rglob("*"):
+                    if f.is_file() and fnmatch.fnmatch(f.name, filename_pattern):
+                        exists = True
+                        matched_file = f.name
+                        break
 
             if exists:
                 found += 1
-                comments.append(f"✓ {deliverable}: {filename} found")
+                comments.append(f"✓ {deliverable}: {matched_file} found")
             else:
-                comments.append(f"✗ {deliverable}: {filename} missing (expected under {dist_root})")
+                comments.append(
+                    f"✗ {deliverable}: {filename_pattern} missing (expected under {category_dir})"
+                )
 
         total = len(expected)
         score = found / total if total > 0 else 1.0

@@ -1,4 +1,10 @@
-"""Kimi CLI actor."""
+"""Kimi CLI actor.
+
+Kimi Code runs in headless one-shot prompt mode (``kimi -p ...``).  In this
+mode Kimi auto-approves tool calls and mutates the working directory directly.
+The stdout/stderr transcript is kept for traceability, but the authoritative
+agent submission is the set of new YAML files it created on disk.
+"""
 
 from __future__ import annotations
 
@@ -8,14 +14,13 @@ import subprocess
 import time
 from pathlib import Path
 
-from sd_hwe_bench.actors.base import Actor, ActorResult
-from sd_hwe_bench.sandbox.parser import YamlBlockParser
+from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
 
 logger = logging.getLogger(__name__)
 
 
 class KimiActor(Actor):
-    """Run Kimi CLI in one-shot prompt mode."""
+    """Run Kimi CLI in one-shot prompt mode and inspect files it created."""
 
     name = "kimi"
 
@@ -48,6 +53,9 @@ class KimiActor(Actor):
             "-p", prompt,
         ]
 
+        # Snapshot files before the agent runs so we can count net-new files.
+        before = list_yaml_files(workspace_root)
+
         start = time.time()
         try:
             result = subprocess.run(
@@ -77,19 +85,12 @@ class KimiActor(Actor):
                 error=str(exc),
             )
 
-        # Kimi may write files directly; also parse any YAML blocks from output
-        parser = YamlBlockParser(workspace_root)
-        written, errors = parser.parse_and_write(raw)
-
-        if errors:
-            logger.debug("Kimi parse errors: %s", errors)
-
-        # Count YAML files excluding scaffold
-        yaml_files = list(workspace_root.rglob("*.yaml")) + list(workspace_root.rglob("*.yml"))
+        after = list_yaml_files(workspace_root)
+        new_files = after - before
 
         return ActorResult(
             success=True,
             raw_output=raw,
-            files_written=len(yaml_files) if not written else written,
+            files_written=len(new_files),
             elapsed_s=elapsed,
         )

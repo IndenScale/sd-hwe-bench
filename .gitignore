@@ -46,6 +46,8 @@ htmlcov/
 Thumbs.db
 
 # Project-specific runtime outputs
+logs/
+runs/
 work/baseline-runs/
 work/agent_runs/
 work/agent_runs2/

@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -14,6 +15,8 @@ from typing import Literal
 logger = logging.getLogger(__name__)
 
 SandboxBackend = Literal["none", "docker", "podman"]
+
+_DEFAULT_PIKI_PYTHON = "/Users/indenscale/workspace/piki/.venv/bin/python"
 
 
 @dataclass
@@ -32,10 +35,22 @@ class PikiResult:
         return self.returncode == 0
 
 
+def _current_python_has_piki() -> bool:
+    """Check whether the current interpreter can import piki."""
+    try:
+        import piki  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
+
+
 class SandboxRunner:
     """Run piki commands in an isolated environment.
 
-    - backend='none': run piki directly on the host (uses PIPKIPATH env var or PATH).
+    - backend='none': run piki directly on the host.
+      Resolution order: explicit ``piki_python`` > current interpreter (if piki
+      is importable) > ``$PIPKIPATH`` > ``piki`` executable on PATH.
     - backend='docker'/'podman': run piki inside a container image with the workspace mounted.
     """
 
@@ -47,9 +62,24 @@ class SandboxRunner:
     ):
         self.backend = backend
         self.image = image
-        self.piki_python = piki_python or os.environ.get(
-            "PIPKIPATH", "/Users/indenscale/workspace/piki/.venv/bin/python"
-        )
+        self.piki_python = piki_python
+
+    def _resolve_python(self) -> str | None:
+        """Return the Python interpreter to use for running piki."""
+        # 1. Explicit override wins.
+        if self.piki_python:
+            return self.piki_python
+
+        # 2. Prefer current interpreter if piki/adl are installed in it.
+        if _current_python_has_piki():
+            return sys.executable
+
+        # 3. Legacy monorepo fallback via PIPKIPATH.
+        env_python = os.environ.get("PIPKIPATH", _DEFAULT_PIKI_PYTHON)
+        if env_python and Path(env_python).exists():
+            return env_python
+
+        return None
 
     def check(self, project_dir: Path) -> PikiResult:
         """Run `piki check --format json` on project_dir."""
@@ -78,14 +108,13 @@ class SandboxRunner:
         subcommand: str,
         extra_args: list[str],
     ) -> PikiResult:
-        # Prefer explicit Python module path (local editable install)
-        python = self.piki_python
-        if python and Path(python).exists():
+        python = self._resolve_python()
+        if python:
             cmd = [python, "-m", "piki", subcommand, *extra_args]
         elif shutil.which("piki"):
             cmd = ["piki", subcommand, *extra_args]
         else:
-            logger.error("piki not found: PIPKIPATH=%s and 'piki' not in PATH", python)
+            logger.error("piki not found: not importable in current interpreter, PIPKIPATH not set, and 'piki' not in PATH")
             return PikiResult(
                 command=[],
                 returncode=-1,

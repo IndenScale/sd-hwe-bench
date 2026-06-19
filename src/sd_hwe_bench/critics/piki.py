@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from sd_hwe_bench.critics.base import Critic, CriticResult
 from sd_hwe_bench.sandbox.runner import SandboxRunner
 from sd_hwe_bench.task import TaskInstance
 
-# Map piki rule IDs to scoring layers
+logger = logging.getLogger(__name__)
+
+# Exact rule ID -> scoring layer.  Used for stable, well-known piki rules.
 PIKI_RULE_LAYERS: dict[str, str] = {
     "SCHEMA-001": "L1",
     "TELECOM-POWER-001": "L3",
@@ -37,12 +40,45 @@ PIKI_RULE_LAYERS: dict[str, str] = {
     "TELECOM-CONN-003": "L2",
 }
 
+# Fallback prefix -> scoring layer.  Used when piki introduces new rule IDs
+# that are not yet in the explicit map above.
+PIKI_RULE_PREFIXES: list[tuple[str, str]] = [
+    ("SCHEMA-", "L1"),
+    ("TELECOM-POWER-", "L3"),
+    ("TELECOM-RACK-", "L4"),
+    ("TELECOM-COLLISION-", "L4"),
+    ("TELECOM-FK-", "L2"),
+    ("TELECOM-PORT-", "L2"),
+    ("TELECOM-CONN-", "L2"),
+    ("REFS-", "L2"),
+    ("FK-", "L2"),
+    ("TAGS-", "L2"),
+    ("INTERFACE-", "L2"),
+    ("MATE-", "L2"),
+    ("CATALOG-", "L2"),
+]
+
 LAYER_WEIGHTS = {
     "L1": 0.10,
     "L2": 0.15,
     "L3": 0.40,
     "L4": 0.20,
 }
+
+
+def _layer_for_rule(rule_id: str) -> str:
+    """Map a piki rule ID to a scoring layer (L1-L4).
+
+    First tries an exact match, then falls back to known prefixes.  Unknown
+    rules default to L2 so the failure is visible, but a warning is logged.
+    """
+    if rule_id in PIKI_RULE_LAYERS:
+        return PIKI_RULE_LAYERS[rule_id]
+    for prefix, layer in PIKI_RULE_PREFIXES:
+        if rule_id.startswith(prefix):
+            return layer
+    logger.warning("Unknown piki rule ID %r; defaulting to L2", rule_id)
+    return "L2"
 
 
 class PikiCritic(Critic):
@@ -63,7 +99,11 @@ class PikiCritic(Critic):
                 passed=False,
                 score=0.0,
                 comments=["piki engine not available"],
-                artifacts={"stdout": result.stdout, "stderr": result.stderr},
+                artifacts={
+                    "available": False,
+                    "stdout": result.stdout,
+                    "stderr": result.stderr,
+                },
             )
 
         parsed = result.parsed or {}
@@ -73,7 +113,7 @@ class PikiCritic(Critic):
             if rule_result.get("passed"):
                 continue
             rule_id = rule_result.get("rule_id", "")
-            layer = PIKI_RULE_LAYERS.get(rule_id, "L2")
+            layer = _layer_for_rule(rule_id)
             layer_errors[layer].append(
                 f"{rule_id}: {rule_result.get('message', 'failed')}"
             )
@@ -83,7 +123,7 @@ class PikiCritic(Critic):
             if severity not in ("ERROR", "FATAL"):
                 continue
             code = diag.get("code", "")
-            layer = PIKI_RULE_LAYERS.get(code, "L2")
+            layer = _layer_for_rule(code)
             layer_errors[layer].append(
                 f"{code}: {diag.get('message', 'failed')}"
             )
