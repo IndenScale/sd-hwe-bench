@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    markdownlint-eac:
+      glob: "papers/engineering-as-code/**/*.md"
+      run: markdownlint --config papers/engineering-as-code/.markdownlint.yaml {staged_files}

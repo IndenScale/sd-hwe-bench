@@ -1,0 +1,6 @@
+# Markdownlint-cli2 configuration for engineering-as-code paper
+# Scans the paper directory with the paper-specific rules
+config:
+  papers/engineering-as-code/.markdownlint.yaml
+globs:
+  - papers/engineering-as-code/**/*.md
