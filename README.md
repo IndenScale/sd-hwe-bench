@@ -122,8 +122,11 @@ sd-hwe-bench list
 # Run a single task (requires piki project at task path)
 sd-hwe-bench run tasks/telecom/rack-deploy-001
 
-# Run full benchmark
-sd-hwe-bench run --dataset telecom
+# Run full benchmark (auto-detects docker / podman / none)
+sd-hwe-bench run telecom/ --actor kimi:kimi-code/k2.7 --passes 5
+
+# Explicit sandbox backend
+sd-hwe-bench run telecom/ --actor gemini:gemini-3.1-pro --sandbox docker
 ```
 
 ### Task Structure

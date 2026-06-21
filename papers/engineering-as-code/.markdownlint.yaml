@@ -1,0 +1,21 @@
+# Markdownlint configuration for engineering-as-code paper
+# These files are paper snippets/appendices with long code paths, YAML examples,
+# and HTML comment metadata; strict 80-char/heading rules are not practical.
+
+default: true
+
+# Line length: snippets contain long file paths and code references
+MD013: false
+
+# First-line heading: each file starts with an HTML metadata comment
+MD041: false
+
+# Table column style: compact tables are intentional
+MD060: false
+
+# Emphasis used as heading: bold labels inside appendices are intentional
+MD036: false
+
+# Emphasis style: both asterisk and underscore are used intentionally
+MD049: false
+

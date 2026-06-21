@@ -1,0 +1,75 @@
+graph TD
+    %% ── Top Level ──
+    EaC["**Engineering as Code**<br/>(EaC)"]
+
+    %% ── Three Pillars ──
+    ADL["**Assembly Definition Language**<br/>(ADL)"]
+    ESA["**Engineering Static Analysis**<br/>(ESA)"]
+    EPM["**EPM / AssemblyHub**<br/>Package Manager + Registry"]
+
+    %% ── ADL Sub-languages ──
+    PDL["PDL<br/>Part Definition<br/>Language"]
+    PML["PML<br/>Part Mating<br/>Language"]
+    PLL["PLL<br/>Part Layout<br/>Language"]
+
+    %% ── ESA Rule Layers ──
+    L0["L0 · Syntax"]
+    L1["L1 · Schema"]
+    L2["L2 · Reference Integrity"]
+    L3["L3 · Business Rules"]
+    L4["L4 · Geometry"]
+
+    %% ── Collab Sub ──
+    PKG["Package<br/>Manager"]
+    REG["Registry"]
+
+    %% ── Validation ──
+    BENCH["**SD-HWE-Bench**<br/>Validation & Evaluation"]
+
+    %% ── Right-side Contrast ──
+    ACC["Traditional ACC<br/>Post-hoc Compliance<br/>Checking"]
+    DESIGN["Design-Time<br/>Quality Gate"]
+    SHIFT["Shift Left ➜"]
+
+    %% ── Edges: Top-down hierarchy ──
+    EaC --> ADL
+    EaC --> ESA
+    EaC --> EPM
+
+    ADL --> PDL
+    ADL --> PML
+    ADL --> PLL
+
+    ESA --> L0
+    ESA --> L1
+    ESA --> L2
+    ESA --> L3
+    ESA --> L4
+
+    EPM --> PKG
+    EPM --> REG
+
+    %% ── Validation at bottom ──
+    ADL --> BENCH
+    ESA --> BENCH
+    EPM --> BENCH
+
+    %% ── Right-side contrast ──
+    ACC -.->|"replaced by"| ESA
+    ESA --> DESIGN
+    DESIGN -.-> SHIFT
+
+    %% ── Styling ──
+    classDef top fill:#1a1a2e,stroke:#e94560,color:#eee,stroke-width:2px
+    classDef pillar fill:#16213e,stroke:#0f3460,color:#eee,stroke-width:2px
+    classDef sub fill:#0f3460,stroke:#533483,color:#ddd,stroke-width:1.5px
+    classDef leaf fill:#1a1a2e,stroke:#533483,color:#ccc,stroke-width:1px
+    classDef bench fill:#1a1a2e,stroke:#e94560,color:#eee,stroke-width:2px
+    classDef contrast fill:#2d132c,stroke:#c54c82,color:#ddd,stroke-width:1.5px,stroke-dasharray: 5 5
+
+    class EaC top
+    class ADL,ESA,EPM pillar
+    class PDL,PML,PLL,PKG,REG sub
+    class L0,L1,L2,L3,L4 leaf
+    class BENCH bench
+    class ACC,DESIGN,SHIFT contrast

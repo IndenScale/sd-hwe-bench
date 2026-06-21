@@ -126,7 +126,10 @@ sd-hwe-bench run telecom/comprehensive-001 --actor kimi
 # 使用 DeepSeek API
 sd-hwe-bench run telecom/comprehensive-001 --actor openai:deepseek-v4-pro
 
-# 带沙盒和 rubric 评测
+# 默认 --sandbox auto 会自动探测 docker → podman → none
+sd-hwe-bench run telecom/comprehensive-001 --actor kimi --rubrics
+
+# 显式指定沙盒
 sd-hwe-bench run telecom/comprehensive-001 --actor kimi --sandbox docker --rubrics
 
 # 评分已有输出目录

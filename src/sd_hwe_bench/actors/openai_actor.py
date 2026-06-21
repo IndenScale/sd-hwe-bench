@@ -1,4 +1,4 @@
-"""OpenAI-compatible API actor (DeepSeek, etc.)."""
+"""OpenAI-compatible API actor (DeepSeek, OpenAI, etc.)."""
 
 from __future__ import annotations
 
@@ -9,27 +9,16 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from sd_hwe_bench.actors.base import Actor, ActorResult
+from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
+from sd_hwe_bench.prompts import PromptBuilder
 from sd_hwe_bench.sandbox.parser import YamlBlockParser
+from sd_hwe_bench.sandbox.runner import SandboxRunner
 
 logger = logging.getLogger(__name__)
 
 _SYSTEM_PROMPT = """You are a hardware engineering design agent. You must produce piki YAML design declarations.
-Follow the piki directory conventions exactly:
-- instances/devices/ — device instances
-- instances/racks/ — rack instances
-- instances/pdus/ — PDU instances
-- instances/ports/ — port instances
-- instances/transceivers/ — transceiver instances
-- instances/fibers/ — fiber instances
-- instances/port_connections/ — port connection instances
-- layouts/layout.yaml — rack layout
-- mates/rack-mount/ — rack mount mates
-- mates/power-iec/ — power IEC mates
-- mates/sfp28-cage/ — SFP28 cage mates
-- mates/lc-connector/ — LC connector mates
-Output each file as a separate ```yaml code block with file path as comment on first line.
-After writing files, run `piki check` and `piki generate` in your workspace."""
+Follow the piki directory conventions exactly.
+Output each file as a separate ```yaml code block with the file path as a comment on the first line."""
 
 
 class OpenAIActor(Actor):
@@ -48,6 +37,8 @@ class OpenAIActor(Actor):
         self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "https://api.deepseek.com/v1")
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self._client: OpenAI | None = None
+        self.prompt_builder = PromptBuilder()
+        self.runner = SandboxRunner()
 
     @property
     def client(self) -> OpenAI:
@@ -60,6 +51,8 @@ class OpenAIActor(Actor):
     def run(self, prompt: str, workspace_root: Path) -> ActorResult:
         workspace_root = Path(workspace_root).resolve()
         workspace_root.mkdir(parents=True, exist_ok=True)
+
+        before = list_yaml_files(workspace_root)
 
         start = time.time()
         try:
@@ -88,9 +81,27 @@ class OpenAIActor(Actor):
         if errors:
             logger.debug("OpenAI parse errors: %s", errors)
 
+        # Run piki check and generate inside the workspace so deliverables exist.
+        check_result = self.runner.check(workspace_root)
+        if not check_result.success:
+            logger.warning(
+                "piki check failed for %s: %s", workspace_root, check_result.stderr[:500]
+            )
+        else:
+            generate_result = self.runner.generate(workspace_root)
+            if not generate_result.success:
+                logger.warning(
+                    "piki generate failed for %s: %s",
+                    workspace_root,
+                    generate_result.stderr[:500],
+                )
+
+        after = list_yaml_files(workspace_root)
+        new_files = after - before
+
         return ActorResult(
             success=True,
             raw_output=raw,
-            files_written=written,
+            files_written=len(new_files),
             elapsed_s=elapsed,
         )

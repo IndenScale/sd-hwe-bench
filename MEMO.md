@@ -23,16 +23,17 @@
 
 | 维度 | 状态 | 说明 |
 |---|---|---|
-| 核心框架 | ✅ 完成 | Python 包、Typer CLI、Actor-Critic scorer、dataset、leaderboard、llm_judge |
-| 单元测试 | ✅ 45/45 pass | `tests/` 覆盖 workspace、parser、actors、critics、scorer；ADL 重构导致的 3 处失败已修复 |
+| 核心框架 | ✅ 完成 | Python 包、Typer CLI、`commands/` 子命令、Actor-Critic scorer、dataset、leaderboard、llm_judge |
+| 单元测试 | ✅ 49/49 pass | `tests/` 覆盖 workspace、parser、actors、critics、scorer |
 | 任务数量 | ⚠️ 5 个 | 每个 task_type 各 1 个（目标 30+） |
 | 评分体系 | ✅ 可运行 | L0-L4 + Deliverables + LLM rubrics 端到端通 |
-| piki 引擎 | ✅ 已集成 | 真实 piki 0.1.0，支持 `--sandbox docker` / `podman` / `none` |
-| LLM Judge | ✅ DeepSeek | via OPENAI_API_KEY / `--rubrics-model` |
+| piki 引擎 | ✅ 已集成 | 真实 piki 0.1.0，支持 `--sandbox auto` / `docker` / `podman` / `none` |
+| LLM Judge | ✅ DeepSeek | via OPENAI_API_KEY / `--rubrics-model`（可选依赖 `deepeval`） |
 | Actor-Critic | ✅ 已落地 | Actor 生成 → Critics 分层评分 → 归档轨迹 |
-| 沙盒 | ✅ 支持 | Workspace 隔离 + 可选 Docker/Podman piki 容器 |
+| 沙盒 | ✅ 支持 | Workspace 隔离；`--sandbox auto` 自动探测 docker → podman → none |
 | Leaderboard | ✅ 可生成 | `sd-hwe-bench leaderboard --update` |
 | 站点 | ✅ HTML 就绪 | `site/index.html`，Coming Soon 单页 |
+| 代码结构 | ✅ 已重构 | CLI 拆分为 `commands/`，删除 `agents/`、`leaderboard.py`、`* .bak` 等 legacy |
 | 域名 | ❌ 未注册 | **高优先级：立刻注册** |
 
 ## 依赖与引擎
@@ -53,15 +54,21 @@
 ## CLI 用法
 
 ```bash
+# 默认 `--sandbox auto`：优先 docker，其次 podman，最后回退到本地 none
 sd-hwe-bench list --dataset .
 sd-hwe-bench run telecom/comprehensive-001 --actor kimi
 sd-hwe-bench run telecom/comprehensive-001 --actor openai:deepseek-v4-pro --rubrics
 sd-hwe-bench score telecom/comprehensive-001 runs/.../workspace
 sd-hwe-bench archive
 sd-hwe-bench leaderboard --update
+
+# 显式指定沙箱后端
+sd-hwe-bench run telecom/comprehensive-001 --actor kimi --sandbox docker
+sd-hwe-bench run telecom/comprehensive-001 --actor codex:deepseek --sandbox none
 ```
 
-Actor 规范：`kimi[:model]` / `codex[:model]` / `gemini[:model]` / `openai:MODEL` / `deepseek:MODEL`。
+- Actor 规范：`kimi[:model]` / `codex[:model]` / `gemini[:model]` / `openai:MODEL` / `deepseek:MODEL`。
+- 沙箱规范：`auto`（默认） / `docker` / `podman` / `none`。
 
 ## 归档结构
 

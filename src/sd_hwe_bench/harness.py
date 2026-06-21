@@ -1,9 +1,8 @@
-"""Evaluation harness — orchestrates task execution, scoring, and reporting.
+"""Evaluation harness — legacy scoring and reporting utilities.
 
-Supports:
-- Static scoring (pre-generated outputs via --output)
-- Agent-driven runs (codex/gemini CLI) with pass@k
-- Per-model comparison
+The active CLI now lives in ``sd_hwe_bench.cli`` and uses the actor/critic
+pipeline directly. This module is retained for backward-compatible report
+formatting and the legacy ``run`` helper.
 """
 
 from __future__ import annotations
@@ -13,23 +12,12 @@ import logging
 import shutil
 import subprocess
 import tempfile
-from dataclasses import dataclass
 from pathlib import Path
 
-from sd_hwe_bench.agents import CodexDriver, GeminiDriver, build_agent_prompt
 from sd_hwe_bench.dataset import Dataset
 from sd_hwe_bench.scorer import TaskScore, compute_pass_at_k, score_task
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class AgentConfig:
-    """Configuration for one agent model in the benchmark."""
-
-    driver: str  # "codex" or "gemini"
-    model: str
-    passes: int = 1  # pass@k: number of independent runs per task
 
 
 class Harness:
@@ -117,110 +105,6 @@ class Harness:
             results.append(task_scores)
 
         return results
-
-    # ── Agent-driven benchmark (new) ────────────────────────────────────
-
-    def run_agent(
-        self,
-        task_ids: list[str],
-        agent_configs: list[AgentConfig],
-        rubrics_enabled: bool = False,
-        rubrics_model: str | None = None,
-        run_dir: Path | None = None,
-    ) -> dict[str, list[list[TaskScore]]]:
-        """Run benchmark with agent drivers, producing per-model results.
-
-        Each task is run k=agent_config.passes times independently.
-        Results are keyed by model identifier.
-
-        Args:
-            task_ids: Tasks to evaluate.
-            agent_configs: One AgentConfig per model to test.
-            rubrics_enabled: Enable LLM rubrics.
-            rubrics_model: Override rubric judge model.
-            run_dir: Base directory for agent outputs (uses temp if None).
-
-        Returns:
-            Dict mapping model_id → per-task score lists.
-        """
-        all_results: dict[str, list[list[TaskScore]]] = {}
-
-        for ag_cfg in agent_configs:
-            model_id = f"{ag_cfg.driver}/{ag_cfg.model}"
-            task_results: list[list[TaskScore]] = []
-
-            for task_id in task_ids:
-                task = self.dataset.load_task(task_id)
-                rubric_sets = task.metadata.rubrics if rubrics_enabled else None
-
-                pass_scores: list[TaskScore] = []
-                for attempt in range(ag_cfg.passes):
-                    logger.info(
-                        "Running %s task=%s attempt=%d/%d",
-                        model_id, task_id, attempt + 1, ag_cfg.passes,
-                    )
-
-                    # Set up output directory
-                    if run_dir:
-                        out = run_dir / model_id.replace("/", "_") / task_id.replace("/", "_") / f"pass_{attempt}"
-                    else:
-                        out = Path(tempfile.mkdtemp(prefix="sd-hwe-"))
-
-                    # Build prompt
-                    prompt = build_agent_prompt(
-                        task_metadata=task.metadata.to_dict()
-                        if hasattr(task.metadata, "to_dict")
-                        else _task_metadata_to_dict(task),
-                        scaffold_dir=task.scaffold_dir,
-                    )
-
-                    # Run agent
-                    success = self._invoke_agent(ag_cfg, prompt, task.scaffold_dir, out)
-
-                    if not success:
-                        logger.warning(
-                            "Agent %s failed on %s attempt %d — scoring anyway",
-                            model_id, task_id, attempt,
-                        )
-
-                    # Score
-                    score = score_task(
-                        task_id=task_id,
-                        agent_output_dir=out,
-                        expected_deliverables=task.metadata.expected_deliverables,
-                        rubric_sets=rubric_sets,
-                        requirement=task.metadata.requirement,
-                        rubrics_model=rubrics_model,
-                        task=task,
-                    )
-                    pass_scores.append(score)
-                    logger.info(
-                        "  attempt=%d score=%.0f%% success=%s",
-                        attempt, score.overall_score * 100, score.success,
-                    )
-
-                task_results.append(pass_scores)
-
-            all_results[model_id] = task_results
-
-        return all_results
-
-    def _invoke_agent(
-        self,
-        ag_cfg: AgentConfig,
-        prompt: str,
-        scaffold_dir: Path,
-        output_dir: Path,
-    ) -> bool:
-        """Invoke the appropriate agent driver."""
-        if ag_cfg.driver == "codex":
-            driver = CodexDriver(model=ag_cfg.model)
-            return driver.run(prompt, scaffold_dir, output_dir)
-        elif ag_cfg.driver == "gemini":
-            driver = GeminiDriver(model=ag_cfg.model)
-            return driver.run(prompt, scaffold_dir, output_dir)
-        else:
-            raise ValueError(f"Unknown driver: {ag_cfg.driver}")
 
     # ── Reporting ───────────────────────────────────────────────────────
 

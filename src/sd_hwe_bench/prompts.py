@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 _PIKI_QUICKREF = """\
 ## Piki 快速参考
@@ -152,8 +152,17 @@ class PromptBuilder:
         task_metadata: dict[str, Any],
         scaffold_dir: Path,
         require_generator: bool = True,
+        output_mode: Literal["cli", "api"] = "cli",
     ) -> str:
-        """Build the full prompt injected into the actor."""
+        """Build the full prompt injected into the actor.
+
+        Args:
+            task_metadata: Parsed task.yaml as dict.
+            scaffold_dir: Path to the task's scaffold/ directory.
+            require_generator: Whether to emphasize deliverable generation.
+            output_mode: "cli" for agents that mutate the working directory
+                directly; "api" for agents that return YAML code blocks.
+        """
         parts: list[str] = []
 
         task_id = task_metadata.get("task_id", "unknown")
@@ -211,16 +220,28 @@ class PromptBuilder:
                 parts.append(f"- `{d}`")
 
         # Output instructions
-        parts.append(
-            "\n## 输出要求\n\n"
-            "1. 作为设计 agent，请直接在 workspace 目录中创建/修改 YAML 文件；"
-            "不需要在 stdout 中输出完整 YAML。\n"
-            "2. 务必把设备实例放在 `instances/devices/`，不要放在 `instances/` 根目录。\n"
-            "3. 不要修改 scaffold 中的 `models/` 和 `piki.toml`。\n"
-            "4. 完成后必须先执行 `piki check`，确认无错误后再执行 `piki generate`。\n"
-            "5. 只产出与任务相关的文件，不要额外发挥。\n"
-            "\n请开始完成这个工程设计任务。"
-        )
+        if output_mode == "api":
+            parts.append(
+                "\n## 输出要求\n\n"
+                "1. 输出每个文件为一个独立的 ```yaml 代码块。\n"
+                "2. 每个代码块的第一行必须是一个文件路径注释，例如 "
+                "`# instances/devices/SRV-01.yaml`。\n"
+                "3. 务必把设备实例放在 `instances/devices/`，不要放在 `instances/` 根目录。\n"
+                "4. 不要修改 scaffold 中的 `models/` 和 `piki.toml`。\n"
+                "5. 只产出与任务相关的文件，不要额外发挥。\n"
+                "\n请开始完成这个工程设计任务，输出所有需要的 YAML 文件。"
+            )
+        else:
+            parts.append(
+                "\n## 输出要求\n\n"
+                "1. 作为设计 agent，请直接在 workspace 目录中创建/修改 YAML 文件；"
+                "不需要在 stdout 中输出完整 YAML。\n"
+                "2. 务必把设备实例放在 `instances/devices/`，不要放在 `instances/` 根目录。\n"
+                "3. 不要修改 scaffold 中的 `models/` 和 `piki.toml`。\n"
+                "4. 完成后必须先执行 `piki check`，确认无错误后再执行 `piki generate`。\n"
+                "5. 只产出与任务相关的文件，不要额外发挥。\n"
+                "\n请开始完成这个工程设计任务。"
+            )
 
         if require_generator:
             parts.append(

@@ -4,12 +4,12 @@ import dataclasses
 import logging
 import os
 from pathlib import Path
-
-from deepeval.metrics import GEval
-from deepeval.test_case import LLMTestCase
-from deepeval.test_case.llm_test_case import SingleTurnParams
+from typing import TYPE_CHECKING
 
 from sd_hwe_bench.task import RubricCriterion, RubricSet
+
+if TYPE_CHECKING:
+    from deepeval.test_case.llm_test_case import SingleTurnParams
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +59,22 @@ def evaluate_single_criterion(
     Returns:
         RubricScore with score, reason, and weight.
     """
+    # DeepEval is an optional dependency; import it lazily so the rest of the
+    # package remains usable without it.
+    try:
+        from deepeval.metrics import GEval
+        from deepeval.test_case import LLMTestCase
+        from deepeval.test_case.llm_test_case import SingleTurnParams
+    except ImportError as exc:
+        logger.error("deepeval is required for rubric evaluation: %s", exc)
+        return RubricScore(
+            criterion_id=criterion.id,
+            name=criterion.name,
+            score=0.0,
+            reason=f"deepeval not installed: {exc}",
+            weight=criterion.weight,
+        )
+
     metric = GEval(
         name=criterion.name,
         evaluation_params=[SingleTurnParams.INPUT, SingleTurnParams.ACTUAL_OUTPUT],
