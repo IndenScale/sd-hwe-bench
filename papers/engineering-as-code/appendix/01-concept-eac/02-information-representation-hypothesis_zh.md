@@ -10,9 +10,9 @@
 
 > **信息表示假说**：传统工程领域 AI 设计生成能力滞后的根本原因，不在于模型能力不足或物理复杂性过高，而在于缺乏一种可被机器直接消费、生成、校验与版本化的设计表示——即“Design as Code”形式的可计算基础。
 
-该假说源于对代码、数学与芯片三个领域的观察。DeepSeek-R1 在数学推理上展现出系统性链式思考能力 [@deepseek2025r1]；Claude Code 等编码智能体在 SWE-Bench 上解决了大量真实 GitHub 问题 [@anthropic2025claude]；AMS-IO-Bench 上的模型在芯片 I/O 环设计的 DRC/LVS 检查中达到高通过率 [@liu2025amsio]。这些领域的共同特征是：存在一种可被自动、快速、确定性校验的“正确性表示”——数学问题的最终答案、代码的编译与测试套件、芯片网表的设计规则 [@lightman2024letsverify]。
+该假说源于对代码、数学与芯片三个领域的观察。DeepSeek-R1 在数学推理上展现出系统性链式思考能力 [@deepseek2025r1]；Claude Code 等编码智能体在 SWE-Bench 上解决了大量真实 GitHub 问题 [@anthropic2025claude]；AMS-IO-Bench 上的模型在芯片 I/O 环设计的 DRC/LVS 检查中达到高通过率 [@liu2025amsio]。这些领域的共同特征是：存在一种可被自动、快速、确定性校验的“正确性表示”——数学问题的最终答案、代码的编译与测试套件、芯片网表的设计规则 [@lightman2023letsverify]。
 
-Lightman 等人在数学推理中发现，过程奖励模型（PRM）显著优于结果奖励模型（ORM），说明**步骤级可校验性本身是能力跃迁的关键使能条件** [@lightman2024letsverify]。SWE-RL 进一步证明，当 bug 修复的正确性可由测试套件确定性判定时，强化学习能显著提升修复成功率 [@sweagent2025swerl]。DeepSeekMath 则系统性地将这一范式命名为“可验证奖励强化学习”（RLVR），用可验证答案作为奖励信号，消除了昂贵的人工标注需求 [@shao2024deepseekmath]。
+Lightman 等人在数学推理中发现，过程奖励模型（PRM）显著优于结果奖励模型（ORM），说明**步骤级可校验性本身是能力跃迁的关键使能条件** [@lightman2023letsverify]。SWE-RL 进一步证明，当 bug 修复的正确性可由测试套件确定性判定时，强化学习能显著提升修复成功率 [@sweagent2025swerl]。DeepSeekMath 则系统性地将这一范式命名为“可验证奖励强化学习”（RLVR），用可验证答案作为奖励信号，消除了昂贵的人工标注需求 [@shao2024deepseekmath]。
 
 这三个案例共同构成一条因果链：
 

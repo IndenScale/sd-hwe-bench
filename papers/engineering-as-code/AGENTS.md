@@ -52,8 +52,20 @@ EPM / AssemblyHub 不是工程协作工具——它们是让 physical design 获
 ```text
 papers/engineering-as-code/
 ├── AGENTS.md                        # 本文件
-├── sections/                         # FSE Research Track 正文（真相源，按节拆分）
-│   ├── 00-abstract.md
+├── Makefile                          # 构建入口
+├── templates/                        # Pandoc LaTeX 模板
+│   └── arxiv.tex
+├── scripts/                          # 构建脚本
+│   ├── assemble.sh                   # Markdown 合并（中文 HTML/PDF 草稿）
+│   ├── assemble-en.sh                # Markdown 合并（英文 HTML/PDF 草稿）
+│   ├── assemble-latex-en.sh          # Markdown 合并（英文 LaTeX 投稿源）
+│   ├── render-pdf.js                 # Markdown -> HTML -> PDF（视觉草稿）
+│   ├── render-latex.sh               # Markdown -> LaTeX -> PDF（投稿源）
+│   └── prepare-arxiv-source.sh       # 打包 arXiv 源文件 tar.gz
+├── sections/                         # 中文正文源文件
+├── sections-en/                      # 英文正文源文件（投稿真相源）
+│   ├── 00-header.md                  # 标题、作者、单位
+│   ├── 00-abstract.md                # 摘要、关键词
 │   ├── 01-introduction.md
 │   ├── 02-background.md
 │   ├── 03-the-eac-approach.md
@@ -63,16 +75,51 @@ papers/engineering-as-code/
 │   ├── 07-related-work.md
 │   └── 08-conclusion.md
 ├── appendix/                         # 扩展/参考材料
-│   ├── 01-concept-eac/
-│   ├── 02-language-adl/
-│   ├── 03-shift-left-quality/
-│   ├── 04-infrastructure/
-│   └── 05-future-ai4engineering/
 ├── references/                       # 已下载的参考文献 PDF
-├── refs.bib
-├── engineering-as-code.zh.md         # 【已废弃】旧版中文全文稿
-└── engineering-as-code.en.md         # 【已废弃】旧版英文全文稿
+├── refs.bib                          # BibTeX 单真相源
+├── arxiv-submission/                 # arXiv 投稿源输出目录
+└── engineering-as-code.zh.md         # 【已废弃】旧版中文全文稿
 ```
+
+## 构建管线
+
+### 英文投稿源（LaTeX / arXiv 首选）
+
+```bash
+# 生成 arxiv-submission/manuscript-en.tex（本地无需 LaTeX）
+make tex-en
+
+# 若已安装 TeX Live / MacTeX，同时编译 PDF
+make arxiv-pdf
+
+# 匿名版本（审稿用）
+make tex-en-anonymous
+
+# 生成可直接上传 arXiv 的源文件包（tar.gz）
+make arxiv-source
+
+# 匿名版源文件包
+make arxiv-source-anonymous
+
+# 打包并本地编译验证（需 TeX Live / MacTeX）
+./scripts/prepare-arxiv-source.sh --verify
+```
+
+该管线：
+- 从 `sections-en/00-header.md` 提取 `\title` / `\author` / `\affil`。
+- 从 `sections-en/00-abstract.md` 提取 `\begin{abstract}` 与 keywords。
+- 使用 `pandoc-crossref` 处理图表交叉引用，`pandoc-citeproc` + `refs.bib` 生成 BibTeX 参考文献。
+- 章节标题不再手写编号，由 LaTeX `\section`/ `\subsection` 自动编号。
+- 代码块使用 Pandoc 默认语法高亮，表格使用 `longtable` + `\caption`。
+
+### 视觉草稿（HTML / Paged.js）
+
+```bash
+make pdf-en
+make pdf-en-anonymous
+```
+
+此管线保留用于快速预览排版效果，但**不用于 arXiv / 正式投稿**。
 
 ## 写作语言与术语
 
@@ -96,7 +143,7 @@ papers/engineering-as-code/
 
 | 键名                     | 论文                            | 论证位置   | 作用                                                  |
 | ------------------------ | ------------------------------- | ---------- | ----------------------------------------------------- |
-| `lightman2024letsverify` | Let's Verify Step by Step       | §3         | PRM > ORM → step-level verifiability 是 RLVR 使能条件 |
+| `lightman2023letsverify` | Let's Verify Step by Step       | §3         | PRM > ORM → step-level verifiability 是 RLVR 使能条件 |
 | `sweagent2025swerl`      | SWE-RL                          | §3, §7     | 代码修复 RLVR 实证 → 验证信号必要性的证据点           |
 | `chiari2024iacstatic`    | IaC Static Analysis (EMSE 2024) | §5, §7     | IaC 工具实证 → "X as Code" 静态分析可行且高效的先例   |
 | `liu2023ifcversion`      | IFC Normalization for VC        | §2, §7     | IFC 无法 Git diff → CAD/BIM 不适合作为 code 表示的实证 |

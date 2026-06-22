@@ -1,0 +1,96 @@
+$-- =============================================================================
+$-- arxiv.tex — Pandoc LaTeX template for arXiv-compatible submissions.
+$-- Based on pandoc's default LaTeX template, stripped to single-column article
+$-- layout with proper \title, \author, \affil, abstract environment, and
+$-- BibTeX / thebibliography output via pandoc-citeproc.
+$-- =============================================================================
+$document-metadata.latex()$
+\documentclass[11pt,a4paper]{article}
+
+$if(geometry)$
+\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+$else$
+\usepackage[margin=2.5cm]{geometry}
+$endif$
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage[htt]{hyphenat}
+
+% Tighten table horizontal padding to reduce overfull hbox in wide tables.
+\setlength{\tabcolsep}{4pt}
+
+$fonts.latex()$
+$font-settings.latex()$
+$common.latex()$
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  filecolor=black,
+  citecolor=black,
+  urlcolor=blue,
+  pdftitle={$title-meta$},
+  pdfauthor={$for(author)$$author$$sep$, $endfor$}
+}
+
+$if(title)$
+\title{$title$$if(thanks)$\thanks{$thanks$}$endif$}
+$endif$
+$if(subtitle)$
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{%
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{$subtitle$}
+$endif$
+
+\author{$for(author)$$author$$sep$ \and $endfor$
+$if(institute)$
+  \\ \normalsize $institute$
+$endif$
+}
+\date{$date$}
+
+\begin{document}
+
+$if(title)$
+\maketitle
+$if(abstract)$
+\begin{abstract}
+$abstract$
+$if(keywords)$
+
+\textbf{Keywords:} $keywords$
+$endif$
+\end{abstract}
+$endif$
+$endif$
+
+$for(include-before)$
+$include-before$
+
+$endfor$
+
+$body$
+
+$for(include-after)$
+$include-after$
+
+$endfor$
+
+\end{document}

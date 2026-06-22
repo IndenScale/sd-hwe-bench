@@ -9,7 +9,7 @@
 以下语法总结了 ADL 在 piki 中的核心构造。它作为希望了解精确语法边界的读者参考；权威解析器是 `adl/src/adl/parsing/` 中的 YAML 加载链。
 
 ```text
-Project       ::= piki.toml (ModelFile | InstanceFile | MateFile | LayoutFile | CatalogFile)*
+Project       ::= piki.toml (ModelFile | InstanceFile | MateFile | LayoutFile)*
 
 ModelFile     ::= "model:" id
                   "family:" FamilyName

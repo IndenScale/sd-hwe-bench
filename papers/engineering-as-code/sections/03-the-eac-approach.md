@@ -28,7 +28,7 @@ EaC 有三根支柱，但构成一个整体命题：
 
 **代码**。SWE-bench 任务要求 Agent 修复真实 GitHub issue [@jimenez2024swebench]。奖励信号是测试套件：Agent 的补丁要么通过，要么失败。SWE-RL 证明仅凭该信号，无需人类示范，即可训练出解决 42% SWE-bench Verified 任务的 Agent [@sweagent2025swerl]。表示——带有测试套件的 Git 仓库——是使 RLVR 可行的脚手架。
 
-**数学**。DeepSeekMath 和 DeepSeek-R1 在形式化定理证明上训练，其中每个证明步骤的可正确性是可验证的 [@shao2024deepseekmath; @deepseek2025r1]。Let's Verify Step by Step 的关键发现是过程监督的奖励模型（PRM）优于结果监督的奖励模型（ORM）[@lightman2024letsverify]。PRM 要生效，中间步骤必须可单独验证——这一属性只有结构化、可分解的表示才能提供。
+**数学**。DeepSeekMath 和 DeepSeek-R1 在形式化定理证明上训练，其中每个证明步骤的可正确性是可验证的 [@shao2024deepseekmath; @deepseek2025r1]。Let's Verify Step by Step 的关键发现是过程监督的奖励模型（PRM）优于结果监督的奖励模型（ORM）[@lightman2023letsverify]。PRM 要生效，中间步骤必须可单独验证——这一属性只有结构化、可分解的表示才能提供。
 
 **芯片设计**。Google 的芯片布局工作使用 Verilog 网表作为输入，设计规则检查（DRC）作为奖励信号 [@mirhoseini2020rlchip]。DRC 检查可制造性约束（间距、层规则、时序）并返回通过/失败裁决。表示（网表 + 标准单元库）将功能意图与几何实现解耦，使奖励可计算。
 

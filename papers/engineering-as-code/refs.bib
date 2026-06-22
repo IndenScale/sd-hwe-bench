@@ -2,268 +2,372 @@
 %% SD-HWE-Bench / Engineering as Code — Reference Bibliography
 %% ============================================================================
 
-@article{shao2024deepseekmath,
-  author       = {Shao, Zhihong and Wang, Peiyi and Zhu, Qihao and Song, Runxin and Yang, Fan and Liu, Daya and Zhang, Hang and Zhang, Jie and Liu, Yiqiao and Chen, Mingfeng and Guo, Daya},
-  title        = {{DeepSeekMath}: Pushing the Limits of Mathematical Reasoning in Open Language Models},
-  journal      = {arXiv preprint arXiv:2402.03300},
-  year         = {2024},
-  note         = {Latest version at \url{https://arxiv.org/abs/2402.03300}}
+
+@article{hudak1996dsl,
+  author       = {Hudak, Paul},
+  title        = {{Building domain-specific embedded languages}},
+  journal      = {{ACM Computing Surveys}},
+  year         = {1996},
+  volume       = {28},
+  number       = {4es},
+  pages        = {Article 196},
+  doi          = {10.1145/242224.242477},
+  url          = {https://doi.org/10.1145/242224.242477}
 }
 
-@misc{deepseek2025r1,
+@book{fowler2010dsl,
+  author       = {Fowler, Martin},
+  title        = {{Domain-specific languages}},
+  year         = {2010},
+  publisher    = {Addison-Wesley Professional},
+  address      = {Boston, MA},
+  isbn         = {978-0-321-71294-3},
+  url          = {https://martinfowler.com/books/dsl.html}
+}
+
+@book{volter2013dsl,
+  author       = {V{\"o}lter, Markus and Stahl, Thomas and Bettin, Jorn and Haase, Arno and Helsen, Simon},
+  title        = {{Model-driven software development: technology, engineering, management}},
+  year         = {2013},
+  publisher    = {John Wiley \& Sons},
+  address      = {Hoboken, NJ},
+  isbn         = {978-1-118-72576-4},
+  url          = {https://www.wiley.com/en-us/Model+Driven+Software+Development%3A+Technology%2C+Engineering%2C+Management-p-9781118725764}
+}
+
+@inproceedings{cousot1977abstract,
+  author       = {Cousot, Patrick and Cousot, Radhia},
+  title        = {{Abstract interpretation: a unified lattice model for static analysis of programs by construction or approximation of fixpoints}},
+  booktitle    = {{Proceedings of the 4th ACM SIGACT-SIGPLAN Symposium on Principles of Programming Languages (POPL)}},
+  year         = {1977},
+  pages        = {238--252},
+  doi          = {10.1145/512950.512973},
+  url          = {https://doi.org/10.1145/512950.512973}
+}
+
+@article{shao2024deepseekmath,
+  author       = {Shao, Zhihong and others},
+  title        = {{DeepSeekMath: pushing the limits of mathematical reasoning in open language models}},
+  journal      = {{arXiv:2402.03300}},
+  year         = {2024},
+  eprinttype   = {arXiv},
+  eprint       = {2402.03300},
+  url          = {https://arxiv.org/abs/2402.03300}
+}
+
+@article{deepseek2025r1,
   author       = {{DeepSeek-AI}},
-  title        = {{DeepSeek-R1}: Incentivizing Reasoning Capability in {LLMs} via Reinforcement Learning},
+  title        = {{DeepSeek-R1: incentivizing reasoning capability in LLMs via reinforcement learning}},
+  journal      = {{arXiv:2501.12948}},
   year         = {2025},
-  howpublished = {\url{https://arxiv.org/abs/2501.12948}},
-  note         = {Preprint. Latest version at \url{https://arxiv.org/abs/2501.12948}}
+  eprinttype   = {arXiv},
+  eprint       = {2501.12948},
+  url          = {https://arxiv.org/abs/2501.12948}
 }
 
 @misc{anthropic2025claude,
   author       = {{Anthropic}},
-  title        = {Claude Code},
+  title        = {{Claude Code Overview}},
   year         = {2025},
-  howpublished = {\url{https://docs.anthropic.com/en/docs/claude-code/overview}},
-  note         = {Product documentation. Latest version at \url{https://docs.anthropic.com/en/docs/claude-code/overview}}
+  publisher    = {{Anthropic}},
+  howpublished = {Technical documentation},
+  url          = {https://docs.anthropic.com/en/docs/claude-code/overview},
+  urldate      = {2026-06-22}
 }
 
 @inproceedings{liu2023verilogeval,
   author       = {Liu, Mingjie and Pinckney, Nathaniel and Khailany, Brucek and Ren, Haoxing},
-  title        = {{VerilogEval}: Evaluating Large Language Models for {Verilog} Code Generation},
-  booktitle    = {Proceedings of the 42nd IEEE/ACM International Conference on Computer-Aided Design (ICCAD)},
+  title        = {{VerilogEval: evaluating large language models for Verilog code generation}},
+  booktitle    = {{Proceedings of the 42nd IEEE/ACM International Conference on Computer-Aided Design (ICCAD)}},
   year         = {2023},
   doi          = {10.1109/ICCAD57390.2023.10323811},
-  note         = {Latest version at \url{https://arxiv.org/abs/2309.07562}}
+  url          = {https://arxiv.org/abs/2309.07562}
 }
 
-@misc{chipbench2025,
+@article{chipbench2025,
   author       = {{ChipBench contributors}},
-  title        = {{ChipBench}: A Next-Step Benchmark for Evaluating {LLM} Performance in {AI}-Aided Chip Design},
+  title        = {{ChipBench: a next-step benchmark for evaluating LLM performance in AI-aided chip design}},
+  journal      = {{arXiv:2503.04807}},
   year         = {2025},
-  howpublished = {\url{https://arxiv.org/abs/2503.04807}},
-  note         = {Preprint. Latest version at \url{https://arxiv.org/abs/2503.04807}}
+  eprinttype   = {arXiv},
+  eprint       = {2503.04807},
+  url          = {https://arxiv.org/abs/2503.04807}
 }
 
-@misc{liu2025amsio,
+@article{liu2025amsio,
   author       = {Liu, Bingqing and others},
-  title        = {{AMS-IO-Bench}: A Large-Scale Benchmark for Analog/Mixed-Signal {I/O} Ring Design},
+  title        = {{AMS-IO-Bench: a large-scale benchmark for analog/mixed-signal I/O ring design}},
+  journal      = {{arXiv:2504.19197}},
   year         = {2025},
-  howpublished = {\url{https://arxiv.org/abs/2504.19197}},
-  note         = {Preprint. Latest version at \url{https://arxiv.org/abs/2504.19197}}
+  eprinttype   = {arXiv},
+  eprint       = {2504.19197},
+  url          = {https://arxiv.org/abs/2504.19197}
 }
 
-@standard{ieee1364,
+@misc{ieee1364,
   author       = {{IEEE}},
-  title        = {{IEEE} 1364: {Verilog} Hardware Description Language},
+  title        = {{IEEE Standard for Verilog Hardware Description Language}},
   year         = {2005},
-  organization = {Institute of Electrical and Electronics Engineers},
-  note         = {Standard document. Latest version at \url{https://standards.ieee.org/standard/1364-2005.html}}
+  type         = {Standard},
+  number       = {{IEEE Std 1364-2005}},
+  organization = {{IEEE Standards Association}},
+  url          = {https://standards.ieee.org/standard/1364-2005.html}
+}
+
+@article{xiao2025bimgraph,
+  author       = {Xiao, Zixuan and Koh, Pei Troh and Ma, Jun and Cheng, Jack C.P.},
+  title        = {{Automating geometry-intensive compliance checking in BIM: graph-based semantic reasoning framework}},
+  journal      = {{arXiv:2506.20551}},
+  year         = {2025},
+  eprinttype   = {arXiv},
+  eprint       = {2506.20551},
+  url          = {https://arxiv.org/abs/2506.20551}
+}
+
+@article{madireddy2025llmbim,
+  author       = {Madireddy, Soumya and others},
+  title        = {{Large language model-driven code compliance checking in BIM}},
+  journal      = {{Electronics}},
+  year         = {2025},
+  volume       = {14},
+  number       = {11},
+  pages        = {2146},
+  doi          = {10.3390/electronics14112146},
+  url          = {https://doi.org/10.3390/electronics14112146}
 }
 
 @article{eastman2009acc,
   author       = {Eastman, Charles and Lee, Jae-Min and Jeong, Yeon-Suk and Lee, Jin-Kook},
-  title        = {Automated Code Checking: Status and Future Directions},
-  journal      = {Automation in Construction},
+  title        = {{Automated code checking: status and future directions}},
+  journal      = {{Automation in Construction}},
   year         = {2009},
   volume       = {18},
   number       = {2},
   pages        = {101--115},
   doi          = {10.1016/j.autcon.2008.07.001},
-  note         = {Latest version at \url{https://doi.org/10.1016/j.autcon.2008.07.001}}
+  url          = {https://doi.org/10.1016/j.autcon.2008.07.001}
 }
 
 @inproceedings{zhang2019acc,
   author       = {Zhang, Ruichuan and El-Gohary, Nora M.},
-  title        = {A Machine-Learning Approach for Semantic Matching of Building Codes and {BIMs} for Supporting Automated Code Checking},
-  booktitle    = {Proceedings of the 2019 ASCE International Conference on Computing in Civil Engineering},
+  title        = {{A machine-learning approach for semantic matching of building codes and BIMs for supporting automated code checking}},
+  booktitle    = {{Proceedings of the 2019 ASCE International Conference on Computing in Civil Engineering}},
   year         = {2019},
   organization = {American Society of Civil Engineers},
   address      = {Atlanta, GA, USA},
   doi          = {10.1061/9780784482421.056},
-  note         = {Latest version at \url{https://doi.org/10.1061/9780784482421.056}}
+  url          = {https://doi.org/10.1061/9780784482421.056}
 }
 
 @article{yang2024llmacc,
   author       = {Yang, F. and Zhang, J.},
-  title        = {Large Language Model-Driven Prompt-Based Automation for Building Code Compliance Checking},
-  journal      = {Automation in Construction},
+  title        = {{Large language model-driven prompt-based automation for building code compliance checking}},
+  journal      = {{Automation in Construction}},
   year         = {2024},
   volume       = {160},
   pages        = {105310},
   doi          = {10.1016/j.autcon.2024.105310},
-  note         = {Latest version at \url{https://doi.org/10.1016/j.autcon.2024.105310}}
+  url          = {https://doi.org/10.1016/j.autcon.2024.105310}
 }
 
 @inproceedings{nakhaee2024kgllm,
   author       = {Nakhaee, Amirreza and others},
-  title        = {A Hybrid Knowledge-Graph-{LLM} Framework for Automated Compliance Checking in Building Design},
-  booktitle    = {Proceedings of the 30th International DMS Conference on Visualization and Visual Languages (DMSVIVA 2024)},
+  title        = {{A hybrid knowledge-graph-LLM framework for automated compliance checking in building design}},
+  booktitle    = {{Proceedings of the 30th International DMS Conference on Visualization and Visual Languages (DMSVIVA 2024)}},
   year         = {2024},
   publisher    = {Springer},
   doi          = {10.1007/978-3-031-63227-2_12},
-  note         = {Latest version at \url{https://doi.org/10.1007/978-3-031-63227-2_12}}
+  url          = {https://doi.org/10.1007/978-3-031-63227-2_12}
 }
 
-@misc{galanos2026aecbench,
+@article{galanos2026aecbench,
   author       = {Galanos, Theodoros and Mulyar, Alexander},
-  title        = {{AEC-Bench}: An {AI} Benchmark for Architecture, Engineering, and Construction},
+  title        = {{AEC-Bench: an AI benchmark for architecture, engineering, and construction}},
+  journal      = {{arXiv:2505.09010}},
   year         = {2026},
-  howpublished = {\url{https://arxiv.org/abs/2505.09010}},
-  note         = {Preprint. Latest version at \url{https://arxiv.org/abs/2505.09010}}
+  eprinttype   = {arXiv},
+  eprint       = {2505.09010},
+  url          = {https://arxiv.org/abs/2505.09010}
 }
 
-@misc{maatouk2023teleqna,
+@article{maatouk2023teleqna,
   author       = {Maatouk, Ali and Piovesan, Nicola and Ayed, Fadhel and De Domenico, Antonio and Debbah, M\'{e}rouane},
-  title        = {{TeleQnA}: A Benchmark Dataset to Assess Large Language Models' Telecommunications Knowledge},
+  title        = {{TeleQnA: a benchmark dataset to assess large language models' telecommunications knowledge}},
+  journal      = {{arXiv:2310.15051}},
   year         = {2023},
-  howpublished = {\url{https://arxiv.org/abs/2310.15051}},
-  note         = {Preprint. Latest version at \url{https://arxiv.org/abs/2310.15051}}
+  eprinttype   = {arXiv},
+  eprint       = {2310.15051},
+  url          = {https://arxiv.org/abs/2310.15051}
 }
 
 @article{quattrocchi2023iacsurvey,
   author       = {Quattrocchi, Giovanni and Tamburri, Damian A.},
-  title        = {Infrastructure as Code: A Survey of Research and Practice},
-  journal      = {IEEE Software},
+  title        = {{Infrastructure as code: a survey of research and practice}},
+  journal      = {{IEEE Software}},
   year         = {2023},
   volume       = {40},
   number       = {5},
   pages        = {55--62},
   doi          = {10.1109/MS.2023.3285751},
-  note         = {Latest version at \url{https://doi.org/10.1109/MS.2023.3285751}}
+  url          = {https://doi.org/10.1109/MS.2023.3285751}
 }
 
 @book{morris2022iac,
   author       = {Morris, Kief and others},
-  title        = {Infrastructure as Code: Dynamic Systems for the Cloud Age},
+  title        = {{Infrastructure as code: dynamic systems for the cloud age}},
   year         = {2022},
   edition      = {2nd},
   publisher    = {O'Reilly Media},
+  address      = {Sebastopol, CA},
   isbn         = {978-1-098-11467-1},
-  note         = {Latest version at \url{https://www.oreilly.com/library/view/infrastructure-as-code/9781098114664/}}
+  url          = {https://www.oreilly.com/library/view/infrastructure-as-code/9781098114664/}
 }
 
-@misc{engdesign2025,
+@article{engdesign2025,
   author       = {{EngDesign contributors}},
-  title        = {{EngDesign}: A Comprehensive Benchmark for Engineering Design with Large Language Models},
+  title        = {{EngDesign: a comprehensive benchmark for engineering design with large language models}},
+  journal      = {{arXiv:2505.18116}},
   year         = {2025},
-  howpublished = {\url{https://arxiv.org/abs/2505.18116}},
-  note         = {To appear at NeurIPS 2025 Datasets and Benchmarks Track. Latest version at \url{https://arxiv.org/abs/2505.18116}}
+  note         = {To appear at NeurIPS 2025 Datasets and Benchmarks Track},
+  eprinttype   = {arXiv},
+  eprint       = {2505.18116},
+  url          = {https://arxiv.org/abs/2505.18116}
 }
 
-@standard{omg2024sysml,
+@misc{omg2024sysml,
   author       = {{Object Management Group}},
-  title        = {{SysML} v2 Specification},
+  title        = {{OMG Systems Modeling Language (SysML) Version 2.0}},
   year         = {2024},
-  organization = {Object Management Group},
-  howpublished = {\url{https://www.omg.org/spec/SysML/}},
-  note         = {Specification. Latest version at \url{https://www.omg.org/spec/SysML/}}
+  publisher    = {{Object Management Group}},
+  howpublished = {Specification},
+  url          = {https://www.omg.org/spec/SysML/},
+  urldate      = {2026-06-22}
 }
 
-@standard{buildingsmart2023ifc,
+@misc{buildingsmart2023ifc,
   author       = {{buildingSMART International}},
-  title        = {Industry Foundation Classes ({IFC}) Specification},
+  title        = {{Industry Foundation Classes (IFC) 4.3.2.0 Specification}},
   year         = {2023},
-  organization = {buildingSMART International},
-  howpublished = {\url{https://technical.buildingsmart.org/standards/ifc/ifc-schema-specifications/}},
-  note         = {Specification. Latest version at \url{https://technical.buildingsmart.org/standards/ifc/ifc-schema-specifications/}}
+  publisher    = {{buildingSMART International}},
+  howpublished = {Specification},
+  url          = {https://technical.buildingsmart.org/standards/ifc/ifc-schema-specifications/},
+  urldate      = {2026-06-22}
 }
 
 @inproceedings{jimenez2024swebench,
-  author       = {Jimenez, Carlos E. and Yang, John and Wettig, Alexander and Yao, Shunyu and Pei, Kexin and Press, Ofir and Narasimhan, Karthik},
-  title        = {{SWE-bench}: Can Language Models Resolve Real-World {GitHub} Issues?},
-  booktitle    = {The Twelfth International Conference on Learning Representations (ICLR)},
+  author       = {Jimenez, Carlos E. and others},
+  title        = {{SWE-bench: can language models resolve real-world GitHub issues?}},
+  booktitle    = {{The Twelfth International Conference on Learning Representations (ICLR)}},
   year         = {2024},
-  howpublished = {\url{https://openreview.net/forum?id=VTF8yNQM66}},
-  note         = {Latest version at \url{https://openreview.net/forum?id=VTF8yNQM66}}
+  url          = {https://openreview.net/forum?id=VTF8yNQM66}
 }
 
 @misc{piki2026sdhwebench,
   author       = {{piki core team}},
-  title        = {{SD-HWE-Bench}: A Benchmark for Declarative Design Capability Assessment in Software-Defined Hardware Engineering},
+  title        = {{SD-HWE-Bench: a benchmark for declarative design capability assessment in software-defined hardware engineering}},
   year         = {2026},
-  howpublished = {\url{https://github.com/piki-ai/sd-hwe-bench}},
-  note         = {Preprint. Latest version at \url{https://github.com/piki-ai/sd-hwe-bench}}
+  publisher    = {{piki core team}},
+  howpublished = {GitHub repository},
+  url          = {https://github.com/piki-ai/sd-hwe-bench},
+  urldate      = {2026-06-22}
 }
 
-@misc{lightman2024letsverify,
-  author       = {Lightman, Hunter and Kosaraju, Vineet and Burda, Yura and Edwards, Harri and Baker, Bowen and Lee, Teddy and Leike, Jan and Schulman, John and Sutskever, Ilya and Cobbe, Karl},
-  title        = {Let's Verify Step by Step},
-  year         = {2024},
-  howpublished = {arXiv preprint arXiv:2305.20050},
-  note         = {Latest version at \url{https://arxiv.org/abs/2305.20050}}
+@article{lightman2023letsverify,
+  author       = {Lightman, Hunter and others},
+  title        = {{Let's verify step by step}},
+  journal      = {{arXiv:2305.20050}},
+  year         = {2023},
+  eprinttype   = {arXiv},
+  eprint       = {2305.20050},
+  url          = {https://arxiv.org/abs/2305.20050}
 }
 
-@misc{sweagent2025swerl,
+@article{sweagent2025swerl,
   author       = {{SWE-agent contributors}},
-  title        = {{SWE-RL}: Training Language Model Agents to Solve Real-World {GitHub} Issues via Reinforcement Learning},
+  title        = {{SWE-RL: training language model agents to solve real-world GitHub issues via reinforcement learning}},
+  journal      = {{arXiv:2502.18449}},
   year         = {2025},
-  howpublished = {arXiv preprint},
-  note         = {Latest version at \url{https://arxiv.org/abs/2502.18449}}
+  eprinttype   = {arXiv},
+  eprint       = {2502.18449},
+  url          = {https://arxiv.org/abs/2502.18449}
 }
 
 @article{chiari2024iacstatic,
   author       = {Chiari, Michele and Xiang, Bin and Canfora, Gerardo and Penta, Massimiliano Di},
-  title        = {An Empirical Study of Static Analysis Tools for {Infrastructure as Code}},
-  journal      = {Empirical Software Engineering},
+  title        = {{An empirical study of static analysis tools for infrastructure as code}},
+  journal      = {{Empirical Software Engineering}},
   year         = {2024},
   volume       = {29},
   number       = {3},
   pages        = {1--42},
   doi          = {10.1007/s10664-023-10407-1},
-  note         = {Latest version at \url{https://doi.org/10.1007/s10664-023-10407-1}}
+  url          = {https://doi.org/10.1007/s10664-023-10407-1}
 }
 
-@misc{fuchs2024llmregs,
+@article{fuchs2024llmregs,
   author       = {Fuchs, Stefan and Witbrock, Michael and Dimyadi, Johannes and Amor, Robert},
-  title        = {Using Large Language Models for the Interpretation of Building Regulations},
+  title        = {{Using large language models for the interpretation of building regulations}},
+  journal      = {{arXiv:2407.21060}},
   year         = {2024},
-  howpublished = {Proceedings of the 13th Conference on Engineering, Project and Production Management (EPPM 2023), Auckland, New Zealand},
-  note         = {Latest version at \url{https://arxiv.org/abs/2407.21060}}
+  eprinttype   = {arXiv},
+  eprint       = {2407.21060},
+  url          = {https://arxiv.org/abs/2407.21060}
 }
 
-@article{liu2023ifcversion,
+@inproceedings{liu2023ifcversion,
   author       = {Liu, Han and Gao, Ge and Gu, Ming},
-  title        = {A Parallel {IFC} Normalization Algorithm for Incremental Storage and Version Control},
+  title        = {{A parallel IFC normalization algorithm for incremental storage and version control}},
+  booktitle    = {{Proceedings of the 30th International Workshop on Intelligent Computing in Engineering (EG-ICE 2023)}},
   year         = {2023},
-  howpublished = {arXiv preprint arXiv:2312.14931},
-  note         = {Latest version at \url{https://arxiv.org/abs/2312.14931}}
+  pages        = {511--520},
+  url          = {https://arxiv.org/abs/2312.14931}
 }
 
-@misc{mirhoseini2020rlchip,
-  author       = {Mirhoseini, Azalia and Goldie, Anna and Yazgan, Mustafa and Jiang, Joe and Songhori, Ebrahim and Wang, Shen and Lee, Young-Joon and Johnson, Eric and Pathak, Omkar and Bae, Sungmin and Nazi, Azade and Pak, Jiwoo and Tong, Andy and Srinivasa, Kavya and Hang, William and Tuncer, Emre and Babu, Anand and Le, Quoc V. and Laudon, James and Ho, Richard and Carpenter, Roger and Dean, Jeff},
-  title        = {Chip Placement with Deep Reinforcement Learning},
+@article{mirhoseini2020rlchip,
+  author       = {Mirhoseini, Azalia and others},
+  title        = {{Chip placement with deep reinforcement learning}},
+  journal      = {{arXiv:2004.10746}},
   year         = {2020},
-  howpublished = {arXiv preprint arXiv:2004.10746},
-  note         = {Latest version at \url{https://arxiv.org/abs/2004.10746}}
+  eprinttype   = {arXiv},
+  eprint       = {2004.10746},
+  url          = {https://arxiv.org/abs/2004.10746}
 }
 
-@misc{kim2025rule2drc,
+@inproceedings{kim2025rule2drc,
   author       = {Kim, Jinuk and Byun, Junsoo and Hwang, Donghwi and Park, Seong-Jin and Song, Hyun Oh},
-  title        = {{Rule2DRC}: Benchmarking {LLM} Agents for {DRC} Script Synthesis with Execution-Guided Test Generation},
-  year         = {2025},
-  howpublished = {Proceedings of the 43rd International Conference on Machine Learning (ICML 2026), Seoul, South Korea},
-  note         = {Latest version at \url{https://arxiv.org/abs/2605.15669}}
+  title        = {{Rule2DRC: benchmarking LLM agents for DRC script synthesis with execution-guided test generation}},
+  booktitle    = {{Proceedings of the 43rd International Conference on Machine Learning (ICML 2026)}},
+  year         = {2026},
+  address      = {Seoul, South Korea},
+  url          = {https://arxiv.org/abs/2605.15669}
 }
 
-@misc{multiswebench2025,
+@article{multiswebench2025,
   author       = {{ByteDance Seed}},
-  title        = {{Multi-SWE-bench}: A Multilingual Benchmark for Issue Resolving},
+  title        = {{Multi-SWE-bench: a multilingual benchmark for issue resolving}},
+  journal      = {{arXiv:2504.02605}},
   year         = {2025},
-  howpublished = {arXiv preprint arXiv:2504.02605},
-  note         = {Latest version at \url{https://arxiv.org/abs/2504.02605}}
+  eprinttype   = {arXiv},
+  eprint       = {2504.02605},
+  url          = {https://arxiv.org/abs/2504.02605}
 }
 
-@misc{qiu2026hwebenschematic,
+@article{qiu2026hwebenschematic,
   author       = {Qiu, Weibo and Xiao, Yinhao and Pan, Runyu},
-  title        = {{HWE-Bench}: Can Language Models Perform Board-level Schematic Designs?},
+  title        = {{HWE-Bench: can language models perform board-level schematic designs?}},
+  journal      = {{arXiv:2603.18102}},
   year         = {2026},
-  howpublished = {\url{https://arxiv.org/abs/2603.18102}},
-  note         = {Preprint. Latest version at \url{https://arxiv.org/abs/2603.18102}}
+  eprinttype   = {arXiv},
+  eprint       = {2603.18102},
+  url          = {https://arxiv.org/abs/2603.18102}
 }
 
-@misc{cui2026hwebebugrepair,
+@article{cui2026hwebebugrepair,
   author       = {Cui, Fan and Hou, Hongyuan and Luo, Zizhang and Yin, Chenyun and Liang, Yun},
-  title        = {{HWE-Bench}: Benchmarking {LLM} Agents on Real-World Hardware Bug Repair Tasks},
+  title        = {{HWE-Bench: benchmarking LLM agents on real-world hardware bug repair tasks}},
+  journal      = {{arXiv:2604.14709}},
   year         = {2026},
-  howpublished = {\url{https://arxiv.org/abs/2604.14709}},
-  note         = {Preprint. Latest version at \url{https://arxiv.org/abs/2604.14709}}
+  eprinttype   = {arXiv},
+  eprint       = {2604.14709},
+  url          = {https://arxiv.org/abs/2604.14709}
 }

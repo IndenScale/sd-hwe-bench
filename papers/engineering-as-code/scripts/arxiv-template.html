@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$title$</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm 2cm 2.5cm 2cm;
+  }
+  body {
+    font-family: "Times New Roman", "STSong", "SimSun", serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #000;
+    text-align: justify;
+    max-width: 100%;
+  }
+  h1, h2, h3, h4 {
+    font-family: "Times New Roman", "STSong", "SimSun", serif;
+    color: #000;
+    page-break-after: avoid;
+  }
+  h1 { font-size: 16pt; text-align: center; margin-top: 0; }
+  h2 { font-size: 14pt; margin-top: 1.5em; border-bottom: 1px solid #000; padding-bottom: 0.2em; }
+  h3 { font-size: 12pt; margin-top: 1.2em; }
+  h4 { font-size: 11pt; margin-top: 1em; font-style: italic; }
+  p { margin: 0.5em 0; text-indent: 2em; }
+  p:first-of-type { text-indent: 0; }
+  blockquote {
+    margin: 1em 2em;
+    padding: 0.5em 1em;
+    border-left: 3px solid #555;
+    background: #f9f9f9;
+    font-style: italic;
+  }
+  blockquote p { text-indent: 0; }
+  code {
+    font-family: "Courier New", monospace;
+    font-size: 9.5pt;
+    background: #f4f4f4;
+    padding: 0.1em 0.3em;
+    border-radius: 2px;
+  }
+  pre {
+    font-family: "Courier New", monospace;
+    font-size: 9pt;
+    background: #f4f4f4;
+    padding: 0.8em 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow-x: auto;
+    line-height: 1.4;
+  }
+  pre code { background: none; padding: 0; }
+  table {
+    border-collapse: collapse;
+    margin: 1em auto;
+    font-size: 10pt;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #000;
+    padding: 4px 8px;
+    text-align: left;
+  }
+  th { background: #eee; font-weight: bold; }
+  strong { font-weight: bold; }
+  em { font-style: italic; }
+  ul, ol { margin: 0.5em 0 0.5em 2em; }
+  li { margin: 0.2em 0; }
+  sup { font-size: 0.8em; }
+  .author-block {
+    text-align: center;
+    margin: 1.5em 0 0.5em 0;
+  }
+  .author-block p { text-indent: 0; text-align: center; }
+  .abstract-label {
+    text-align: center;
+    font-weight: bold;
+    margin: 1em 0 0.3em 0;
+  }
+  .keywords {
+    font-size: 10pt;
+    margin: 0.3em 0 1em 0;
+    text-indent: 0;
+  }
+  hr { border: none; border-top: 1px solid #000; margin: 2em 0; }
+</style>
+</head>
+<body>
+$if(title)$
+<h1>$title$</h1>
+$endif$
+
+$if(author)$
+<div class="author-block">
+<p><strong>$author$</strong></p>
+$if(affiliation)$
+<p>$affiliation$</p>
+$endif$
+</div>
+$endif$
+
+$body$
+</body>
+</html>
