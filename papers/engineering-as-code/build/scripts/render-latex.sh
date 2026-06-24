@@ -2,33 +2,48 @@
 # render-latex.sh — Markdown -> LaTeX -> PDF pipeline for arXiv/FSE submissions.
 #
 # Usage:
-#   ./scripts/render-latex.sh              # generate arxiv-submission/manuscript-en.tex
-#   ./scripts/render-latex.sh --pdf        # also compile PDF if a LaTeX engine is available
-#   ./scripts/render-latex.sh --anonymous  # omit author/affiliation metadata
+#   build/scripts/render-latex.sh [--lang zh|en]              # generate dist/latex/<slug>.tex
+#   build/scripts/render-latex.sh [--lang zh|en] --pdf        # also compile PDF if a LaTeX engine is available
+#   build/scripts/render-latex.sh [--lang zh|en] --anonymous  # omit author/affiliation metadata
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PAPER_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PAPER_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 PDF_MODE=false
 ANONYMOUS=false
+LANG="en"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --pdf) PDF_MODE=true; shift ;;
     --anonymous) ANONYMOUS=true; shift ;;
+    --lang)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing argument for --lang"; exit 1
+      fi
+      LANG="$2"; shift 2 ;;
     *) echo "Unknown option: $1"; exit 1 ;;
   esac
 done
 
-mkdir -p "$PAPER_DIR/arxiv-submission"
+if [[ "$LANG" == "zh" ]]; then
+  SECTIONS_DIR="$PAPER_DIR/src/sections"
+  TEMPLATE="$PAPER_DIR/build/templates/arxiv-zh.tex"
+else
+  SECTIONS_DIR="$PAPER_DIR/src/sections-en"
+  TEMPLATE="$PAPER_DIR/build/templates/arxiv.tex"
+fi
 
-MD_FILE="$PAPER_DIR/manuscript-en-latex.md"
-TEX_FILE="$PAPER_DIR/arxiv-submission/manuscript-en.tex"
-PDF_FILE="$PAPER_DIR/arxiv-submission/manuscript-en.pdf"
-TEMPLATE="$PAPER_DIR/templates/arxiv.tex"
+SLUG="$(python3 "$SCRIPT_DIR/slug-from-meta.py" "$SECTIONS_DIR")"
+
+mkdir -p "$PAPER_DIR/dist/latex"
+
+MD_FILE="$PAPER_DIR/dist/latex/${SLUG}-latex.md"
+TEX_FILE="$PAPER_DIR/dist/latex/${SLUG}.tex"
+PDF_FILE="$PAPER_DIR/dist/latex/${SLUG}.pdf"
 
 echo "Assembling LaTeX-ready Markdown..."
-bash "$SCRIPT_DIR/assemble-latex-en.sh" "$MD_FILE"
+bash "$SCRIPT_DIR/assemble-latex.sh" "$SECTIONS_DIR" "$MD_FILE"
 
 METADATA_OVERRIDES=""
 if [[ "$ANONYMOUS" == true ]]; then
@@ -85,7 +100,7 @@ if [[ "$PDF_MODE" == true ]]; then
 
   if [[ "$PDF_MODE" == true ]]; then
     echo "Compiling PDF with $ENGINE..."
-    cd "$PAPER_DIR/arxiv-submission"
+    cd "$PAPER_DIR/dist/latex"
     "$ENGINE" -interaction=nonstopmode -halt-on-error "$(basename "$TEX_FILE")" || true
     # Run twice to resolve references
     "$ENGINE" -interaction=nonstopmode -halt-on-error "$(basename "$TEX_FILE")" || true

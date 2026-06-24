@@ -2,12 +2,12 @@
 # prepare-arxiv-source.sh — Package the LaTeX source for arXiv upload.
 #
 # Usage:
-#   ./scripts/prepare-arxiv-source.sh              # non-anonymous source bundle
-#   ./scripts/prepare-arxiv-source.sh --anonymous  # anonymous source bundle
+#   build/scripts/prepare-arxiv-source.sh              # non-anonymous source bundle
+#   build/scripts/prepare-arxiv-source.sh --anonymous  # anonymous source bundle
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PAPER_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PAPER_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 ANONYMOUS=false
 VERIFY=false
@@ -19,18 +19,19 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-UPLOAD_DIR="$PAPER_DIR/arxiv-upload"
-SOURCE_DIR="$PAPER_DIR/arxiv-submission"
-TEX_FILE="manuscript-en.tex"
 if [[ "$ANONYMOUS" == true ]]; then
-  TARBALL="$PAPER_DIR/arxiv-source-anonymous.tar.gz"
+  UPLOAD_DIR="$PAPER_DIR/dist/submissions/arxiv-anonymous"
+  TARBALL="$PAPER_DIR/dist/submissions/arxiv-anonymous/arxiv-source-anonymous.tar.gz"
 else
-  TARBALL="$PAPER_DIR/arxiv-source.tar.gz"
+  UPLOAD_DIR="$PAPER_DIR/dist/submissions/arxiv"
+  TARBALL="$PAPER_DIR/dist/submissions/arxiv/arxiv-source.tar.gz"
 fi
+SOURCE_DIR="$PAPER_DIR/dist/latex"
+SLUG="$(python3 "$SCRIPT_DIR/slug-from-meta.py" "$PAPER_DIR/src/sections-en")"
+TEX_FILE="${SLUG}.tex"
 
-echo "=== Step 1: clean previous build artifacts ==="
+echo "=== Step 1: clean arXiv upload directory ==="
 cd "$PAPER_DIR"
-make clean >/dev/null
 rm -rf "$UPLOAD_DIR"
 mkdir -p "$UPLOAD_DIR"
 
@@ -64,7 +65,7 @@ if [[ -n "$FIGURES" ]]; then
     echo "  - $stem"
     found=false
     for ext in pdf png eps jpg jpeg; do
-      candidate="$PAPER_DIR/diagrams/${stem}.${ext}"
+      candidate="$PAPER_DIR/assets/diagrams/${stem}.${ext}"
       if [[ -f "$candidate" ]]; then
         cp "$candidate" "$UPLOAD_DIR/"
         echo "    copied ${stem}.${ext}"
@@ -115,8 +116,12 @@ fi
 
 echo "=== Step 5: create arXiv source tarball ==="
 rm -f "$TARBALL"
+TARBALL_TMP="$(mktemp -u "$PAPER_DIR/.arxiv-source-XXXXXX.tar.gz")"
+trap 'rm -f "$TARBALL_TMP"' EXIT
 cd "$PAPER_DIR"
-tar -czvf "$TARBALL" -C "$UPLOAD_DIR" .
+tar -czvf "$TARBALL_TMP" -C "$UPLOAD_DIR" .
+mv "$TARBALL_TMP" "$TARBALL"
+trap - EXIT
 
 echo ""
 echo "Done. arXiv source bundle:"

@@ -1,50 +1,62 @@
-.PHONY: pdf pdf-en pdf-anonymous pdf-en-anonymous md md-en tex tex-en arxiv arxiv-pdf arxiv-anonymous arxiv-source arxiv-source-anonymous clean
+.PHONY: md md-zh md-en pdf pdf-zh pdf-en pdf-zh-anonymous pdf-en-anonymous tex tex-zh tex-en tex-zh-anonymous tex-en-anonymous arxiv arxiv-pdf arxiv-anonymous arxiv-source arxiv-source-anonymous arxiv-source-verify all clean
 
-md:
-	@bash scripts/assemble.sh
+md-zh:
+	@bash build/scripts/assemble.sh
 
 md-en:
-	@bash scripts/assemble-en.sh
+	@bash build/scripts/assemble-en.sh
 
-# HTML/Paged.js PDF pipeline (legacy; good for visual drafts)
-pdf:
-	@node scripts/render-pdf.js
+md: md-zh md-en
+
+# HTML/Paged.js PDF pipeline
+pdf-zh:
+	@node build/scripts/render-pdf.js
 
 pdf-en:
-	@node scripts/render-pdf.js --en
+	@node build/scripts/render-pdf.js --en
 
-pdf-anonymous:
-	@node scripts/render-pdf.js --anonymous
+pdf-zh-anonymous:
+	@node build/scripts/render-pdf.js --anonymous
 
 pdf-en-anonymous:
-	@node scripts/render-pdf.js --en --anonymous
+	@node build/scripts/render-pdf.js --en --anonymous
 
-# LaTeX / arXiv pipeline (preferred for submission)
+pdf: pdf-zh pdf-en
+
+# LaTeX / arXiv / FSE pipeline
+tex-zh:
+	@bash build/scripts/render-latex.sh --lang zh
+
 tex-en:
-	@bash scripts/render-latex.sh
+	@bash build/scripts/render-latex.sh --lang en
+
+tex-zh-anonymous:
+	@bash build/scripts/render-latex.sh --lang zh --anonymous
 
 tex-en-anonymous:
-	@bash scripts/render-latex.sh --anonymous
+	@bash build/scripts/render-latex.sh --lang en --anonymous
+
+tex: tex-zh tex-en
 
 arxiv: tex-en
 
 arxiv-pdf:
-	@bash scripts/render-latex.sh --pdf
+	@bash build/scripts/render-latex.sh --lang en --pdf
 
-arxiv-anonymous:
-	@bash scripts/render-latex.sh --anonymous
+arxiv-anonymous: tex-en-anonymous
 
 arxiv-source:
-	@bash scripts/prepare-arxiv-source.sh
+	@bash build/scripts/prepare-arxiv-source.sh
 
 arxiv-source-anonymous:
-	@bash scripts/prepare-arxiv-source.sh --anonymous
+	@bash build/scripts/prepare-arxiv-source.sh --anonymous
 
-all: pdf pdf-anonymous pdf-en pdf-en-anonymous tex-en
+arxiv-source-verify:
+	@bash build/scripts/prepare-arxiv-source.sh --verify
+
+all: md pdf tex
 
 clean:
-	@rm -f manuscript.pdf manuscript-anonymous.pdf manuscript-en.pdf manuscript-en-anonymous.pdf manuscript-en-latex.md .tmp-metadata.json .tmp-manuscript.html
-	@rm -f arxiv-submission/manuscript-en.tex arxiv-submission/manuscript-en.pdf arxiv-submission/*.aux arxiv-submission/*.log arxiv-submission/*.out arxiv-submission/*.bbl arxiv-submission/*.blg
-	@rm -rf arxiv-upload
-	@rm -f arxiv-source.tar.gz arxiv-source-anonymous.tar.gz
+	@rm -rf dist/md dist/pdf dist/latex dist/submissions
+	@rm -f .tmp-metadata.json .tmp-manuscript.html
 	@echo "Cleaned build artifacts."

@@ -51,43 +51,64 @@ EPM / AssemblyHub 不是工程协作工具——它们是让 physical design 获
 
 ```text
 papers/engineering-as-code/
-├── AGENTS.md                        # 本文件
+├── AGENTS.md                         # 本文件
 ├── Makefile                          # 构建入口
-├── templates/                        # Pandoc LaTeX 模板
-│   └── arxiv.tex
-├── scripts/                          # 构建脚本
-│   ├── assemble.sh                   # Markdown 合并（中文 HTML/PDF 草稿）
-│   ├── assemble-en.sh                # Markdown 合并（英文 HTML/PDF 草稿）
-│   ├── assemble-latex-en.sh          # Markdown 合并（英文 LaTeX 投稿源）
-│   ├── render-pdf.js                 # Markdown -> HTML -> PDF（视觉草稿）
-│   ├── render-latex.sh               # Markdown -> LaTeX -> PDF（投稿源）
-│   └── prepare-arxiv-source.sh       # 打包 arXiv 源文件 tar.gz
-├── sections/                         # 中文正文源文件
-├── sections-en/                      # 英文正文源文件（投稿真相源）
-│   ├── 00-header.md                  # 标题、作者、单位
-│   ├── 00-abstract.md                # 摘要、关键词
-│   ├── 01-introduction.md
-│   ├── 02-background.md
-│   ├── 03-the-eac-approach.md
-│   ├── 04-adl.md
-│   ├── 05-esa.md
-│   ├── 06-evaluation.md
-│   ├── 07-related-work.md
-│   └── 08-conclusion.md
-├── appendix/                         # 扩展/参考材料
-├── references/                       # 已下载的参考文献 PDF
-├── refs.bib                          # BibTeX 单真相源
-├── arxiv-submission/                 # arXiv 投稿源输出目录
-└── engineering-as-code.zh.md         # 【已废弃】旧版中文全文稿
+├── refs.bib                          # BibTeX 引用单真相源
+├── src/                              # 编辑真相源
+│   ├── sections/                     # 中文正文源文件
+│   │   ├── meta.yaml                 # frontmatter：标题、作者、单位、摘要、关键词
+│   │   ├── 01-introduction.md
+│   ├── sections-en/                  # 英文正文源文件（投稿真相源）
+│   │   ├── meta.yaml                 # frontmatter：标题、作者、单位、摘要、关键词
+│   │   ├── 01-introduction.md
+│   │   ├── 02-background.md
+│   │   ├── 03-the-eac-approach.md
+│   │   ├── 04-adl.md
+│   │   ├── 05-esa.md
+│   │   ├── 06-evaluation.md
+│   │   ├── 07-related-work.md
+│   │   └── 08-conclusion.md
+│   └── appendix/                     # 扩展/参考材料
+├── assets/                           # 静态资产
+│   ├── diagrams/                     # 论文插图
+│   └── references/                   # 已下载的参考文献 PDF
+├── build/                            # 构建脚本与模板
+│   ├── scripts/                      # 构建脚本
+│   │   ├── assemble.sh               # Markdown 合并（中文）
+│   │   ├── assemble-en.sh            # Markdown 合并（英文）
+│   │   ├── assemble-latex.sh         # Markdown 合并（LaTeX 投稿源）
+│   │   ├── render-pdf.js             # Markdown -> HTML -> PDF
+│   │   ├── render-latex.sh           # Markdown -> LaTeX -> PDF
+│   │   ├── fix-latex-tables.py       # LaTeX 表格后处理
+│   │   ├── slug-from-meta.py         # 从 meta.yaml 标题生成文件名
+│   │   └── prepare-arxiv-source.sh   # 打包 arXiv 源文件 tar.gz
+│   └── templates/                    # Pandoc 模板
+│       ├── arxiv.tex                 # 英文 LaTeX 模板
+│       ├── arxiv-zh.tex              # 中文 LaTeX 模板
+│       └── arxiv-template.html       # HTML/PDF 模板
+└── dist/                             # 所有下游产物（gitignored）
+    ├── md/                           # 合并后的单一 Markdown 文件
+    ├── pdf/                          # HTML/Paged.js PDF
+    ├── latex/                        # LaTeX 源（arXiv / FSE 共用）
+    └── submissions/                  # 各出版渠道投稿包
+        ├── arxiv/
+        └── arxiv-anonymous/
 ```
+
+**命名规则**：下游产物文件名从 `meta.yaml` 的 `title` 自动派生（slug），不再使用 `manuscript` 等硬编码名称。
+
+**核心原则**：`src/` 与 `assets/` 是**唯一可编辑的真相源**；`dist/` 是**完全生成的下游产物**，可随时 `make clean` 重建。
 
 ## 构建管线
 
-### 英文投稿源（LaTeX / arXiv 首选）
+### LaTeX 投稿源（arXiv / FSE 首选）
 
 ```bash
-# 生成 arxiv-submission/manuscript-en.tex（本地无需 LaTeX）
+# 生成 dist/latex/<slug>.tex（本地无需 LaTeX）
 make tex-en
+
+# 中文 LaTeX 源
+make tex-zh
 
 # 若已安装 TeX Live / MacTeX，同时编译 PDF
 make arxiv-pdf
@@ -102,29 +123,33 @@ make arxiv-source
 make arxiv-source-anonymous
 
 # 打包并本地编译验证（需 TeX Live / MacTeX）
-./scripts/prepare-arxiv-source.sh --verify
+make arxiv-source-verify
 ```
 
 该管线：
-- 从 `sections-en/00-header.md` 提取 `\title` / `\author` / `\affil`。
-- 从 `sections-en/00-abstract.md` 提取 `\begin{abstract}` 与 keywords。
+- 从 `src/sections-en/meta.yaml` / `src/sections/meta.yaml` 提取 `\title` / `\author` / `\affil` / `\begin{abstract}` / keywords。
+- 章节文件（`01-introduction.md` 等）只包含正文，不再包含标题页或摘要。
 - 使用 `pandoc-crossref` 处理图表交叉引用，`pandoc-citeproc` + `refs.bib` 生成 BibTeX 参考文献。
 - 章节标题不再手写编号，由 LaTeX `\section`/ `\subsection` 自动编号。
 - 代码块使用 Pandoc 默认语法高亮，表格使用 `longtable` + `\caption`。
 
-### 视觉草稿（HTML / Paged.js）
+### Markdown / PDF
 
 ```bash
+make md            # dist/md/<zh-slug>.md + dist/md/<en-slug>.md
+make md-zh
+make md-en
+make pdf           # dist/pdf/<zh-slug>.pdf + dist/pdf/<en-slug>.pdf
+make pdf-zh
 make pdf-en
+make pdf-zh-anonymous
 make pdf-en-anonymous
 ```
 
-此管线保留用于快速预览排版效果，但**不用于 arXiv / 正式投稿**。
-
 ## 写作语言与术语
 
-1. **`sections/` 是投稿真相源**：按 FSE Research Track 结构直接用英文撰写。
-2. **`appendix/` 采用 _zh / _en 双版本**：`_zh.md` 为中文原生创作版，`_en.md` 为英文投稿版。
+1. **`src/sections-en/` 是投稿真相源**：按 FSE Research Track 结构直接用英文撰写。
+2. **`src/appendix/` 采用 _zh / _en 双版本**：`_zh.md` 为中文原生创作版，`_en.md` 为英文投稿版。
 3. 旧版 `engineering-as-code.zh.md` / `engineering-as-code.en.md` 已废弃，不再维护。
 
 ## 写作风格
