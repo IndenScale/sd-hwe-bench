@@ -20,14 +20,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ "$ANONYMOUS" == true ]]; then
-  UPLOAD_DIR="$PAPER_DIR/dist/submissions/arxiv-anonymous"
-  TARBALL="$PAPER_DIR/dist/submissions/arxiv-anonymous/arxiv-source-anonymous.tar.gz"
+  UPLOAD_DIR="$PAPER_DIR/arxiv/dist/submissions/arxiv-anonymous"
+  TARBALL="$PAPER_DIR/arxiv/dist/submissions/arxiv-anonymous/arxiv-source-anonymous.tar.gz"
 else
-  UPLOAD_DIR="$PAPER_DIR/dist/submissions/arxiv"
-  TARBALL="$PAPER_DIR/dist/submissions/arxiv/arxiv-source.tar.gz"
+  UPLOAD_DIR="$PAPER_DIR/arxiv/dist/submissions/arxiv"
+  TARBALL="$PAPER_DIR/arxiv/dist/submissions/arxiv/arxiv-source.tar.gz"
 fi
-SOURCE_DIR="$PAPER_DIR/dist/latex"
-SLUG="$(python3 "$SCRIPT_DIR/slug-from-meta.py" "$PAPER_DIR/src/sections-en")"
+SOURCE_DIR="$PAPER_DIR/arxiv/dist/latex"
+SLUG="$(python3 "$SCRIPT_DIR/slug-from-meta.py" "$PAPER_DIR/arxiv/src/sections-en")"
 TEX_FILE="${SLUG}.tex"
 
 echo "=== Step 1: clean arXiv upload directory ==="

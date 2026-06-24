@@ -20,7 +20,7 @@ const en = process.argv.includes('--en');
 const anonymous = process.argv.includes('--anonymous');
 const outputArg = process.argv.filter(a => a.endsWith('.pdf')).pop();
 
-const sectionsDir = path.join(paperDir, en ? 'src/sections-en' : 'src/sections');
+const sectionsDir = path.join(paperDir, en ? 'arxiv/src/sections-en' : 'arxiv/src/sections');
 
 function getSlug(dir) {
   return execSync(`python3 "${path.join(scriptDir, 'slug-from-meta.py')}" "${dir}"`, {
@@ -33,8 +33,8 @@ const slug = getSlug(sectionsDir);
 
 const outputPdf = outputArg
   ? path.resolve(outputArg)
-  : path.join(paperDir, 'dist/pdf', `${slug}${anonymous ? '-anonymous' : ''}.pdf`);
-const mdFile = path.join(paperDir, 'dist/md', `${slug}.md`);
+  : path.join(paperDir, 'arxiv/dist/pdf', `${slug}${anonymous ? '-anonymous' : ''}.pdf`);
+const mdFile = path.join(paperDir, 'arxiv/dist/md', `${slug}.md`);
 
 const asmScript = en ? 'build/scripts/assemble-en.sh' : 'build/scripts/assemble.sh';
 

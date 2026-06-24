@@ -1,46 +1,59 @@
 #!/usr/bin/env bash
-# render-latex.sh — Markdown -> LaTeX -> PDF pipeline for arXiv/FSE submissions.
+# render-fse-latex.sh — Markdown -> LaTeX -> PDF pipeline for FSE 2027 submissions.
 #
 # Usage:
-#   build/scripts/render-latex.sh [--lang zh|en]              # generate dist/latex/<slug>.tex
-#   build/scripts/render-latex.sh [--lang zh|en] --pdf        # also compile PDF if a LaTeX engine is available
-#   build/scripts/render-latex.sh [--lang zh|en] --anonymous  # omit author/affiliation metadata
+#   build/scripts/render-fse-latex.sh [--lang zh|en] [--sections-dir DIR] [--pdf] [--anonymous]
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PAPER_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
+LANG="en"
 PDF_MODE=false
 ANONYMOUS=false
-LANG="en"
+SECTIONS_DIR=""
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --lang)
+      if [[ $# -lt 2 ]]; then echo "Missing argument for --lang"; exit 1; fi
+      LANG="$2"; shift 2 ;;
+    --sections-dir)
+      if [[ $# -lt 2 ]]; then echo "Missing argument for --sections-dir"; exit 1; fi
+      SECTIONS_DIR="$2"; shift 2 ;;
     --pdf) PDF_MODE=true; shift ;;
     --anonymous) ANONYMOUS=true; shift ;;
-    --lang)
-      if [[ $# -lt 2 ]]; then
-        echo "Missing argument for --lang"; exit 1
-      fi
-      LANG="$2"; shift 2 ;;
     *) echo "Unknown option: $1"; exit 1 ;;
   esac
 done
 
 if [[ "$LANG" == "zh" ]]; then
-  SECTIONS_DIR="$PAPER_DIR/arxiv/src/sections"
-  TEMPLATE="$PAPER_DIR/build/templates/arxiv-zh.tex"
+  SECTIONS_DIR="${SECTIONS_DIR:-$PAPER_DIR/fse/src/sections}"
+  if [[ "$ANONYMOUS" == true ]]; then
+    TEMPLATE="$PAPER_DIR/build/templates/fse-zh-anonymous.tex"
+  else
+    TEMPLATE="$PAPER_DIR/build/templates/fse-zh.tex"
+  fi
+  OUTDIR="$PAPER_DIR/fse/dist/latex-zh"
+  FSE_TABLE_MODE=true
 else
-  SECTIONS_DIR="$PAPER_DIR/arxiv/src/sections-en"
-  TEMPLATE="$PAPER_DIR/build/templates/arxiv.tex"
+  SECTIONS_DIR="${SECTIONS_DIR:-$PAPER_DIR/fse/src/sections-en}"
+  if [[ "$ANONYMOUS" == true ]]; then
+    TEMPLATE="$PAPER_DIR/build/templates/fse-anonymous.tex"
+  else
+    TEMPLATE="$PAPER_DIR/build/templates/fse.tex"
+  fi
+  OUTDIR="$PAPER_DIR/fse/dist/latex"
+  FSE_TABLE_MODE=true
 fi
 
 SLUG="$(python3 "$SCRIPT_DIR/slug-from-meta.py" "$SECTIONS_DIR")"
 
-mkdir -p "$PAPER_DIR/arxiv/dist/latex"
+mkdir -p "$OUTDIR"
 
-MD_FILE="$PAPER_DIR/arxiv/dist/latex/${SLUG}-latex.md"
-TEX_FILE="$PAPER_DIR/arxiv/dist/latex/${SLUG}.tex"
-PDF_FILE="$PAPER_DIR/arxiv/dist/latex/${SLUG}.pdf"
+MD_FILE="$OUTDIR/${SLUG}-latex.md"
+TEX_FILE="$OUTDIR/${SLUG}.tex"
+PDF_FILE="$OUTDIR/${SLUG}.pdf"
 
 echo "Assembling LaTeX-ready Markdown..."
 bash "$SCRIPT_DIR/assemble-latex.sh" "$SECTIONS_DIR" "$MD_FILE"
@@ -48,6 +61,11 @@ bash "$SCRIPT_DIR/assemble-latex.sh" "$SECTIONS_DIR" "$MD_FILE"
 METADATA_OVERRIDES=""
 if [[ "$ANONYMOUS" == true ]]; then
   METADATA_OVERRIDES="--metadata=author:Anonymous --metadata=institute:"
+fi
+
+LUA_FILTER_ARG=""
+if [[ "$FSE_TABLE_MODE" == true ]]; then
+  LUA_FILTER_ARG="--lua-filter=$PAPER_DIR/build/filters/tables-to-fse.lua"
 fi
 
 echo "Pandoc -> LaTeX..."
@@ -63,15 +81,17 @@ pandoc "$MD_FILE" \
   --top-level-division=section \
   --number-sections \
   --columns=1000 \
+  $LUA_FILTER_ARG \
   $METADATA_OVERRIDES
 
 rm -f "$MD_FILE"
 
 echo "Post-processing tables..."
-python3 "$SCRIPT_DIR/fix-latex-tables.py" "$TEX_FILE"
+if [[ "$FSE_TABLE_MODE" != true ]]; then
+  python3 "$SCRIPT_DIR/fix-latex-tables.py" "$TEX_FILE"
+fi
 
 if [[ "$PDF_MODE" == true ]]; then
-  # Try to locate a TeX Live engine even if the shell PATH is not yet set.
   TEXLIVE_BIN=""
   for candidate in \
     /Library/TeX/texbin \
@@ -100,10 +120,10 @@ if [[ "$PDF_MODE" == true ]]; then
 
   if [[ "$PDF_MODE" == true ]]; then
     echo "Compiling PDF with $ENGINE..."
-    cd "$PAPER_DIR/arxiv/dist/latex"
-    "$ENGINE" -interaction=nonstopmode -halt-on-error "$(basename "$TEX_FILE")" || true
-    # Run twice to resolve references
-    "$ENGINE" -interaction=nonstopmode -halt-on-error "$(basename "$TEX_FILE")" || true
+    cd "$OUTDIR"
+    "$ENGINE" -interaction=nonstopmode -halt-on-error "$TEX_FILE" || true
+    "$ENGINE" -interaction=nonstopmode -halt-on-error "$TEX_FILE" || true
+    "$ENGINE" -interaction=nonstopmode -halt-on-error "$TEX_FILE" || true
     cd "$PAPER_DIR"
   fi
 fi

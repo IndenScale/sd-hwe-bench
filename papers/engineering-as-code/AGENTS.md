@@ -54,42 +54,41 @@ papers/engineering-as-code/
 ├── AGENTS.md                         # 本文件
 ├── Makefile                          # 构建入口
 ├── refs.bib                          # BibTeX 引用单真相源
-├── src/                              # 编辑真相源
-│   ├── sections/                     # 中文正文源文件
-│   │   ├── meta.yaml                 # frontmatter：标题、作者、单位、摘要、关键词
-│   │   ├── 01-introduction.md
-│   ├── sections-en/                  # 英文正文源文件（投稿真相源）
-│   │   ├── meta.yaml                 # frontmatter：标题、作者、单位、摘要、关键词
-│   │   ├── 01-introduction.md
-│   │   ├── 02-background.md
-│   │   ├── 03-the-eac-approach.md
-│   │   ├── 04-adl.md
-│   │   ├── 05-esa.md
-│   │   ├── 06-evaluation.md
-│   │   ├── 07-related-work.md
-│   │   └── 08-conclusion.md
-│   └── appendix/                     # 扩展/参考材料
+├── arxiv/                            # arXiv 投稿真相源（完整版）
+│   └── src/
+│       ├── sections/                 # 中文正文源文件
+│       ├── sections-en/              # 英文正文源文件
+│       └── appendix/                 # 扩展/参考材料
+├── fse/                              # FSE 2027 投稿真相源（精简版）
+│   └── src/
+│       ├── sections/                 # 中文正文源文件
+│       ├── sections-en/              # 英文正文源文件（18 页目标）
+│       └── appendix/                 # FSE 附录（+4 页）
 ├── assets/                           # 静态资产
 │   ├── diagrams/                     # 论文插图
 │   └── references/                   # 已下载的参考文献 PDF
 ├── build/                            # 构建脚本与模板
 │   ├── scripts/                      # 构建脚本
 │   │   ├── assemble.sh               # Markdown 合并（中文）
-│   │   ├── assemble-en.sh            # Markdown 合并（英文）
+│   │   ├── assemble-en.sh            # Markdown 合并（英文 arXiv）
 │   │   ├── assemble-latex.sh         # Markdown 合并（LaTeX 投稿源）
 │   │   ├── render-pdf.js             # Markdown -> HTML -> PDF
-│   │   ├── render-latex.sh           # Markdown -> LaTeX -> PDF
+│   │   ├── render-latex.sh           # Markdown -> LaTeX -> PDF（arXiv）
+│   │   ├── render-fse-latex.sh       # Markdown -> LaTeX -> PDF（FSE）
 │   │   ├── fix-latex-tables.py       # LaTeX 表格后处理
 │   │   ├── slug-from-meta.py         # 从 meta.yaml 标题生成文件名
 │   │   └── prepare-arxiv-source.sh   # 打包 arXiv 源文件 tar.gz
 │   └── templates/                    # Pandoc 模板
-│       ├── arxiv.tex                 # 英文 LaTeX 模板
+│       ├── arxiv.tex                 # 英文 LaTeX 模板（arXiv）
 │       ├── arxiv-zh.tex              # 中文 LaTeX 模板
+│       ├── fse.tex                   # ACM acmart 模板（FSE）
+│       ├── fse-anonymous.tex         # ACM 匿名审稿模板（FSE）
 │       └── arxiv-template.html       # HTML/PDF 模板
 └── dist/                             # 所有下游产物（gitignored）
     ├── md/                           # 合并后的单一 Markdown 文件
-    ├── pdf/                          # HTML/Paged.js PDF
-    ├── latex/                        # LaTeX 源（arXiv / FSE 共用）
+    ├── pdf/                           # HTML/Paged.js PDF
+    ├── latex/                        # LaTeX 源（arXiv）
+    ├── fse/latex/                    # LaTeX 源 + PDF（FSE）
     └── submissions/                  # 各出版渠道投稿包
         ├── arxiv/
         └── arxiv-anonymous/
@@ -97,8 +96,7 @@ papers/engineering-as-code/
 
 **命名规则**：下游产物文件名从 `meta.yaml` 的 `title` 自动派生（slug），不再使用 `manuscript` 等硬编码名称。
 
-**核心原则**：`src/` 与 `assets/` 是**唯一可编辑的真相源**；`dist/` 是**完全生成的下游产物**，可随时 `make clean` 重建。
-
+**核心原则**：`arxiv/src/`、`fse/src/` 与 `assets/` 是**唯一可编辑的真相源**；`dist/` 是**完全生成的下游产物**，可随时 `make clean` 重建。
 ## 构建管线
 
 ### LaTeX 投稿源（arXiv / FSE 首选）
@@ -127,7 +125,7 @@ make arxiv-source-verify
 ```
 
 该管线：
-- 从 `src/sections-en/meta.yaml` / `src/sections/meta.yaml` 提取 `\title` / `\author` / `\affil` / `\begin{abstract}` / keywords。
+- 从 `arxiv/src/sections-en/meta.yaml` / `arxiv/src/sections/meta.yaml` 提取 `\title` / `\author` / `\affil` / `\begin{abstract}` / keywords。
 - 章节文件（`01-introduction.md` 等）只包含正文，不再包含标题页或摘要。
 - 使用 `pandoc-crossref` 处理图表交叉引用，`pandoc-citeproc` + `refs.bib` 生成 BibTeX 参考文献。
 - 章节标题不再手写编号，由 LaTeX `\section`/ `\subsection` 自动编号。
@@ -148,8 +146,9 @@ make pdf-en-anonymous
 
 ## 写作语言与术语
 
-1. **`src/sections-en/` 是投稿真相源**：按 FSE Research Track 结构直接用英文撰写。
-2. **`src/appendix/` 采用 _zh / _en 双版本**：`_zh.md` 为中文原生创作版，`_en.md` 为英文投稿版。
+1. **`arxiv/src/sections-en/` 是 arXiv 投稿真相源**：完整版 Position Paper。
+2. **`fse/src/sections-en/` 是 FSE 投稿真相源**：精简版（目标 18+4 页）。
+3. **`arxiv/src/appendix/` 采用 _zh / _en 双版本**：`_zh.md` 为中文原生创作版，`_en.md` 为英文投稿版。
 3. 旧版 `engineering-as-code.zh.md` / `engineering-as-code.en.md` 已废弃，不再维护。
 
 ## 写作风格

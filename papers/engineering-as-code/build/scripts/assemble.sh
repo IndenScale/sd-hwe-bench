@@ -1,14 +1,31 @@
 #!/usr/bin/env bash
 # Assemble src/sections/*.md into a single Markdown file named after the title.
-# Usage: build/scripts/assemble.sh [output.md]
-# Default output: dist/md/<slug>.md
+# Usage: build/scripts/assemble.sh [--sections-dir DIR] [output.md]
+# Default sections dir: arxiv/src/sections
+# Default output: arxiv/dist/md/<slug>.md
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PAPER_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SECTIONS_DIR="$PAPER_DIR/src/sections"
+
+SECTIONS_DIR="$PAPER_DIR/arxiv/src/sections"
+OUTPUT=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --sections-dir)
+      if [[ $# -lt 2 ]]; then echo "Missing argument for --sections-dir"; exit 1; fi
+      SECTIONS_DIR="$2"; shift 2 ;;
+    --sections-dir=*) SECTIONS_DIR="${1#*=}"; shift ;;
+    -*)
+      echo "Unknown option: $1"; exit 1 ;;
+    *)
+      OUTPUT="$1"; shift ;;
+  esac
+done
+
 SLUG="$(python3 "$SCRIPT_DIR/slug-from-meta.py" "$SECTIONS_DIR")"
-OUTPUT="${1:-$PAPER_DIR/dist/md/${SLUG}.md}"
+OUTPUT="${OUTPUT:-$PAPER_DIR/arxiv/dist/md/${SLUG}.md}"
 mkdir -p "$(dirname "$OUTPUT")"
 
 python3 - "$SECTIONS_DIR" "$OUTPUT" << 'PYEOF'

@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PAPER_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-SECTIONS_DIR="${1:-$PAPER_DIR/src/sections-en}"
+SECTIONS_DIR="${1:-$PAPER_DIR/arxiv/src/sections-en}"
 SLUG="$(python3 "$SCRIPT_DIR/slug-from-meta.py" "$SECTIONS_DIR")"
 OUTPUT="${2:-$PAPER_DIR/dist/latex/${SLUG}-latex.md}"
 mkdir -p "$(dirname "$OUTPUT")"
