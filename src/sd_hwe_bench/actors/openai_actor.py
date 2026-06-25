@@ -38,7 +38,9 @@ class OpenAIActor(Actor):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         self._client: OpenAI | None = None
         self.prompt_builder = PromptBuilder()
-        self.runner = SandboxRunner()
+        # Use host piki directly to avoid Docker auto-detection overhead and
+        # warnings in environments without a running container runtime.
+        self.runner = SandboxRunner(backend="none")
 
     @property
     def client(self) -> OpenAI:
