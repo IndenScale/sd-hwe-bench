@@ -1,0 +1,3 @@
+[submodule "canonical/telecom-rack"]
+	path = canonical/telecom-rack
+	url = ./canonical/telecom-rack
