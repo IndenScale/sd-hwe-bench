@@ -26,12 +26,10 @@ from __future__ import annotations
 import argparse
 import io
 import logging
-import os
 import shutil
 import subprocess
 import sys
 import tarfile
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -157,9 +155,7 @@ def resolve_ref(project_dir: Path, commit_name: str) -> str:
         )
         if result.returncode == 0:
             return result.stdout.strip()
-    raise ValueError(
-        f"Could not resolve commit '{commit_name}' to a git ref in {project_dir}"
-    )
+    raise ValueError(f"Could not resolve commit '{commit_name}' to a git ref in {project_dir}")
 
 
 def find_piki_python(piki_python: str | None) -> str:
@@ -177,6 +173,7 @@ def find_piki_python(piki_python: str | None) -> str:
     # Current interpreter if piki is importable.
     try:
         import piki  # noqa: F401
+
         return sys.executable
     except ImportError:
         pass

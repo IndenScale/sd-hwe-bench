@@ -1,32 +1,49 @@
-#!/bin/bash
-# Baseline runner: test gpt-5.1-codex and gemini-2.5-flash on comprehensive-001
-set -e
+#!/usr/bin/env bash
+# Legacy baseline runner: run a small set of CLI actors against a single task.
+#
+# NOTE: This script predates the current `sd-hwe-bench run` CLI. It is kept for
+# quick manual smoke tests only. New experiments should use the CLI directly.
+#
+# Environment variables (all optional):
+#   TASK          Task ID to run (default: telecom/comprehensive-001)
+#   MODELS        Space-separated actor specs (default: codex:gpt-5.1-codex codex:claude-sonnet-4-20250514)
+#   PASSES        Number of independent passes (default: 1)
+#   SANDBOX       Sandbox backend: auto|none|docker|podman (default: auto)
+#   RUN_DIR       Directory for rollout archives (default: work/baseline-runs)
+#
+# Example:
+#   TASK=telecom/layout-design-001 PASSES=3 ./work/legacy/run_baseline.sh
 
-export PIPKIPATH=/Users/indenscale/workspace/piki/.venv/bin/python
-cd /Users/indenscale/workspace/sd-hwe-bench
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+
+TASK="${TASK:-telecom/comprehensive-001}"
+MODELS="${MODELS:-codex:gpt-5.1-codex codex:claude-sonnet-4-20250514}"
+PASSES="${PASSES:-1}"
+SANDBOX="${SANDBOX:-auto}"
+RUN_DIR="${RUN_DIR:-work/baseline-runs}"
+
+cd "${REPO_ROOT}"
 
 echo "=== SD-HWE-Bench Baseline ==="
-echo "Task: telecom/comprehensive-001"
+echo "Task: ${TASK}"
+echo "Sandbox: ${SANDBOX}"
+echo "Passes: ${PASSES}"
+echo "Run dir: ${RUN_DIR}"
 echo ""
 
-# Model 1: gpt-5.1-codex via codex CLI
-echo "--- Running: gpt-5.1-codex ---"
-.venv/bin/python -m sd_hwe_bench.cli run-agent \
-  telecom/comprehensive-001 \
-  --driver codex --model gpt-5.1-codex \
-  --format markdown \
-  --run-dir work/baseline-runs \
-  2>&1
+for actor_spec in ${MODELS}; do
+    echo "--- Running: ${actor_spec} ---"
+    ./.venv/bin/python -m sd_hwe_bench.cli run "${TASK}" \
+        --actor "${actor_spec}" \
+        --passes "${PASSES}" \
+        --sandbox "${SANDBOX}" \
+        --run-dir "${RUN_DIR}" \
+        2>&1
+    echo ""
+done
 
-echo ""
-echo "--- Running: claude-sonnet-4-20250514 ---"
-# Model 2: Claude via codex CLI (using anthropic model name)
-.venv/bin/python -m sd_hwe_bench.cli run-agent \
-  telecom/comprehensive-001 \
-  --driver codex --model claude-sonnet-4-20250514 \
-  --format markdown \
-  --run-dir work/baseline-runs \
-  2>&1
-
-echo ""
 echo "=== Done ==="
+echo "Archives: ${RUN_DIR}"

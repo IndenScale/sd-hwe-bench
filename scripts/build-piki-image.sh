@@ -2,31 +2,38 @@
 # Build the piki sandbox image used by --sandbox docker/podman.
 #
 # Environment variables:
-#   PIKI_ROOT          Path to the piki repository root (default: ../piki)
-#   IMAGE_TAG          Image tag to build (default: sd-hwe-bench-piki:latest)
-#   CONTAINER_RUNTIME  docker or podman (default: docker)
+#   PIKI_ROOT             Path to the piki repository root (default: ../piki)
+#   IMAGE_TAG             Image tag to build (default: ${SD_HWE_SANDBOX_IMAGE})
+#   SD_HWE_SANDBOX_IMAGE  Fallback image tag if IMAGE_TAG is unset
+#   CONTAINER_RUNTIME     docker or podman (default: docker)
 #
 # Arguments:
-#   --tag <tag>        Override IMAGE_TAG
+#   --tag <tag>           Override IMAGE_TAG
+#   --runtime <runtime>   Override CONTAINER_RUNTIME
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PIKI_ROOT="${PIKI_ROOT:-${REPO_ROOT}/../piki}"
-IMAGE_TAG="${IMAGE_TAG:-sd-hwe-bench-piki:latest}"
+DEFAULT_IMAGE_TAG="${SD_HWE_SANDBOX_IMAGE:-sd-hwe-bench-piki:latest}"
+IMAGE_TAG="${IMAGE_TAG:-${DEFAULT_IMAGE_TAG}}"
 CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-docker}"
 
-# Parse optional --tag argument
+# Parse optional arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --tag)
             IMAGE_TAG="$2"
             shift 2
             ;;
+        --runtime)
+            CONTAINER_RUNTIME="$2"
+            shift 2
+            ;;
         *)
             echo "Unknown option: $1" >&2
-            echo "Usage: $0 [--tag <image-tag>]" >&2
+            echo "Usage: $0 [--tag <image-tag>] [--runtime <docker|podman>]" >&2
             exit 1
             ;;
     esac
