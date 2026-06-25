@@ -51,6 +51,7 @@ class Workspace:
         actor_name: str,
         model: str | None = None,
         scaffold_dir: Path | None = None,
+        attempt: int | None = None,
     ) -> Workspace:
         """Create a new workspace directory.
 
@@ -60,6 +61,8 @@ class Workspace:
             actor_name: Name of the actor (e.g., 'kimi').
             model: Optional model name.
             scaffold_dir: Optional scaffold directory to copy into workspace.
+            attempt: Optional attempt index to make the directory name unique
+                when multiple rollouts run in parallel.
         """
         run_root = Path(run_root)
         run_root.mkdir(parents=True, exist_ok=True)
@@ -68,7 +71,8 @@ class Workspace:
         safe_task = task_id.replace("/", "_")
         safe_actor = actor_name.replace("/", "_")
         suffix = f"_{model.replace('/', '_')}" if model else ""
-        run_name = f"{timestamp}_{safe_task}_{safe_actor}{suffix}"
+        attempt_suffix = f"_a{attempt:03d}" if attempt is not None else ""
+        run_name = f"{timestamp}_{safe_task}_{safe_actor}{suffix}{attempt_suffix}"
         run_dir = run_root / run_name
 
         if run_dir.exists():
@@ -88,6 +92,7 @@ class Workspace:
                 "task_id": task_id,
                 "actor": actor_name,
                 "model": model,
+                "attempt": attempt,
                 "created_at": datetime.now(timezone.utc).isoformat(),
             }
         )

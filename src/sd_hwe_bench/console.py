@@ -10,6 +10,20 @@ from sd_hwe_bench.scorer import TaskScore
 console = Console()
 
 
+def print_score_summary(result: dict) -> None:
+    """Render a lightweight rollout result to the console."""
+    success = result.get("success", False)
+    status = "[green]PASS[/green]" if success else "[red]FAIL[/red]"
+    task_id = result.get("task_id", "unknown")
+    attempt = result.get("attempt", 0) + 1
+    overall = result.get("overall_score", 0.0)
+    elapsed = result.get("actor_elapsed_s", 0.0)
+    console.print(
+        f"{status} {task_id} (attempt {attempt}) — score: {overall:.2%} — "
+        f"elapsed: {elapsed:.1f}s"
+    )
+
+
 def print_score(score: TaskScore) -> None:
     """Render a TaskScore to the console."""
     status = "[green]PASS[/green]" if score.success else "[red]FAIL[/red]"
