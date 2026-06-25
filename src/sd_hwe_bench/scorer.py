@@ -349,6 +349,17 @@ def score_task(
         _layer_scores_from_static(score, static_result)
 
     # 3. Deliverable critic (L5/L6)
+    # If deliverables are expected, run piki generate first so the critic
+    # inspects freshly produced artifacts. Generation uses the same sandbox
+    # runner as the rule checks (container or host).
+    if expected_deliverables and runner is not None:
+        gen_res = runner.generate(project_dir)
+        if not gen_res.available:
+            logger.warning(
+                "piki generate unavailable (%s); deliverables may be missing",
+                gen_res.stderr,
+            )
+
     deliverable = DeliverableCritic()
     deliv_res = deliverable.evaluate(project_dir, task)  # type: ignore[arg-type]
     score.critic_results.append(deliv_res)
