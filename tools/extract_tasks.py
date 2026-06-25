@@ -189,7 +189,13 @@ def find_piki_python(piki_python: str | None) -> str:
 
 
 def validate_solution(solution_dir: Path, piki_python: str) -> tuple[bool, str]:
-    """Run `piki check` on a solution directory and return (passed, output)."""
+    """Run `piki check` on a solution directory and return (passed, output).
+
+    In addition to the aggregate ``passed`` flag, every individual rule result
+    must report ``passed: true``. Some piki versions mark the aggregate as
+    passed even when a single rule fails, which would let invalid reference
+    solutions slip into the canonical task set.
+    """
     result = subprocess.run(
         [piki_python, "-m", "piki", "check", "--format", "json"],
         cwd=solution_dir,
@@ -198,12 +204,41 @@ def validate_solution(solution_dir: Path, piki_python: str) -> tuple[bool, str]:
         timeout=settings.PIKI_TIMEOUT_S,
     )
     stdout = result.stdout.strip()
+    diagnostics: list[str] = []
+    passed = result.returncode == 0
+
     try:
         parsed = yaml.safe_load(stdout)
-        passed = bool(parsed.get("passed", False)) and result.returncode == 0
     except Exception:
-        passed = result.returncode == 0
-    return passed, stdout + (f"\n{result.stderr}" if result.stderr else "")
+        parsed = None
+
+    if parsed is None:
+        diagnostics.append("Could not parse piki JSON output")
+        passed = False
+    else:
+        aggregate_passed = bool(parsed.get("passed", False))
+        if not aggregate_passed:
+            passed = False
+            diagnostics.append("Aggregate piki result is failed")
+
+        for rule in parsed.get("results", []):
+            if not rule.get("passed", False):
+                passed = False
+                rule_id = rule.get("rule_id", "unknown")
+                message = rule.get("message", "").strip()
+                file_ = rule.get("file", "")
+                diagnostics.append(
+                    f"Rule {rule_id} failed"
+                    + (f": {message}" if message else "")
+                    + (f" ({file_})" if file_ else "")
+                )
+
+    output = stdout
+    if diagnostics:
+        output += "\n" + "\n".join(diagnostics)
+    if result.stderr:
+        output += f"\n{result.stderr}"
+    return passed, output
 
 
 def generate_task_id(domain: str, project: str, step: int) -> str:
