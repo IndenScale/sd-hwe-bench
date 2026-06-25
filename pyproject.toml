@@ -39,9 +39,9 @@ dependencies = [
     "openai>=1.0",
     # piki / adl 是 SD-HWE-Bench 的运行时引擎。在 monorepo 本地开发时，请通过
     # `uv pip install -e ../piki/adl -e ../piki` 以 editable 方式安装；
-    # CI/生产环境可通过下方 git URL 安装（建议后续锁定到具体 commit/tag）。
-    "adl @ git+https://github.com/IndenScale/piki.git#subdirectory=adl",
-    "piki @ git+https://github.com/IndenScale/piki.git",
+    # CI/生产环境使用下方锁定到具体 commit 的 git URL，保证可复现性。
+    "adl @ git+https://github.com/IndenScale/piki.git@4655b56d0f577b75bd5d82379652cd65e35cea92#subdirectory=adl",
+    "piki @ git+https://github.com/IndenScale/piki.git@4655b56d0f577b75bd5d82379652cd65e35cea92",
 ]
 
 [project.optional-dependencies]

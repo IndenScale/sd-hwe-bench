@@ -253,7 +253,11 @@ def extract_task(
         manifest["project"],
         to_commit.get("step", 0),
     )
-    task_dir = output_dir / task_id
+    # task_id includes the domain prefix (e.g. "telecom/telecom-rack-001").
+    # The output_dir already corresponds to the domain, so use the bare
+    # task name for the filesystem path.
+    task_name = task_id.split("/", 1)[1]
+    task_dir = output_dir / task_name
 
     if dry_run:
         logger.info("[dry-run] Would create %s", task_dir)
