@@ -129,8 +129,7 @@ class TestLayerScoresFromStatic:
         assert score.layers["L2"].passed == 1
         # All layers pass when static checks are clean
         expected = (
-            LAYER_WEIGHTS["L1"] + LAYER_WEIGHTS["L2"]
-            + LAYER_WEIGHTS["L3"] + LAYER_WEIGHTS["L4"]
+            LAYER_WEIGHTS["L1"] + LAYER_WEIGHTS["L2"] + LAYER_WEIGHTS["L3"] + LAYER_WEIGHTS["L4"]
         )
         assert score.overall_score == expected
 
@@ -156,8 +155,13 @@ class TestScoreTask:
         score = score_task(
             "telecom/comprehensive-001",
             tasks_dir / "telecom/comprehensive-001/solution",
-            expected_deliverables=["bom-csv", "power-budget", "port-map",
-                                   "rack-face-panel-svg", "cable-list"],
+            expected_deliverables=[
+                "bom-csv",
+                "power-budget",
+                "port-map",
+                "rack-face-panel-svg",
+                "cable-list",
+            ],
         )
         assert score.layers["L0"].passed == 1
         assert score.layers["L1"].passed == 1
@@ -189,6 +193,7 @@ class TestScoreTask:
     def test_task_loads_rubrics(self, tasks_dir):
         """Verify tasks with rubrics in task.yaml load correctly."""
         from sd_hwe_bench.task import TaskInstance
+
         task = TaskInstance(tasks_dir / "telecom/comprehensive-001")
         assert len(task.metadata.rubrics) >= 1
         rubric = task.metadata.rubrics[0]
@@ -224,11 +229,13 @@ class TestComputePassAtK:
         assert compute_pass_at_k(scores, 1) == 0.5
 
     def test_pass_at_3(self):
-        scores = [[
-            TaskScore(task_id="a", success=False),
-            TaskScore(task_id="a", success=False),
-            TaskScore(task_id="a", success=True),
-        ]]
+        scores = [
+            [
+                TaskScore(task_id="a", success=False),
+                TaskScore(task_id="a", success=False),
+                TaskScore(task_id="a", success=True),
+            ]
+        ]
         assert compute_pass_at_k(scores, 3) == 1.0
         assert compute_pass_at_k(scores, 1) == 0.0
 
@@ -239,12 +246,16 @@ class TestComputePassAtK:
 class TestComputePartialCredit:
     def test_basic(self):
         scores = [
-            TaskScore(task_id="a", success=True, overall_score=0.85,
-                      layers={
-                          "L0": LayerScore("L0", 1, 1, 0),
-                          "L1": LayerScore("L1", 1, 1, 0),
-                          "L2": LayerScore("L2", 1, 0, 1),
-                      }),
+            TaskScore(
+                task_id="a",
+                success=True,
+                overall_score=0.85,
+                layers={
+                    "L0": LayerScore("L0", 1, 1, 0),
+                    "L1": LayerScore("L1", 1, 1, 0),
+                    "L2": LayerScore("L2", 1, 0, 1),
+                },
+            ),
         ]
         result = compute_partial_credit(scores)
         l2 = next(r for r in result if r["layer"] == "L2")
@@ -272,8 +283,7 @@ class TestCheckDeliverable:
     def test_piki_toml_dist_config(self):
         with tempfile.TemporaryDirectory() as td:
             (Path(td) / "piki.toml").write_text(
-                "[generators.dist]\nroot = \"output\"\n\n"
-                "[generators.dist.targets]\nbom-csv = \"bom\"\n"
+                '[generators.dist]\nroot = "output"\n\n[generators.dist.targets]\nbom-csv = "bom"\n'
             )
             target = Path(td) / "output" / "bom" / "bom.csv"
             target.parent.mkdir(parents=True)

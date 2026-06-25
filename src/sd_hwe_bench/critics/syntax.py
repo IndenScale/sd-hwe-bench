@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 
 from sd_hwe_bench.critics.base import Critic, CriticResult
+from sd_hwe_bench.settings import settings
 from sd_hwe_bench.task import TaskInstance
 
 
@@ -21,7 +22,8 @@ class SyntaxCritic(Critic):
 
         yaml_files = sorted(project_dir.rglob("*.yaml")) + sorted(project_dir.rglob("*.yml"))
         instance_files = [
-            f for f in yaml_files
+            f
+            for f in yaml_files
             if "models/" not in str(f.relative_to(project_dir)) and f.name != "piki.toml"
         ]
 
@@ -52,7 +54,7 @@ class SyntaxCritic(Critic):
         # L0 fails only on YAML parse errors or empty project, not on missing expected files.
         passed = parse_errors == 0
         score = 1.0
-        score -= 0.1 * parse_errors
+        score -= settings.SYNTAX_PENALTY_PER_ERROR * parse_errors
         score = max(0.0, score)
 
         if passed:

@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from typing import Any, Literal
 
+from sd_hwe_bench.settings import settings
+
 _PIKI_QUICKREF = """\
 ## Piki 快速参考
 
@@ -230,7 +232,10 @@ class PromptBuilder:
                     rel = f.relative_to(scaffold_dir)
                     parts.append(f"- `{rel}`")
                     # Include small scaffold files inline for context
-                    if f.suffix in (".yaml", ".yml", ".toml") and f.stat().st_size < 4096:
+                    if (
+                        f.suffix in (".yaml", ".yml", ".toml")
+                        and f.stat().st_size < settings.SCAFFOLD_INLINE_MAX_BYTES
+                    ):
                         parts.append(f"\n`{rel}`:\n```yaml")
                         parts.append(f.read_text(encoding="utf-8"))
                         parts.append("```\n")
@@ -349,7 +354,9 @@ class PromptBuilder:
         files = sorted(
             p.relative_to(project_dir)
             for p in project_dir.rglob("*")
-            if p.is_file() and not p.name.startswith(".") and ".git" not in str(p.relative_to(project_dir)).split(os.sep)
+            if p.is_file()
+            and not p.name.startswith(".")
+            and ".git" not in str(p.relative_to(project_dir)).split(os.sep)
         )
         parts.append("\n## 当前 workspace 中的文件\n")
         if files:
@@ -362,7 +369,7 @@ class PromptBuilder:
         parts.append("\n## 上次 `piki check` 的诊断\n")
         has_errors = False
         if diagnostics:
-            for d in diagnostics[:20]:
+            for d in diagnostics[: settings.REPAIR_PROMPT_MAX_DIAGNOSTICS]:
                 has_errors = True
                 rule = d.get("rule_id", "")
                 name = d.get("name", "")
@@ -377,18 +384,16 @@ class PromptBuilder:
                 if ls.errors:
                     has_errors = True
                     parts.append(f"\n**{layer}** ({'通过' if ls.passed else '未通过'}):")
-                    for err in ls.errors[:10]:
+                    max_errors = settings.REPAIR_PROMPT_MAX_ERRORS_PER_LAYER
+                    for err in ls.errors[:max_errors]:
                         parts.append(f"- {err}")
-                    if len(ls.errors) > 10:
-                        parts.append(f"- ... 还有 {len(ls.errors) - 10} 条错误")
+                    if len(ls.errors) > max_errors:
+                        parts.append(f"- ... 还有 {len(ls.errors) - max_errors} 条错误")
         if not has_errors:
             parts.append("所有检查已通过。如果交付物尚未生成，请运行 `piki generate`.")
 
         remaining = max_repair - turn + 1
-        parts.append(
-            f"\n## 剩余轮次\n\n"
-            f"当前是第 {turn} 轮修复，最多还有 {remaining} 轮。"
-        )
+        parts.append(f"\n## 剩余轮次\n\n当前是第 {turn} 轮修复，最多还有 {remaining} 轮。")
 
         parts.append(
             "\n## 操作要求\n\n"

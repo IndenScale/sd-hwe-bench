@@ -37,6 +37,8 @@ from typing import Any
 
 import yaml
 
+from sd_hwe_bench.settings import settings
+
 logger = logging.getLogger(__name__)
 
 # Files and directories that should never be copied into scaffold/solution.
@@ -161,7 +163,15 @@ def resolve_ref(project_dir: Path, commit_name: str) -> str:
 
 
 def find_piki_python(piki_python: str | None) -> str:
-    """Find a Python interpreter that can run piki."""
+    """Find a Python interpreter that can run piki.
+
+    Resolution order:
+    1. Explicit ``--piki-python`` argument.
+    2. Current interpreter if it can import piki.
+    3. ``SD_HWE_PIKI_PYTHON`` environment variable.
+    4. Legacy ``PIPKIPATH`` environment variable.
+    5. ``python3`` / ``python`` on PATH.
+    """
     if piki_python:
         return piki_python
     # Current interpreter if piki is importable.
@@ -170,10 +180,10 @@ def find_piki_python(piki_python: str | None) -> str:
         return sys.executable
     except ImportError:
         pass
-    # Legacy monorepo fallback.
-    fallback = "/Users/indenscale/workspace/piki/.venv/bin/python"
-    if Path(fallback).exists():
-        return fallback
+    # Environment-based resolution.
+    env_python = settings.PIKI_PYTHON
+    if env_python and Path(env_python).exists():
+        return env_python
     # Try PATH.
     python = shutil.which("python3") or shutil.which("python")
     if python:
@@ -188,7 +198,7 @@ def validate_solution(solution_dir: Path, piki_python: str) -> tuple[bool, str]:
         cwd=solution_dir,
         capture_output=True,
         text=True,
-        timeout=120,
+        timeout=settings.PIKI_TIMEOUT_S,
     )
     stdout = result.stdout.strip()
     try:

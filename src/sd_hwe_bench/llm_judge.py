@@ -2,19 +2,16 @@
 
 import dataclasses
 import logging
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from sd_hwe_bench.settings import settings
 from sd_hwe_bench.task import RubricCriterion, RubricSet
 
 if TYPE_CHECKING:
-    from deepeval.test_case.llm_test_case import SingleTurnParams
+    pass
 
 logger = logging.getLogger(__name__)
-
-# Default model: prefer DEEPSEEK_API_KEY env, then OPENAI_API_KEY
-_DEFAULT_MODEL = "deepseek-chat" if os.getenv("DEEPSEEK_API_KEY") else "gpt-4.1-mini"
 
 
 @dataclasses.dataclass
@@ -44,8 +41,8 @@ def evaluate_single_criterion(
     criterion: RubricCriterion,
     requirement: str,
     actual_output: str,
-    model: str = _DEFAULT_MODEL,
-    timeout: int = 120,
+    model: str = settings.LLM_JUDGE_MODEL,
+    timeout: int = settings.LLM_JUDGE_TIMEOUT_S,
 ) -> RubricScore:
     """Evaluate a single rubric criterion against the agent's output.
 
@@ -112,8 +109,8 @@ def evaluate_rubric_set(
     rubric_set: RubricSet,
     requirement: str,
     actual_output: str,
-    model: str = _DEFAULT_MODEL,
-    timeout: int = 120,
+    model: str = settings.LLM_JUDGE_MODEL,
+    timeout: int = settings.LLM_JUDGE_TIMEOUT_S,
 ) -> LLMJudgeResult:
     """Evaluate an entire rubric set against the agent's output.
 
@@ -208,7 +205,7 @@ def _build_criteria(requirement: str, criterion: RubricCriterion) -> str:
         f"- 0.5: Partially compliant, significant gaps\n"
         f"- 0.3: Major issues, barely addresses requirement\n"
         f"- 0.0: Non-compliant or completely missing\n\n"
-        f"Return ONLY a JSON object: {{\"score\": <float>, \"reason\": \"<explanation>\"}}"
+        f'Return ONLY a JSON object: {{"score": <float>, "reason": "<explanation>"}}'
     )
 
 

@@ -15,6 +15,7 @@ import time
 from pathlib import Path
 
 from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
+from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +28,11 @@ class KimiActor(Actor):
     def __init__(
         self,
         model: str | None = None,
-        timeout: int = 600,
-        kimi_bin: str = "kimi",
+        timeout: int | None = None,
+        kimi_bin: str | None = None,
     ):
-        super().__init__(model=model or "kimi-code/kimi-for-coding", timeout=timeout)
-        self.kimi_bin = kimi_bin
+        super().__init__(model=model or settings.DEFAULT_KIMI_MODEL, timeout=timeout)
+        self.kimi_bin = kimi_bin if kimi_bin is not None else settings.KIMI_BIN
 
     def run(self, prompt: str, workspace_root: Path) -> ActorResult:
         workspace_root = Path(workspace_root)
@@ -48,9 +49,12 @@ class KimiActor(Actor):
 
         cmd = [
             self.kimi_bin,
-            "-m", self.model,
-            "--output-format", "text",
-            "-p", prompt,
+            "-m",
+            self.model,
+            "--output-format",
+            "text",
+            "-p",
+            prompt,
         ]
 
         # Snapshot files before the agent runs so we can count net-new files.

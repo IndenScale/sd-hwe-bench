@@ -14,6 +14,7 @@ import time
 from pathlib import Path
 
 from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
+from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +27,11 @@ class GeminiActor(Actor):
     def __init__(
         self,
         model: str | None = None,
-        timeout: int = 600,
-        gemini_bin: str = "gemini",
+        timeout: int | None = None,
+        gemini_bin: str | None = None,
     ):
-        super().__init__(model=model or "gemini-2.5-flash", timeout=timeout)
-        self.gemini_bin = gemini_bin
+        super().__init__(model=model or settings.DEFAULT_GEMINI_MODEL, timeout=timeout)
+        self.gemini_bin = gemini_bin if gemini_bin is not None else settings.GEMINI_BIN
 
     def run(self, prompt: str, workspace_root: Path) -> ActorResult:
         workspace_root = Path(workspace_root).resolve()
@@ -49,24 +50,37 @@ class GeminiActor(Actor):
         git_dir = workspace_root / ".git"
         if not git_dir.exists():
             try:
-                subprocess.run(["git", "init", "-q"], cwd=str(workspace_root), capture_output=True, timeout=10)
-                subprocess.run(["git", "add", "-A"], cwd=str(workspace_root), capture_output=True, timeout=10)
+                subprocess.run(
+                    ["git", "init", "-q"],
+                    cwd=str(workspace_root),
+                    capture_output=True,
+                    timeout=settings.GEMINI_GIT_TIMEOUT_S,
+                )
+                subprocess.run(
+                    ["git", "add", "-A"],
+                    cwd=str(workspace_root),
+                    capture_output=True,
+                    timeout=settings.GEMINI_GIT_TIMEOUT_S,
+                )
                 subprocess.run(
                     ["git", "commit", "-m", "scaffold", "--allow-empty", "-q"],
                     cwd=str(workspace_root),
                     capture_output=True,
-                    timeout=10,
+                    timeout=settings.GEMINI_GIT_TIMEOUT_S,
                 )
             except Exception:
                 logger.warning("Failed to init git repo for Gemini")
 
         cmd = [
             self.gemini_bin,
-            "--prompt", prompt,
-            "--model", self.model,
+            "--prompt",
+            prompt,
+            "--model",
+            self.model,
             "--yolo",
             "--skip-trust",
-            "--output-format", "text",
+            "--output-format",
+            "text",
         ]
 
         before = list_yaml_files(workspace_root)

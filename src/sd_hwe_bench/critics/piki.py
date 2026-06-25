@@ -7,63 +7,21 @@ from pathlib import Path
 
 from sd_hwe_bench.critics.base import Critic, CriticResult
 from sd_hwe_bench.sandbox.runner import SandboxRunner
+from sd_hwe_bench.settings import settings
 from sd_hwe_bench.task import TaskInstance
 
 logger = logging.getLogger(__name__)
 
-# Exact rule ID -> scoring layer.  Used for stable, well-known piki rules.
-PIKI_RULE_LAYERS: dict[str, str] = {
-    "SCHEMA-001": "L1",
-    "TELECOM-POWER-001": "L3",
-    "TELECOM-POWER-002": "L3",
-    "CATALOG-LIFECYCLE-001": "L3",
-    "TELECOM-RACK-001": "L4",
-    "TELECOM-RACK-002": "L4",
-    "TELECOM-RACK-003": "L4",
-    "TELECOM-COLLISION-001": "L4",
-    "REFS-001": "L2",
-    "REFS-002": "L2",
-    "FK-001": "L2",
-    "TAGS-001": "L2",
-    "INTERFACE-COMPAT-001": "L2",
-    "INTERFACE-CABLE-001": "L2",
-    "MATE-001": "L2",
-    "MATE-002": "L2",
-    "MATE-003": "L2",
-    "CATALOG-001": "L2",
-    "CATALOG-002": "L2",
-    "TELECOM-FK-001": "L2",
-    "TELECOM-PORT-001": "L2",
-    "TELECOM-PORT-002": "L2",
-    "TELECOM-CONN-001": "L2",
-    "TELECOM-CONN-002": "L2",
-    "TELECOM-CONN-003": "L2",
-}
-
-# Fallback prefix -> scoring layer.  Used when piki introduces new rule IDs
-# that are not yet in the explicit map above.
+# Load rule->layer mapping from bundled YAML config. Re-export the derived
+# dicts so existing imports keep working.
+_rule_layers_config = settings.RULE_LAYERS_CONFIG
+PIKI_RULE_LAYERS: dict[str, str] = dict(_rule_layers_config.get("exact", {}))
 PIKI_RULE_PREFIXES: list[tuple[str, str]] = [
-    ("SCHEMA-", "L1"),
-    ("TELECOM-POWER-", "L3"),
-    ("TELECOM-RACK-", "L4"),
-    ("TELECOM-COLLISION-", "L4"),
-    ("TELECOM-FK-", "L2"),
-    ("TELECOM-PORT-", "L2"),
-    ("TELECOM-CONN-", "L2"),
-    ("REFS-", "L2"),
-    ("FK-", "L2"),
-    ("TAGS-", "L2"),
-    ("INTERFACE-", "L2"),
-    ("MATE-", "L2"),
-    ("CATALOG-", "L2"),
+    (entry["prefix"], entry["layer"]) for entry in _rule_layers_config.get("prefixes", [])
 ]
 
-LAYER_WEIGHTS = {
-    "L1": 0.10,
-    "L2": 0.15,
-    "L3": 0.40,
-    "L4": 0.20,
-}
+# Use the shared layer weights from scorer/settings.
+LAYER_WEIGHTS = settings.LAYER_WEIGHTS
 
 
 def _layer_for_rule(rule_id: str) -> str:
@@ -114,9 +72,7 @@ class PikiCritic(Critic):
                 continue
             rule_id = rule_result.get("rule_id", "")
             layer = _layer_for_rule(rule_id)
-            layer_errors[layer].append(
-                f"{rule_id}: {rule_result.get('message', 'failed')}"
-            )
+            layer_errors[layer].append(f"{rule_id}: {rule_result.get('message', 'failed')}")
 
         for diag in parsed.get("diagnostics", []):
             severity = str(diag.get("severity", "")).upper()
@@ -124,9 +80,7 @@ class PikiCritic(Critic):
                 continue
             code = diag.get("code", "")
             layer = _layer_for_rule(code)
-            layer_errors[layer].append(
-                f"{code}: {diag.get('message', 'failed')}"
-            )
+            layer_errors[layer].append(f"{code}: {diag.get('message', 'failed')}")
 
         layer_scores: dict[str, float] = {}
         comments: list[str] = []
@@ -136,10 +90,11 @@ class PikiCritic(Critic):
             layer_scores[layer] = LAYER_WEIGHTS[layer] if passed else 0.0
             status = "passed" if passed else f"failed ({len(errors)} errors)"
             comments.append(f"{layer}: {status}")
-            for err in errors[:5]:
+            max_errors = settings.PIKI_CRITIC_MAX_ERRORS
+            for err in errors[:max_errors]:
                 comments.append(f"  - {err}")
-            if len(errors) > 5:
-                comments.append(f"  ... and {len(errors) - 5} more")
+            if len(errors) > max_errors:
+                comments.append(f"  ... and {len(errors) - max_errors} more")
 
         score = sum(layer_scores.values())
         passed = all(layer_errors[layer] == [] for layer in ("L1", "L2", "L3", "L4"))

@@ -1,0 +1,23 @@
+# Deliverable type -> lookup metadata used by DeliverableCritic.
+# Each entry is a tuple of (config_key, filename_glob, default_category).
+# ``config_key`` maps to [generators.dist.targets] in piki.toml.
+bom-csv:
+  config_key: bom-csv
+  filename_pattern: bom.csv
+  default_category: 采购清单
+rack-face-panel-svg:
+  config_key: rack-face-panel-svg
+  filename_pattern: rack-panel*.svg
+  default_category: 施工图
+power-budget:
+  config_key: power-budget
+  filename_pattern: power-budget.csv
+  default_category: 设计评审
+cable-list:
+  config_key: cable-list
+  filename_pattern: cable-list.csv
+  default_category: 采购清单
+port-map:
+  config_key: port-map
+  filename_pattern: port-map.csv
+  default_category: 设计评审

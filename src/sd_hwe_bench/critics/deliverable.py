@@ -6,15 +6,15 @@ import fnmatch
 from pathlib import Path
 
 from sd_hwe_bench.critics.base import Critic, CriticResult
+from sd_hwe_bench.settings import settings
 from sd_hwe_bench.task import TaskInstance
 
-# (config_key, filename_glob, default_category)
+# Load deliverable metadata from bundled YAML config. Re-export as the
+# original tuple dict for backward compatibility.
+_deliverables_config = settings.DELIVERABLES_CONFIG
 DELIVERABLE_PATHS: dict[str, tuple[str, str, str]] = {
-    "bom-csv": ("bom-csv", "bom.csv", "采购清单"),
-    "rack-face-panel-svg": ("rack-face-panel-svg", "rack-panel*.svg", "施工图"),
-    "power-budget": ("power-budget", "power-budget.csv", "设计评审"),
-    "cable-list": ("cable-list", "cable-list.csv", "采购清单"),
-    "port-map": ("port-map", "port-map.csv", "设计评审"),
+    key: (value["config_key"], value["filename_pattern"], value["default_category"])
+    for key, value in _deliverables_config.items()
 }
 
 

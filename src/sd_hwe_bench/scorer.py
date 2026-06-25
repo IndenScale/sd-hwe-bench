@@ -21,6 +21,7 @@ from sd_hwe_bench.critics import (
     SyntaxCritic,
 )
 from sd_hwe_bench.sandbox.runner import SandboxRunner
+from sd_hwe_bench.settings import settings
 from sd_hwe_bench.task import RubricSet
 
 if TYPE_CHECKING:
@@ -54,22 +55,18 @@ class TaskScore:
     critic_results: list[CriticResult] = dataclasses.field(default_factory=list)
 
 
-# Layer weights aligned with initiative doc
-LAYER_WEIGHTS = {
-    "L0": 0.0,   # Gate: must pass, but no points
-    "L1": 0.10,
-    "L2": 0.15,
-    "L3": 0.40,
-    "L4": 0.20,
-    "L5": 0.0,
-    "L6": 0.0,
-}
+# Layer weights aligned with initiative doc. Values are centralized in
+# settings.py and re-exported here for backward compatibility.
+LAYER_WEIGHTS = settings.LAYER_WEIGHTS
 
-DELIVERABLE_WEIGHT = 0.15
-RUBRIC_WEIGHT = 0.0  # Rubrics are optional diagnostic, not included in overall_score by default
+DELIVERABLE_WEIGHT = settings.DELIVERABLE_WEIGHT
+RUBRIC_WEIGHT = (
+    settings.RUBRIC_WEIGHT
+)  # Rubrics are optional diagnostic, not included in overall_score by default
 
 
 # ── Legacy static YAML checks (fallback when piki is unavailable) ─────────
+
 
 def _static_check_yaml(project_dir: Path) -> dict[str, Any]:
     """Run static YAML checks (L0-L2) — fallback when piki is unavailable."""
@@ -281,6 +278,7 @@ def _read_piki_toml_targets(project_dir: Path) -> dict[str, str]:
 
 # ── Main orchestrator ────────────────────────────────────────────────────
 
+
 def score_task(
     task_id: str,
     agent_output_dir: Path,
@@ -305,6 +303,7 @@ def score_task(
         except Exception:
             # Fallback: build a minimal task from arguments
             import types
+
             task = types.SimpleNamespace(
                 metadata=types.SimpleNamespace(
                     expected_files=[],
@@ -380,10 +379,9 @@ def score_task(
         score.rubric_score = rubric_res.score
         score.rubric_results = rubric_res.comments
 
-    # Determine success: all L0-L4 + deliverables must pass
-    critical_layers = ["L0", "L1", "L2", "L3", "L4"]
+    # Determine success: all critical layers + deliverables must pass
     layers_ok = all(
-        score.layers.get(layer) and score.layers[layer].passed for layer in critical_layers
+        score.layers.get(layer) and score.layers[layer].passed for layer in settings.CRITICAL_LAYERS
     )
     deliverables_ok = all(score.deliverable_scores.values()) if expected_deliverables else True
     score.success = layers_ok and deliverables_ok
@@ -392,6 +390,7 @@ def score_task(
 
 
 # ── Aggregate metrics ────────────────────────────────────────────────────
+
 
 def compute_pass_at_k(scores: list[list[TaskScore]], k: int) -> float:
     """Compute Pass@k from per-attempt scores."""

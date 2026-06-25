@@ -12,13 +12,14 @@ from typing import Optional
 import typer
 
 from sd_hwe_bench.actors import create_actor
-from sd_hwe_bench.cli_common import resolve_task_ids, setup_logging
+from sd_hwe_bench.cli_common import build_env_vars, resolve_task_ids, setup_logging
 from sd_hwe_bench.console import console, print_score, print_score_summary
 from sd_hwe_bench.dataset import Dataset
 from sd_hwe_bench.prompts import PromptBuilder
 from sd_hwe_bench.sandbox.runner import SandboxBackend, SandboxRunner
 from sd_hwe_bench.sandbox.workspace import Workspace
 from sd_hwe_bench.scorer import TaskScore, compute_pass_at_k, score_task
+from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def _effective_jobs(jobs: int) -> int:
     the host CPU count.
     """
     if jobs == -1:
-        return min(4, (os.cpu_count() or 1))
+        return min(settings.MAX_AUTO_JOBS, (os.cpu_count() or 1))
     return max(1, jobs)
 
 
@@ -54,6 +55,7 @@ def _run_rollout(
     rubrics: bool,
     rubrics_model: str | None,
     verbose: bool,
+    env_vars: dict[str, str] | None = None,
 ) -> dict:
     """Execute a single rollout in a worker process.
 
@@ -65,7 +67,7 @@ def _run_rollout(
     ds = Dataset(dataset_path)
     task = ds.load_task(job.task_id)
 
-    runner = SandboxRunner(backend=sandbox, image=sandbox_image)
+    runner = SandboxRunner(backend=sandbox, image=sandbox_image, env_vars=env_vars)
     builder = PromptBuilder(piki_ref_path=piki_ref)
 
     ws = Workspace.create(
@@ -95,7 +97,7 @@ def _run_rollout(
             "files_written": result.files_written,
             "elapsed_s": result.elapsed_s,
             "error": result.error,
-            "raw_output_preview": result.raw_output[:2000],
+            "raw_output_preview": result.raw_output[: settings.LOG_PREVIEW_CHARS],
         }
     )
 
@@ -115,8 +117,7 @@ def _run_rollout(
             "success": score.success,
             "overall_score": score.overall_score,
             "layers": {
-                name: {"passed": ls.passed, "total": ls.total}
-                for name, ls in score.layers.items()
+                name: {"passed": ls.passed, "total": ls.total} for name, ls in score.layers.items()
             },
             "deliverables": score.deliverable_scores,
             "rubric_score": score.rubric_score,
@@ -154,9 +155,15 @@ def _run_serial(
     timeout: int,
     rubrics: bool,
     rubrics_model: str | None,
+    env_vars: dict[str, str] | None = None,
 ) -> list[list[TaskScore]]:
     """Run rollouts serially, preserving the original interactive output."""
     all_scores: list[list[TaskScore]] = []
+
+    # Recreate runner with env vars if they were provided (the caller's runner
+    # may have been constructed before env_vars were resolved).
+    if env_vars is not None:
+        runner = SandboxRunner(backend=runner.backend, image=runner.image, env_vars=env_vars)
 
     for tid in task_ids:
         task = ds.load_task(tid)
@@ -194,7 +201,7 @@ def _run_serial(
                     "files_written": result.files_written,
                     "elapsed_s": result.elapsed_s,
                     "error": result.error,
-                    "raw_output_preview": result.raw_output[:2000],
+                    "raw_output_preview": result.raw_output[: settings.LOG_PREVIEW_CHARS],
                 }
             )
 
@@ -249,12 +256,11 @@ def _run_parallel(
     rubrics_model: str | None,
     jobs: int,
     verbose: bool,
+    env_vars: dict[str, str] | None = None,
 ) -> list[list[TaskScore]]:
     """Run rollouts in parallel using a process pool."""
     jobs_list = [
-        RolloutJob(task_id=tid, attempt=attempt)
-        for tid in task_ids
-        for attempt in range(passes)
+        RolloutJob(task_id=tid, attempt=attempt) for tid in task_ids for attempt in range(passes)
     ]
 
     console.print(
@@ -279,6 +285,7 @@ def _run_parallel(
                 rubrics,
                 rubrics_model,
                 verbose,
+                env_vars,
             ): job
             for job in jobs_list
         }
@@ -324,29 +331,37 @@ def _run_parallel(
 def register(app: typer.Typer) -> None:
     @app.command("run")
     def run_task(
-        task_id: str = typer.Argument(..., help="Task ID or prefix, e.g. telecom/comprehensive-001."),
+        task_id: str = typer.Argument(
+            ..., help="Task ID or prefix, e.g. telecom/comprehensive-001."
+        ),
         actor: str = typer.Option(
-            "kimi",
+            settings.DEFAULT_ACTOR,
             "--actor",
             "-a",
             help="Actor spec: kimi[:model], codex[:model], gemini[:model], openai:MODEL, deepseek:MODEL.",
         ),
         dataset: Path = typer.Option(Path("."), "--dataset", help="Path to dataset root."),
-        passes: int = typer.Option(1, "--passes", "-p", help="Number of independent runs per task."),
+        passes: int = typer.Option(
+            settings.DEFAULT_PASSES, "--passes", "-p", help="Number of independent runs per task."
+        ),
         jobs: int = typer.Option(
             -1,
             "--jobs",
             "-j",
-            help="Max parallel rollouts. -1 = auto (min(4, cpu_count)); 1 = serial.",
+            help=f"Max parallel rollouts. -1 = auto (min({settings.MAX_AUTO_JOBS}, cpu_count)); 1 = serial.",
         ),
         run_dir: Path = typer.Option(
-            Path("runs"), "--run-dir", help="Directory to store rollout archives."
+            settings.RUN_DIR, "--run-dir", help="Directory to store rollout archives."
         ),
         sandbox: SandboxBackend = typer.Option(
-            "auto", "--sandbox", help="Sandbox backend for piki execution (auto/none/docker/podman)."
+            settings.DEFAULT_SANDBOX_BACKEND,
+            "--sandbox",
+            help="Sandbox backend for piki execution (auto/none/docker/podman).",
         ),
         sandbox_image: str = typer.Option(
-            "sd-hwe-bench-piki:latest", "--sandbox-image", help="Container image for piki sandbox."
+            settings.DEFAULT_SANDBOX_IMAGE,
+            "--sandbox-image",
+            help="Container image for piki sandbox.",
         ),
         rubrics: bool = typer.Option(False, "--rubrics", help="Enable LLM-as-Judge rubrics."),
         rubrics_model: Optional[str] = typer.Option(
@@ -355,8 +370,20 @@ def register(app: typer.Typer) -> None:
         piki_ref: Optional[Path] = typer.Option(
             None, "--piki-ref", help="Path to full piki reference (e.g. piki/AGENTS.md)."
         ),
-        timeout: int = typer.Option(600, "--timeout", "-t", help="Actor timeout in seconds."),
+        timeout: int = typer.Option(
+            settings.DEFAULT_ACTOR_TIMEOUT_S, "--timeout", "-t", help="Actor timeout in seconds."
+        ),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging."),
+        env: Optional[list[str]] = typer.Option(
+            None,
+            "--env",
+            help="Environment variable to inject into the sandbox (KEY=VALUE). Repeatable.",
+        ),
+        env_file: Optional[Path] = typer.Option(
+            None,
+            "--env-file",
+            help="Path to a KEY=VALUE file whose variables are injected into the sandbox.",
+        ),
     ) -> None:
         """Run an Actor-Critic rollout on a task."""
         setup_logging(verbose)
@@ -367,10 +394,16 @@ def register(app: typer.Typer) -> None:
             console.print(f"[red]No tasks matched: {task_id}[/red]")
             raise typer.Exit(code=1)
 
+        try:
+            env_vars = build_env_vars(env_options=env, env_file=env_file)
+        except ValueError as exc:
+            console.print(f"[red]{exc}[/red]")
+            raise typer.Exit(code=1)
+
         effective_jobs = _effective_jobs(jobs)
 
         if effective_jobs == 1:
-            runner = SandboxRunner(backend=sandbox, image=sandbox_image)
+            runner = SandboxRunner(backend=sandbox, image=sandbox_image, env_vars=env_vars)
             builder = PromptBuilder(piki_ref_path=piki_ref)
             all_scores = _run_serial(
                 task_ids=task_ids,
@@ -383,6 +416,7 @@ def register(app: typer.Typer) -> None:
                 timeout=timeout,
                 rubrics=rubrics,
                 rubrics_model=rubrics_model,
+                env_vars=env_vars,
             )
         else:
             all_scores = _run_parallel(
@@ -399,6 +433,7 @@ def register(app: typer.Typer) -> None:
                 rubrics_model=rubrics_model,
                 jobs=effective_jobs,
                 verbose=verbose,
+                env_vars=env_vars,
             )
 
         if len(all_scores) > 1 or passes > 1:

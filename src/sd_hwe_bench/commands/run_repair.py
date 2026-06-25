@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Optional
 
@@ -12,10 +11,11 @@ from sd_hwe_bench.actors import create_actor
 from sd_hwe_bench.cli_common import resolve_task_ids, setup_logging
 from sd_hwe_bench.console import console, print_score
 from sd_hwe_bench.dataset import Dataset
-from sd_hwe_bench.prompts import PromptBuilder, REPAIR_MARKERS
+from sd_hwe_bench.prompts import REPAIR_MARKERS, PromptBuilder
 from sd_hwe_bench.sandbox.runner import SandboxBackend, SandboxRunner
 from sd_hwe_bench.sandbox.workspace import Workspace
 from sd_hwe_bench.scorer import TaskScore, compute_pass_at_k, score_task
+from sd_hwe_bench.settings import settings
 
 
 def _detect_marker(project_dir: Path) -> tuple[Optional[str], str]:
@@ -23,11 +23,7 @@ def _detect_marker(project_dir: Path) -> tuple[Optional[str], str]:
     for key, filename in REPAIR_MARKERS.items():
         path = project_dir / filename
         if path.exists():
-            rationale = (
-                path.read_text(encoding="utf-8").strip()
-                if path.stat().st_size > 0
-                else ""
-            )
+            rationale = path.read_text(encoding="utf-8").strip() if path.stat().st_size > 0 else ""
             return key, rationale
     return None, ""
 
@@ -48,17 +44,21 @@ def _score_to_dict(score: TaskScore) -> dict:
 def register(app: typer.Typer) -> None:
     @app.command("run-repair")
     def run_repair(
-        task_id: str = typer.Argument(..., help="Task ID or prefix, e.g. telecom/comprehensive-001."),
+        task_id: str = typer.Argument(
+            ..., help="Task ID or prefix, e.g. telecom/comprehensive-001."
+        ),
         actor: str = typer.Option(
-            "kimi",
+            settings.DEFAULT_ACTOR,
             "--actor",
             "-a",
             help="Actor spec: kimi[:model], gemini[:model], openai:MODEL, deepseek:MODEL.",
         ),
         dataset: Path = typer.Option(Path("."), "--dataset", help="Path to dataset root."),
-        passes: int = typer.Option(1, "--passes", "-p", help="Number of independent runs per task."),
+        passes: int = typer.Option(
+            settings.DEFAULT_PASSES, "--passes", "-p", help="Number of independent runs per task."
+        ),
         max_repair: int = typer.Option(
-            20,
+            settings.DEFAULT_MAX_REPAIR,
             "--max-repair",
             "-r",
             help="Maximum number of repair rounds (excluding initial generation).",
@@ -69,18 +69,27 @@ def register(app: typer.Typer) -> None:
             help="Baseline mode: run a single turn without ESA feedback or repair loop.",
         ),
         run_dir: Path = typer.Option(
-            Path("runs"), "--run-dir", help="Directory to store rollout archives."
+            settings.RUN_DIR, "--run-dir", help="Directory to store rollout archives."
         ),
         sandbox: SandboxBackend = typer.Option(
-            "auto", "--sandbox", help="Sandbox backend for piki execution (auto/none/docker/podman)."
+            settings.DEFAULT_SANDBOX_BACKEND,
+            "--sandbox",
+            help="Sandbox backend for piki execution (auto/none/docker/podman).",
         ),
         sandbox_image: str = typer.Option(
-            "sd-hwe-bench-piki:latest", "--sandbox-image", help="Container image for piki sandbox."
+            settings.DEFAULT_SANDBOX_IMAGE,
+            "--sandbox-image",
+            help="Container image for piki sandbox.",
         ),
         piki_ref: Optional[Path] = typer.Option(
             None, "--piki-ref", help="Path to full piki reference (e.g. piki/AGENTS.md)."
         ),
-        timeout: int = typer.Option(600, "--timeout", "-t", help="Actor timeout in seconds per turn."),
+        timeout: int = typer.Option(
+            settings.DEFAULT_ACTOR_TIMEOUT_S,
+            "--timeout",
+            "-t",
+            help="Actor timeout in seconds per turn.",
+        ),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging."),
     ) -> None:
         """Run an Actor through a multi-turn repair loop.
@@ -151,7 +160,7 @@ def register(app: typer.Typer) -> None:
                             "files_written": result.files_written,
                             "elapsed_s": result.elapsed_s,
                             "error": result.error,
-                            "raw_output_preview": result.raw_output[:2000],
+                            "raw_output_preview": result.raw_output[: settings.LOG_PREVIEW_CHARS],
                         }
                     )
 
@@ -177,7 +186,9 @@ def register(app: typer.Typer) -> None:
                         }
                     )
                     final_score = score
-                    console.print(f"  [dim]Turn {turn} score: {score.overall_score:.0%} success={score.success}[/dim]")
+                    console.print(
+                        f"  [dim]Turn {turn} score: {score.overall_score:.0%} success={score.success}[/dim]"
+                    )
 
                     # Check for explicit termination markers
                     marker, rationale = _detect_marker(ws.project_dir)
@@ -189,7 +200,9 @@ def register(app: typer.Typer) -> None:
                             termination_reason = "done_but_failed"
                         else:
                             termination_reason = marker
-                        console.print(f"  [yellow]Agent declared '{marker}': {rationale[:80]}[/yellow]")
+                        console.print(
+                            f"  [yellow]Agent declared '{marker}': {rationale[:80]}[/yellow]"
+                        )
                         break
 
                     if score.success:
@@ -199,12 +212,14 @@ def register(app: typer.Typer) -> None:
 
                     if no_repair:
                         termination_reason = "baseline"
-                        console.print(f"  [dim]Baseline turn complete (no repair)[/dim]")
+                        console.print("  [dim]Baseline turn complete (no repair)[/dim]")
                         break
 
                     if turn >= max_repair:
                         termination_reason = "budget_exceeded"
-                        console.print(f"  [red]Budget exhausted after {max_repair} repair rounds[/red]")
+                        console.print(
+                            f"  [red]Budget exhausted after {max_repair} repair rounds[/red]"
+                        )
                         break
 
                     # Extract clean diagnostics from the Piki critic for the repair prompt

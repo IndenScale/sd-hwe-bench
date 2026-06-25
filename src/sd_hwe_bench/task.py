@@ -6,6 +6,8 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, Field
 
+from sd_hwe_bench.settings import settings
+
 
 class Domain(str, Enum):
     TELECOM = "telecom"
@@ -37,8 +39,9 @@ class RubricCriterion(BaseModel):
     id: str = Field(description="Unique criterion identifier within the task")
     name: str = Field(description="Human-readable criterion label")
     description: str = Field(description="What the judge should look for")
-    weight: float = Field(default=1.0, ge=0.0, le=1.0,
-                          description="Weight of this criterion in the rubric score")
+    weight: float = Field(
+        default=1.0, ge=0.0, le=1.0, description="Weight of this criterion in the rubric score"
+    )
     evaluation_steps: list[str] = Field(
         default_factory=list,
         description="Specific evaluation sub-steps the judge should follow",
@@ -50,8 +53,12 @@ class RubricSet(BaseModel):
 
     name: str = Field(default="default", description="Rubric set name")
     criteria: list[RubricCriterion] = Field(description="List of rubric criteria")
-    threshold: float = Field(default=0.6, ge=0.0, le=1.0,
-                             description="Pass threshold for this rubric set")
+    threshold: float = Field(
+        default=settings.DEFAULT_RUBRIC_THRESHOLD,
+        ge=0.0,
+        le=1.0,
+        description="Pass threshold for this rubric set",
+    )
 
 
 class TaskMetadata(BaseModel):
@@ -64,9 +71,9 @@ class TaskMetadata(BaseModel):
     task_type: TaskType = Field(description="Category of design task")
     difficulty: Difficulty = Field(description="Estimated difficulty level")
     requirement: str = Field(description="Natural language requirement")
-    plugins: list[str] = Field(default_factory=lambda: ["telecom"])
+    plugins: list[str] = Field(default_factory=lambda: list(settings.DEFAULT_PLUGINS))
     expected_files: list[str] = Field(default_factory=list)
-    scoring_layers: list[str] = Field(default_factory=lambda: ["L0", "L1", "L2", "L3"])
+    scoring_layers: list[str] = Field(default_factory=lambda: list(settings.DEFAULT_SCORING_LAYERS))
     expected_deliverables: list[str] = Field(default_factory=list)
     rubrics: list[RubricSet] = Field(
         default_factory=list,

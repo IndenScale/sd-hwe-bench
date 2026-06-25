@@ -12,6 +12,7 @@ from sd_hwe_bench.console import print_score
 from sd_hwe_bench.dataset import Dataset
 from sd_hwe_bench.sandbox.runner import SandboxBackend, SandboxRunner
 from sd_hwe_bench.scorer import score_task
+from sd_hwe_bench.settings import settings
 
 
 def register(app: typer.Typer) -> None:
@@ -21,10 +22,14 @@ def register(app: typer.Typer) -> None:
         output: Path = typer.Argument(..., help="Path to agent output directory (workspace)."),
         dataset: Path = typer.Option(Path("."), "--dataset", help="Path to dataset root."),
         sandbox: SandboxBackend = typer.Option(
-            "auto", "--sandbox", help="Sandbox backend for piki execution (auto/none/docker/podman)."
+            settings.DEFAULT_SANDBOX_BACKEND,
+            "--sandbox",
+            help="Sandbox backend for piki execution (auto/none/docker/podman).",
         ),
         sandbox_image: str = typer.Option(
-            "sd-hwe-bench-piki:latest", "--sandbox-image", help="Container image for piki sandbox."
+            settings.DEFAULT_SANDBOX_IMAGE,
+            "--sandbox-image",
+            help="Container image for piki sandbox.",
         ),
         rubrics: bool = typer.Option(False, "--rubrics", help="Enable LLM-as-Judge rubrics."),
         rubrics_model: Optional[str] = typer.Option(

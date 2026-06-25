@@ -6,6 +6,7 @@ from rich.console import Console
 from rich.table import Table
 
 from sd_hwe_bench.scorer import TaskScore
+from sd_hwe_bench.settings import settings
 
 console = Console()
 
@@ -19,8 +20,7 @@ def print_score_summary(result: dict) -> None:
     overall = result.get("overall_score", 0.0)
     elapsed = result.get("actor_elapsed_s", 0.0)
     console.print(
-        f"{status} {task_id} (attempt {attempt}) — score: {overall:.2%} — "
-        f"elapsed: {elapsed:.1f}s"
+        f"{status} {task_id} (attempt {attempt}) — score: {overall:.2%} — elapsed: {elapsed:.1f}s"
     )
 
 
@@ -38,7 +38,7 @@ def print_score(score: TaskScore) -> None:
         ls = score.layers.get(layer)
         if not ls:
             continue
-        err_text = "; ".join(ls.errors[:3]) if ls.errors else "—"
+        err_text = "; ".join(ls.errors[: settings.CONSOLE_MAX_ERRORS]) if ls.errors else "—"
         table.add_row(layer, f"{ls.passed}/{ls.total}", err_text)
 
     console.print(table)
@@ -57,5 +57,5 @@ def print_score(score: TaskScore) -> None:
         for cr in score.critic_results:
             icon = "[green]✓[/green]" if cr.passed else "[red]✗[/red]"
             console.print(f"\n{icon} [bold]{cr.name}[/bold] ({cr.score:.0%})")
-            for comment in cr.comments[:5]:
+            for comment in cr.comments[: settings.CONSOLE_MAX_COMMENTS]:
                 console.print(f"  • {comment}")

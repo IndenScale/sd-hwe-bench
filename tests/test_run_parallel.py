@@ -5,7 +5,6 @@ from __future__ import annotations
 import shutil
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -16,8 +15,8 @@ from sd_hwe_bench.commands.run import (
     _run_rollout,
 )
 from sd_hwe_bench.dataset import Dataset
-from sd_hwe_bench.sandbox.runner import SandboxRunner
 from sd_hwe_bench.sandbox.workspace import Workspace
+from sd_hwe_bench.settings import settings
 
 
 class TestEffectiveJobs:
@@ -100,14 +99,13 @@ class TestRunRollout:
             (dataset_root / "tasks").mkdir()
             _copy_minimal_task(dataset_root, "test/test-001")
 
-            ds = Dataset(dataset_root)
             result = _run_rollout(
                 job=RolloutJob(task_id="test/test-001", attempt=0),
                 dataset_path=dataset_root,
                 run_dir=Path(td) / "runs",
                 actor_spec="kimi",
                 sandbox="none",
-                sandbox_image="sd-hwe-bench-piki:latest",
+                sandbox_image=settings.DEFAULT_SANDBOX_IMAGE,
                 piki_ref=None,
                 timeout=60,
                 rubrics=False,
@@ -138,7 +136,7 @@ class TestRunParallel:
                 run_dir=Path(td) / "runs",
                 actor="kimi",
                 sandbox="none",
-                sandbox_image="sd-hwe-bench-piki:latest",
+                sandbox_image=settings.DEFAULT_SANDBOX_IMAGE,
                 piki_ref=None,
                 timeout=60,
                 rubrics=False,

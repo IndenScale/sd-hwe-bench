@@ -3,19 +3,28 @@
 #
 # This image contains the piki rule engine for use with --sandbox docker/podman mode.
 
-FROM python:3.12-slim
+ARG PYTHON_BASE_IMAGE=python:3.12-slim
+ARG WORKDIR_SRC=/src
+ARG WORKDIR_RUN=/work
+ARG PIKI_INSTALL_DIR=/src/piki
 
-WORKDIR /src
+FROM ${PYTHON_BASE_IMAGE}
+
+ARG WORKDIR_SRC
+ARG WORKDIR_RUN
+ARG PIKI_INSTALL_DIR
+
+WORKDIR ${WORKDIR_SRC}
 
 # Copy piki source (build context should be the piki repo root)
-COPY . /src/piki
+COPY . ${PIKI_INSTALL_DIR}
 
 # Install local adl dependency first, then install piki in editable mode.
 # piki depends on the local submodule piki/adl, not the PyPI package of the same name.
-RUN pip install --no-cache-dir -e "/src/piki/adl" && \
-    pip install --no-cache-dir -e "/src/piki"
+RUN pip install --no-cache-dir -e "${PIKI_INSTALL_DIR}/adl" && \
+    pip install --no-cache-dir -e "${PIKI_INSTALL_DIR}"
 
 # Default working directory after workspace is mounted
-WORKDIR /work
+WORKDIR ${WORKDIR_RUN}
 
 # Do not set ENTRYPOINT: the runner will invoke `python -m piki <subcommand>` directly.

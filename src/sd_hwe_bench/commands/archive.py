@@ -11,12 +11,13 @@ from rich.table import Table
 from sd_hwe_bench.archive.manager import ArchiveManager
 from sd_hwe_bench.cli_common import setup_logging
 from sd_hwe_bench.console import console
+from sd_hwe_bench.settings import settings
 
 
 def register(app: typer.Typer) -> None:
     @app.command("archive")
     def archive_command(
-        run_dir: Path = typer.Option(Path("runs"), "--run-dir", help="Rollout archive root."),
+        run_dir: Path = typer.Option(settings.RUN_DIR, "--run-dir", help="Rollout archive root."),
         format: str = typer.Option("markdown", "--format", help="Output format: json or markdown."),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging."),
     ) -> None:

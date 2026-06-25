@@ -13,10 +13,11 @@ from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
 from sd_hwe_bench.prompts import PromptBuilder
 from sd_hwe_bench.sandbox.parser import YamlBlockParser
 from sd_hwe_bench.sandbox.runner import SandboxRunner
+from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
 
-_SYSTEM_PROMPT = """You are a hardware engineering design agent. You must produce piki YAML design declarations.
+_DEFAULT_SYSTEM_PROMPT = """You are a hardware engineering design agent. You must produce piki YAML design declarations.
 Follow the piki directory conventions exactly.
 Output each file as a separate ```yaml code block with the file path as a comment on the first line."""
 
@@ -29,24 +30,27 @@ class OpenAIActor(Actor):
     def __init__(
         self,
         model: str | None = None,
-        timeout: int = 600,
+        timeout: int | None = None,
         base_url: str | None = None,
         api_key: str | None = None,
+        runner: SandboxRunner | None = None,
     ):
-        super().__init__(model=model or "deepseek-chat", timeout=timeout)
-        self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "https://api.deepseek.com/v1")
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        super().__init__(model=model or settings.DEFAULT_OPENAI_MODEL, timeout=timeout)
+        self.base_url = base_url or settings.OPENAI_BASE_URL
+        api_key_env = settings.OPENAI_API_KEY_ENV
+        self.api_key = api_key or os.environ.get(api_key_env)
         self._client: OpenAI | None = None
         self.prompt_builder = PromptBuilder()
-        # Use host piki directly to avoid Docker auto-detection overhead and
-        # warnings in environments without a running container runtime.
-        self.runner = SandboxRunner(backend="none")
+        # Respect the global sandbox configuration by default. Callers may
+        # inject a specific runner (e.g. host-only for fast paths).
+        self.runner = runner or SandboxRunner()
+        self.system_prompt = settings.SYSTEM_PROMPT or _DEFAULT_SYSTEM_PROMPT
 
     @property
     def client(self) -> OpenAI:
         if self._client is None:
             if not self.api_key:
-                raise RuntimeError("OPENAI_API_KEY not set and no api_key provided")
+                raise RuntimeError(f"{settings.OPENAI_API_KEY_ENV} not set and no api_key provided")
             self._client = OpenAI(base_url=self.base_url, api_key=self.api_key)
         return self._client
 
@@ -61,11 +65,11 @@ class OpenAIActor(Actor):
             resp = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": _SYSTEM_PROMPT},
+                    {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.0,
-                max_tokens=8192,
+                temperature=settings.OPENAI_TEMPERATURE,
+                max_tokens=settings.OPENAI_MAX_TOKENS,
             )
             elapsed = time.time() - start
             raw = resp.choices[0].message.content or ""

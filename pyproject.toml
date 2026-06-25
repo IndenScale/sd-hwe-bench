@@ -62,6 +62,9 @@ Issues = "https://github.com/indenscale/sd-hwe-bench/issues"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+sd_hwe_bench = ["config/*.yaml"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]

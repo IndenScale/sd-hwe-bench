@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from sd_hwe_bench.settings import settings
+
 
 @dataclass
 class ActorResult:
@@ -22,9 +24,9 @@ class Actor:
 
     name: str = "base"
 
-    def __init__(self, model: str | None = None, timeout: int = 600):
+    def __init__(self, model: str | None = None, timeout: int | None = None):
         self.model = model
-        self.timeout = timeout
+        self.timeout = timeout if timeout is not None else settings.DEFAULT_ACTOR_TIMEOUT_S
 
     def run(self, prompt: str, workspace_root: Path) -> ActorResult:
         """Run the actor in the given workspace directory.

@@ -9,7 +9,7 @@ from sd_hwe_bench.actors.kimi import KimiActor
 from sd_hwe_bench.actors.openai_actor import OpenAIActor
 
 
-def create_actor(spec: str, timeout: int = 600) -> Actor:
+def create_actor(spec: str, timeout: int | None = None) -> Actor:
     """Create an actor from a specification string.
 
     Supported specs:

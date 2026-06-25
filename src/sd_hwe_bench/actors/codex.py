@@ -14,6 +14,7 @@ import time
 from pathlib import Path
 
 from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
+from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +27,11 @@ class CodexActor(Actor):
     def __init__(
         self,
         model: str | None = None,
-        timeout: int = 600,
-        codex_bin: str = "codex",
+        timeout: int | None = None,
+        codex_bin: str | None = None,
     ):
-        super().__init__(model=model or "deepseek-chat", timeout=timeout)
-        self.codex_bin = codex_bin
+        super().__init__(model=model or settings.DEFAULT_CODEX_MODEL, timeout=timeout)
+        self.codex_bin = codex_bin if codex_bin is not None else settings.CODEX_BIN
 
     def run(self, prompt: str, workspace_root: Path) -> ActorResult:
         workspace_root = Path(workspace_root).resolve()
@@ -46,11 +47,13 @@ class CodexActor(Actor):
             )
 
         cmd = [
-            self.codex_bin, "exec",
-            "-C", str(workspace_root),
-            "-m", self.model,
-            "--skip-git-repo-check",
-            "--dangerously-bypass-approvals-and-sandbox",
+            self.codex_bin,
+            "exec",
+            "-C",
+            str(workspace_root),
+            "-m",
+            self.model,
+            *settings.CODEX_EXTRA_ARGS,
         ]
 
         before = list_yaml_files(workspace_root)

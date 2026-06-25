@@ -1,0 +1,59 @@
+# Mapping from piki rule IDs to SD-HWE-Bench scoring layers.
+#
+# ``exact`` is used for stable, well-known rules.
+# ``prefixes`` are tried in order when a rule is not in ``exact``.
+# Unknown rules default to L2 with a warning.
+exact:
+  SCHEMA-001: L1
+  TELECOM-POWER-001: L3
+  TELECOM-POWER-002: L3
+  CATALOG-LIFECYCLE-001: L3
+  TELECOM-RACK-001: L4
+  TELECOM-RACK-002: L4
+  TELECOM-RACK-003: L4
+  TELECOM-COLLISION-001: L4
+  REFS-001: L2
+  REFS-002: L2
+  FK-001: L2
+  TAGS-001: L2
+  INTERFACE-COMPAT-001: L2
+  INTERFACE-CABLE-001: L2
+  MATE-001: L2
+  MATE-002: L2
+  MATE-003: L2
+  CATALOG-001: L2
+  CATALOG-002: L2
+  TELECOM-FK-001: L2
+  TELECOM-PORT-001: L2
+  TELECOM-PORT-002: L2
+  TELECOM-CONN-001: L2
+  TELECOM-CONN-002: L2
+  TELECOM-CONN-003: L2
+
+prefixes:
+  - prefix: SCHEMA-
+    layer: L1
+  - prefix: TELECOM-POWER-
+    layer: L3
+  - prefix: TELECOM-RACK-
+    layer: L4
+  - prefix: TELECOM-COLLISION-
+    layer: L4
+  - prefix: TELECOM-FK-
+    layer: L2
+  - prefix: TELECOM-PORT-
+    layer: L2
+  - prefix: TELECOM-CONN-
+    layer: L2
+  - prefix: REFS-
+    layer: L2
+  - prefix: FK-
+    layer: L2
+  - prefix: TAGS-
+    layer: L2
+  - prefix: INTERFACE-
+    layer: L2
+  - prefix: MATE-
+    layer: L2
+  - prefix: CATALOG-
+    layer: L2

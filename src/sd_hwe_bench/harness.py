@@ -16,6 +16,7 @@ from pathlib import Path
 
 from sd_hwe_bench.dataset import Dataset
 from sd_hwe_bench.scorer import TaskScore, compute_pass_at_k, score_task
+from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class Harness:
                                 "OUTPUT_DIR": str(output_dir),
                                 "REQUIREMENT": task.requirement,
                             },
-                            timeout=300,
+                            timeout=settings.DEFAULT_ACTOR_TIMEOUT_S,
                             capture_output=True,
                         )
                     except subprocess.TimeoutExpired:
@@ -133,14 +134,11 @@ class Harness:
             pass1 = compute_pass_at_k(task_results, k=1)
             all_scores = [s for scores in task_results for s in scores[:1]]
             avg_score = (
-                sum(s.overall_score for s in all_scores) / len(all_scores)
-                if all_scores else 0.0
+                sum(s.overall_score for s in all_scores) / len(all_scores) if all_scores else 0.0
             )
             rubric_scores = [s.rubric_score for s in all_scores if s.rubric_score is not None]
             avg_rubric = sum(rubric_scores) / len(rubric_scores) if rubric_scores else 0.0
-            lines.append(
-                f"| {model_id} | {pass1:.0%} | {avg_score:.0%} | {avg_rubric:.0%} |"
-            )
+            lines.append(f"| {model_id} | {pass1:.0%} | {avg_score:.0%} | {avg_rubric:.0%} |")
         lines.append("")
 
         # Per-task detail per model
@@ -179,9 +177,7 @@ class Harness:
     def _report_text(self, results: list[list[TaskScore]]) -> str:
         lines = ["=== SD-HWE-Bench Results ===\n"]
         total_tasks = len(results)
-        passed_tasks = sum(
-            1 for scores in results if scores and scores[0].success
-        )
+        passed_tasks = sum(1 for scores in results if scores and scores[0].success)
         avg_score = (
             sum(scores[0].overall_score for scores in results if scores) / total_tasks
             if total_tasks > 0
@@ -189,7 +185,9 @@ class Harness:
         )
 
         lines.append(f"Tasks evaluated: {total_tasks}")
-        lines.append(f"Passed (Pass@1): {passed_tasks}/{total_tasks} ({passed_tasks/total_tasks:.1%})")
+        lines.append(
+            f"Passed (Pass@1): {passed_tasks}/{total_tasks} ({passed_tasks / total_tasks:.1%})"
+        )
         lines.append(f"Average score: {avg_score:.2%}")
         lines.append("")
 
@@ -279,7 +277,7 @@ class Harness:
         lines = ["# SD-HWE-Bench Results\n"]
         total = len(results)
         passed = sum(1 for s in results if s and s[0].success)
-        lines.append(f"**Pass@1**: {passed}/{total} ({passed/total:.1%})\n")
+        lines.append(f"**Pass@1**: {passed}/{total} ({passed / total:.1%})\n")
         lines.append("| Task ID | Status | Score | L1 | L2 | L3 | L4 | Rubric |")
         lines.append("|---------|--------|-------|----|----|----|----|--------|")
         for scores in results:
