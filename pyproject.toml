@@ -74,5 +74,9 @@ target-version = "py311"
 select = ["E", "F", "W", "I"]
 ignore = ["E501"]
 
+[tool.uv.sources]
+adl = { path = "../piki/adl", editable = true }
+piki = { path = "../piki", editable = true }
+
 [project.scripts]
 sd-hwe-bench = "sd_hwe_bench.cli:main"

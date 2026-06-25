@@ -24,6 +24,24 @@ EPM / AssemblyHub 不是工程协作工具——它们是让 physical design 获
 
 3. **Information Representation Hypothesis**：可测试的理论锚点——AI 在物理工程的瓶颈是缺少可计算设计表示，而非模型能力/物理复杂度。将 EaC 技术选择（ADL + ESA）连接到 RLVR 因果链。
 
+## 当前状态（2026-06-24）
+
+| 维度 | 状态 |
+|---|---|
+| ADL / ESA 概念与实现 | 清晰，3 samples 全过，违规注入 15/15 检出 |
+| Agent 实证 | 刚完成 5 telecom tasks × 2 actors 的 pass@1 smoke：Kimi 80%、DeepSeek-v4-pro 20% |
+| 基础设施 | SD-HWE-Bench 跑通：评分器、repair loop、归档、测试 49/49 绿 |
+| 容器化 | Docker 未运行，当前 `--sandbox none`，需尽快固化 |
+| 论文写作 | 仅 MEMO 与章节草稿，未形成 FSE Vision Track 投稿稿 |
+
+## 下一步（未来 2 周）
+
+1. **验证 prompt 修改效果**：重跑 instance-declare / deliverable 任务，确认 Kimi 稳定提升。
+2. **补最小 ablation**：no-repair vs repair，5 tasks × 1 actor × 3 passes，支撑 Information Representation Hypothesis。
+3. **启动 container 环境**：构建 `sd-hwe-bench-piki` image，确保评分可复现。
+4. **确定 FSE Vision Track 论文大纲**：基于现有章节草稿，整理出投稿版结构。
+5. **评估 AI benchmark track 可行性**：SD-HWE-Bench 的目标是 NeurIPS / ICLR 等 AI 会议的 Dataset/Benchmark Track。若 8 月中旬前任务无法扩展到 12–15 个并完成多模型基线，则推迟到下一个周期。
+
 ### 叙事策略
 
 - **对手不是 ACC/BIM/CAD**，而是「物理工程缺乏 source code 表示」这一空缺本身。
@@ -31,20 +49,35 @@ EPM / AssemblyHub 不是工程协作工具——它们是让 physical design 获
 - **SE 工具链 mapping**：ADL ↔ DSL design，ESA ↔ compiler/linter pipeline，EPM ↔ package manager，Git workflow ↔ VCS。
 - **RLVR 因果链**：结构化可验证表示 → 毫秒级确定性反馈 → RLVR 训练有效 → Agent 能力跃迁。论文论证的是第一环（表示层），不是第四环（Agent）。
 
-### 投稿策略（2026-06-21 更新）
+### 投稿策略（2026-06-24 更新）
 
-### 首选：FSE 2027 Research Track
+本文拆分为两个独立投稿目标：
 
-- 18+4 页，允许完整展开 DSL 设计、static analysis 架构、分层验证和初步实证。
-- FSE 2027 明确将 "Artificial intelligence and machine learning for software engineering" 列入 Topics of Interest。
-- 投稿截止：2026-10-02。
+#### 目标 A：FSE 2027 Vision Track（本仓库 `fse/`）
 
-论证口径：本文解决的是 **SE 基础设施设计问题**（如何为没有 source code 的领域设计 source code 表示层）。物理工程是案例，不是贡献本体。SE 审稿人应该关心 ADL 的 DSL 设计决策、ESA 的分层静态分析架构、以及「表示层设计如何使能下游 AI 训练」这一因果链条。
+- **定位**：Position / Vision Paper，面向 SE 社区提出 Engineering as Code 研究议程。
+- **核心命题**：当一个领域还没有 source code 时，SE 社区如何为它设计可计算表示层。
+- **篇幅与格式**：按 FSE 2027 Vision Track 要求（通常短于 Research Track，具体以 CFP 为准）。
+- **论证口径**：本文解决的是 **SE 基础设施设计问题**（DSL、static analysis、VCS-like design review）。物理工程是案例，不是贡献本体。SE 审稿人应关心 ADL 的 DSL 设计决策、ESA 的分层静态分析架构、以及「表示层设计如何使能下游 AI 训练」这一因果链条。
+- **实验要求**：足以支撑愿景即可，不追求完整 benchmark。当前 smoke 结果（Kimi 80% pass@1、ESA feedback 初步有效）可作为 feasibility demonstration。
+- **投稿截止**：2026-10-02。
 
-**备选路径：**
+#### 目标 B：AI 会议 Dataset / Benchmark Track（`papers/sd-hwe-bench.zh/`）
 
-- **ICSE 2028 Research Track**（若 FSE 被拒）：更广的 SE 受众，更长的审稿周期。
+- **定位**：SD-HWE-Bench 数据集/基准论文，面向 AI 社区，证明工程 AI 需要结构化表示和 ESA 反馈。
+- **目标会议推荐**：
+  - **首选：NeurIPS 2027 Evaluations & Datasets Track**（截稿约 2027-05）。最匹配：NeurIPS E&D 接收新 benchmark、评估方法论和 AI4Science 数据集；更名后的 track 强调“evaluation as scientific study”，与我们的 no-repair vs repair ablation、错误模式分析高度契合。时间也最充裕，可以从容扩展任务和多模型基线。
+  - **冲刺选项：ICLR 2027 Datasets & Benchmarks Track**（截稿约 2026-09/10）。如果能在 8 月底前把任务扩展到 12–15 个、跑完 3–4 个模型基线并完成 ablation，可以尝试；否则风险过高。
+  - **稳妥选项：ICML 2027 Datasets Track**（截稿约 2027-01）。时间和声望都适中，若 ICLR 赶不上可自然转投。
+- **核心贡献**：任务集、评价协议、多模型基线结果、复现包、错误模式分析。
+- **当前差距**：仅 5 个 telecom 任务、host-only 环境、2 个 Actor 基线。要达到 AI benchmark track 的可信度，需要扩展任务、容器化、3–4 个模型 pass@k、完整 ablation。
+- **决策点**：8 月中旬前若无法扩展到 12–15 个任务并完成多模型实验，则放弃 ICLR 冲刺，以 NeurIPS 2027 为主目标。
+
+**备选路径（Vision Track 若被拒）：**
+
+- **ICSE 2028 Research / Vision Track**：更广的 SE 受众。
 - **OOPSLA Onward! 2027**：偏 radical vision，适合较短篇幅。
+- **arXiv 预印本**：建立优先权，同时投后续 venue。
 - 不投 AEC/engineering 期刊——本文是 SE 贡献，投 AEC 期刊会丢失 SE 社区话语权。
 
 ## 文件结构

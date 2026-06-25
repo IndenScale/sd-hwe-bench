@@ -219,7 +219,7 @@ sd-hwe-bench run telecom/comprehensive-001 --actor codex:deepseek --sandbox none
 
 ## 5. 开发约定
 
-- 所有代码修改需保持 `tests/` 通过（当前 45/45 pass）。
+- 所有代码修改需保持 `tests/` 通过（当前 49/49 pass）。
 - 新增任务必须包含完整的 `task.yaml`、`scaffold/`、`solution/`。
 - 新增 Actor 必须继承 `Actor` 基类，实现 `run(prompt, workspace_root) -> ActorResult`。
 - 新增 Critic 必须继承 `Critic` 基类，实现 `evaluate(workspace_root, task) -> CriticResult`。
