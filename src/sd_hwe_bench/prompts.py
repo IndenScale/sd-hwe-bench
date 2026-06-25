@@ -406,3 +406,55 @@ class PromptBuilder:
         parts.append(_REPAIR_MARKER_INSTRUCTIONS)
 
         return "\n".join(parts)
+
+    def build_self_check_turn(
+        self,
+        task_metadata: dict[str, Any],
+        project_dir: Path,
+        diagnostics: list[dict],
+        turn: int,
+        max_rounds: int,
+    ) -> str:
+        """Build a self-check continuation prompt.
+
+        Injected after the agent submits ``.sdhwe.done`` but ``piki check``
+        still reports errors.  The prompt shows only the diagnostics (no full
+        score object) and asks the agent to fix the remaining issues.
+        """
+        task_id = task_metadata.get("task_id", "unknown")
+        task_name = task_metadata.get("name", "Unnamed")
+
+        parts: list[str] = []
+        parts.append(
+            "You are a hardware engineering design agent. You marked the task "
+            "as done, but `piki check` still found errors in your design.\n\n"
+            f"**Task**: {task_name} ({task_id})\n"
+            "Review the diagnostics below and fix the remaining issues in the "
+            "workspace YAML files."
+        )
+
+        # Diagnostics only — concise, no file listing
+        parts.append("\n## `piki check` 诊断\n")
+        for d in diagnostics[: settings.REPAIR_PROMPT_MAX_DIAGNOSTICS]:
+            rule = d.get("rule_id", "")
+            name = d.get("name", "")
+            msg = str(d.get("message", "")).splitlines()[0]
+            file = d.get("file", "")
+            parts.append(f"- `{rule}` {name}: {msg}" + (f" (文件: {file})" if file else ""))
+
+        remaining = max_rounds - turn + 1
+        parts.append(
+            f"\n## 剩余自检轮次\n\n"
+            f"这是第 {turn} 轮自检修复，最多还有 {remaining} 轮。"
+        )
+
+        parts.append(
+            "\n## 操作要求\n\n"
+            "1. 直接修改 workspace 中的 YAML 文件以修复上述错误。\n"
+            "2. 不要修改 scaffold 中的 `models/` 和 `piki.toml`。\n"
+            "3. 修复完成后重新创建 `.sdhwe.done`。\n"
+            "4. 如果你确认当前错误无法在当前轮次内解决，创建 `.sdhwe.give_up`。\n"
+            "5. 只修复与诊断相关的文件，不要改动已通过检查的部分。"
+        )
+
+        return "\n".join(parts)

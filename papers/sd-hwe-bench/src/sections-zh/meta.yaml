@@ -6,14 +6,14 @@ abstract: |
   随着大语言模型能力不断提升，AI Agent 开始涉足物理工程设计领域。
   然而，现有 benchmark 多集中在代码、数学或文本推理，缺乏对工程设计的
   结构化表示、约束检查和可制造性验证的系统性评估。本文提出 SD-HWE-Bench，
-  一个基于 Assembly Definition Language (ADL) 和 Engineering Static Analysis (ESA)
+  一个基于 Assembly Definition Language (ADL) 和 Design Test Suite (DTS)
   的声明式硬件工程 benchmark。我们构建了 2–3 个覆盖电信机柜、数据中心和机械装配的
-  canonical 工程，并从中提取了 N 个设计增量任务。实验表明，ESA 反馈能够显著提升
+  canonical 工程，并从中提取了 N 个设计增量任务。实验表明，DTS 反馈能够显著提升
   Agent 生成合法设计的通过率。我们开源了任务集、评分协议和复现包，
   旨在推动 AI 在物理工程领域的可计算表示研究。
 keywords:
   - AI Agent Benchmark
   - Declarative Hardware Engineering
-  - Engineering Static Analysis
+  - Design Test Suite (DTS)
   - Assembly Definition Language
   - AI for Engineering Design

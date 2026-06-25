@@ -248,6 +248,16 @@ class Settings:
     )
 
     # ------------------------------------------------------------------
+    # Self-check hook
+    # ------------------------------------------------------------------
+    SELF_CHECK_ENABLED: bool = field(
+        default_factory=lambda: _env_bool("SD_HWE_SELF_CHECK_ENABLED", True)
+    )
+    SELF_CHECK_MAX_ROUNDS: int = field(
+        default_factory=lambda: _env_int("SD_HWE_SELF_CHECK_MAX_ROUNDS", 3)
+    )
+
+    # ------------------------------------------------------------------
     # Bundled YAML config accessors
     # ------------------------------------------------------------------
     @property

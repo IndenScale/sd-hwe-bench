@@ -56,6 +56,7 @@ def _run_rollout(
     rubrics_model: str | None,
     verbose: bool,
     env_vars: dict[str, str] | None = None,
+    self_check: bool = True,
 ) -> dict:
     """Execute a single rollout in a worker process.
 
@@ -63,6 +64,10 @@ def _run_rollout(
     so that it can be dispatched via ``ProcessPoolExecutor``.
     """
     setup_logging(verbose)
+
+    # Apply self-check override (settings is frozen, use object.__setattr__)
+    if not self_check:
+        object.__setattr__(settings, "SELF_CHECK_ENABLED", False)
 
     ds = Dataset(dataset_path)
     task = ds.load_task(job.task_id)
@@ -100,6 +105,76 @@ def _run_rollout(
             "raw_output_preview": result.raw_output[: settings.LOG_PREVIEW_CHARS],
         }
     )
+
+    # ── Self-check hook ──────────────────────────────────────────
+    # After the agent finishes, automatically run piki check.  If errors
+    # remain, inject diagnostics and let the agent fix them — up to
+    # SELF_CHECK_MAX_ROUNDS iterations.
+    self_check_rounds = 0
+    while settings.SELF_CHECK_ENABLED and self_check_rounds < settings.SELF_CHECK_MAX_ROUNDS:
+        sc_score = score_task(
+            task_id=job.task_id,
+            agent_output_dir=ws.project_dir,
+            expected_deliverables=task.metadata.expected_deliverables,
+            rubric_sets=None,  # no rubrics during self-check
+            requirement=task.metadata.requirement,
+            rubrics_model=None,
+            runner=runner,
+            task=task,
+        )
+        if sc_score.success:
+            break  # all clear — no self-check needed
+
+        # Extract diagnostics from the piki critic
+        diagnostics = []
+        piki_result = next(
+            (cr for cr in sc_score.critic_results if cr.name == "piki"), None
+        )
+        if piki_result and piki_result.artifacts.get("parsed"):
+            parsed = piki_result.artifacts["parsed"]
+            for rule in parsed.get("results", []):
+                if not rule.get("passed"):
+                    diagnostics.append({
+                        "rule_id": rule.get("rule_id", ""),
+                        "name": rule.get("name", ""),
+                        "message": rule.get("message", ""),
+                        "file": rule.get("file", ""),
+                    })
+            for diag in parsed.get("diagnostics", []):
+                if str(diag.get("severity", "")).upper() in ("ERROR", "FATAL"):
+                    diagnostics.append({
+                        "rule_id": diag.get("code", ""),
+                        "name": diag.get("code", ""),
+                        "message": diag.get("message", ""),
+                        "file": diag.get("file", ""),
+                    })
+
+        if not diagnostics:
+            break  # syntax errors or deliverable-only — don't loop
+
+        self_check_rounds += 1
+        sc_prompt = builder.build_self_check_turn(
+            task_metadata=task.metadata.model_dump(),
+            project_dir=ws.project_dir,
+            diagnostics=diagnostics,
+            turn=self_check_rounds,
+            max_rounds=settings.SELF_CHECK_MAX_ROUNDS,
+        )
+        ws.log_trajectory({
+            "event": "self_check_prompt",
+            "round": self_check_rounds,
+            "diagnostics_count": len(diagnostics),
+        })
+        result = act.run(sc_prompt, ws.project_dir)
+        ws.log_trajectory({
+            "event": "self_check_finished",
+            "round": self_check_rounds,
+            "success": result.success,
+            "files_written": result.files_written,
+            "elapsed_s": result.elapsed_s,
+            "error": result.error,
+        })
+    # ── End self-check hook ──────────────────────────────────────
 
     score = score_task(
         task_id=job.task_id,
@@ -156,6 +231,7 @@ def _run_serial(
     rubrics: bool,
     rubrics_model: str | None,
     env_vars: dict[str, str] | None = None,
+    self_check: bool = True,
 ) -> list[list[TaskScore]]:
     """Run rollouts serially, preserving the original interactive output."""
     all_scores: list[list[TaskScore]] = []
@@ -164,6 +240,10 @@ def _run_serial(
     # may have been constructed before env_vars were resolved).
     if env_vars is not None:
         runner = SandboxRunner(backend=runner.backend, image=runner.image, env_vars=env_vars)
+
+    # Apply self-check override
+    if not self_check:
+        object.__setattr__(settings, "SELF_CHECK_ENABLED", False)
 
     for tid in task_ids:
         task = ds.load_task(tid)
@@ -257,6 +337,7 @@ def _run_parallel(
     jobs: int,
     verbose: bool,
     env_vars: dict[str, str] | None = None,
+    self_check: bool = True,
 ) -> list[list[TaskScore]]:
     """Run rollouts in parallel using a process pool."""
     jobs_list = [
@@ -286,6 +367,7 @@ def _run_parallel(
                 rubrics_model,
                 verbose,
                 env_vars,
+                self_check,
             ): job
             for job in jobs_list
         }
@@ -370,6 +452,11 @@ def register(app: typer.Typer) -> None:
         piki_ref: Optional[Path] = typer.Option(
             None, "--piki-ref", help="Path to full piki reference (e.g. piki/AGENTS.md)."
         ),
+        self_check: bool = typer.Option(
+            settings.SELF_CHECK_ENABLED,
+            "--self-check/--no-self-check",
+            help="Enable/disable the automatic piki check + repair hook after agent run.",
+        ),
         timeout: int = typer.Option(
             settings.DEFAULT_ACTOR_TIMEOUT_S, "--timeout", "-t", help="Actor timeout in seconds."
         ),
@@ -407,6 +494,7 @@ def register(app: typer.Typer) -> None:
             builder = PromptBuilder(piki_ref_path=piki_ref)
             all_scores = _run_serial(
                 task_ids=task_ids,
+                self_check=self_check,
                 passes=passes,
                 ds=ds,
                 run_dir=run_dir,
@@ -421,6 +509,7 @@ def register(app: typer.Typer) -> None:
         else:
             all_scores = _run_parallel(
                 task_ids=task_ids,
+                self_check=self_check,
                 passes=passes,
                 ds=ds,
                 run_dir=run_dir,
