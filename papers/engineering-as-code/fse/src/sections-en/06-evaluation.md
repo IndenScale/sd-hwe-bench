@@ -69,7 +69,7 @@ ESA's violation-injection experiment requires no such customization: violations 
 
 ## SD-HWE-Bench: Agent Evaluation Benchmark [Design Phase]
 
-The pilot experiments validate feasibility and detection accuracy, but do not test whether agents can **generate** ADL from natural-language requirements. We are designing **SD-HWE-Bench** to fill this gap; it will be reported in a companion paper.
+The pilot experiments validate feasibility and detection accuracy, but do not test whether agents can **generate** ADL from natural-language requirements. We have built **SD-HWE-Bench**, a benchmark for AI agent evaluation on declarative hardware engineering tasks, detailed in a companion paper. It currently comprises 19 telecom-domain tasks (5 POC + 14 canonical incremental). Baseline pass@1 results: Kimi (k2.7) 100%/87%, DeepSeek-v4-Flash 84%/81%, DeepSeek-v4-Pro 81%/79%. The benchmark is containerized (Docker, 1.58GB image) with a unified L0-L5 scoring pipeline. Common DeepSeek failure modes—L2 reference errors and L3 constraint violations—demonstrate the gap that deterministic feedback is designed to close.
 
 **Task paradigm**: Input natural-language engineering requirements; output structured ADL declarations (piki YAML); score by L0–L4 pass rate, deliverable quality, and L6 sign-off. Unlike SWE-bench, which tests patch generation on existing codebases [@jimenez2024swebench], SD-HWE-Bench tests creation from scratch because declarative engineering design is not yet an established practice.
 
@@ -100,7 +100,7 @@ Both samples pass their L2–L4a checks (13 and 27 passes respectively).
 | Sample 02 (Datacenter) | Complete (0 errors, 13 passes) | Complete |
 | Sample 03 (Keyboard) | Complete (0 errors, 27 passes) | Complete |
 | Violation-injection experiment | Complete | 15/15 violations detected (100%), 0 false positives |
-| SD-HWE-Bench | Design complete, task authoring in progress | Task suite specification complete; agent experiments deferred to companion paper |
+| SD-HWE-Bench | 19 telecom tasks, 3-model baseline complete | Baseline pass@1 published; pass@5 + repair ablation in progress |
 
 Table: Evaluation status and submission expectations {#tbl:eval-summary}
 
