@@ -193,7 +193,9 @@ class Settings:
             {
                 "L0": 0.0,
                 "L1": 0.10,
-                "L2": 0.15,
+                "L2a": 0.05,
+                "L2b": 0.05,
+                "L2c": 0.05,
                 "L3": 0.40,
                 "L4": 0.20,
                 "L5": 0.0,
@@ -206,7 +208,7 @@ class Settings:
     )
     RUBRIC_WEIGHT: float = field(default_factory=lambda: _env_float("SD_HWE_RUBRIC_WEIGHT", 0.0))
     CRITICAL_LAYERS: list[str] = field(
-        default_factory=lambda: _env_list("SD_HWE_CRITICAL_LAYERS", ["L0", "L1", "L2", "L3", "L4"])
+        default_factory=lambda: _env_list("SD_HWE_CRITICAL_LAYERS", ["L0", "L1", "L2a", "L2b", "L2c", "L3", "L4"])
     )
     SYNTAX_PENALTY_PER_ERROR: float = field(
         default_factory=lambda: _env_float("SD_HWE_SYNTAX_PENALTY_PER_ERROR", 0.1)
@@ -221,7 +223,7 @@ class Settings:
         default_factory=lambda: _env_list("SD_HWE_DEFAULT_PLUGINS", ["telecom"])
     )
     DEFAULT_SCORING_LAYERS: list[str] = field(
-        default_factory=lambda: _env_list("SD_HWE_DEFAULT_SCORING_LAYERS", ["L0", "L1", "L2", "L3"])
+        default_factory=lambda: _env_list("SD_HWE_DEFAULT_SCORING_LAYERS", ["L0", "L1", "L2a", "L2b", "L2c", "L3"])
     )
 
     # ------------------------------------------------------------------

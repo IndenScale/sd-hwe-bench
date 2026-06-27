@@ -72,7 +72,7 @@ def _static_check_yaml(project_dir: Path) -> dict[str, Any]:
     """Run static YAML checks (L0-L2) — fallback when piki is unavailable."""
     import yaml as _yaml
 
-    errors: dict[str, list[str]] = {"L0": [], "L1": [], "L2": []}
+    errors: dict[str, list[str]] = {"L0": [], "L1": [], "L2a": []}
     yaml_files = sorted(project_dir.rglob("*.yaml")) + sorted(project_dir.rglob("*.yml"))
 
     if not yaml_files:
@@ -124,7 +124,7 @@ def _static_check_yaml(project_dir: Path) -> dict[str, Any]:
 
     undefined = referenced_ids - declared_ids
     for uid in sorted(undefined):
-        errors["L2"].append(f"FK-UNDEFINED: '{uid}' is referenced but never declared")
+        errors["L2a"].append(f"FK-UNDEFINED: '{uid}' is referenced but never declared")
 
     result: dict[str, Any] = {
         "errors": errors,
@@ -332,7 +332,7 @@ def score_task(
 
     layer_scores = piki_res.artifacts.get("layer_scores", {})
     layer_errors = piki_res.artifacts.get("layer_errors", {})
-    for layer in ("L1", "L2", "L3", "L4"):
+    for layer in ("L1", "L2a", "L2b", "L2c", "L3", "L4"):
         score.layers[layer] = LayerScore(
             layer=layer,
             total=1,

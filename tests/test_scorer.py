@@ -22,7 +22,9 @@ class TestLayerWeights:
     def test_all_layers_present(self):
         assert "L0" in LAYER_WEIGHTS
         assert "L1" in LAYER_WEIGHTS
-        assert "L2" in LAYER_WEIGHTS
+        assert "L2a" in LAYER_WEIGHTS
+        assert "L2b" in LAYER_WEIGHTS
+        assert "L2c" in LAYER_WEIGHTS
         assert "L3" in LAYER_WEIGHTS
         assert "L4" in LAYER_WEIGHTS
 
@@ -46,7 +48,7 @@ class TestStaticCheckYaml:
             result = _static_check_yaml(Path(td))
             assert result["errors"]["L0"] == []
             assert result["errors"]["L1"] == []
-            assert result["errors"]["L2"] == []
+            assert result["errors"]["L2a"] == []
             assert result["declared_count"] == 1
 
     def test_missing_id_field(self):
@@ -62,7 +64,7 @@ class TestStaticCheckYaml:
                 "- instance: GHOST\n  position_u: 10\n  rack_id: RACK-MISSING\n"
             )
             result = _static_check_yaml(Path(td))
-            l2_errors = result["errors"]["L2"]
+            l2_errors = result["errors"]["L2a"]
             assert any("GHOST" in e for e in l2_errors)
             assert any("RACK-MISSING" in e for e in l2_errors)
 
@@ -74,7 +76,7 @@ class TestStaticCheckYaml:
                 "- instance: SRV-01\n  position_u: 10\n  rack_id: RACK-A01\n"
             )
             result = _static_check_yaml(Path(td))
-            assert result["errors"]["L2"] == []
+            assert result["errors"]["L2a"] == []
             assert result["declared_count"] == 2
 
     def test_model_file_skipped(self):
@@ -104,7 +106,7 @@ class TestStaticCheckYaml:
                 "target: {instance: SW-01, port: Gi1/0/1}\n"
             )
             result = _static_check_yaml(Path(td))
-            assert result["errors"]["L2"] == []
+            assert result["errors"]["L2a"] == []
 
     def test_port_reference_slash_format(self):
         with tempfile.TemporaryDirectory() as td:
@@ -114,7 +116,7 @@ class TestStaticCheckYaml:
             )
             result = _static_check_yaml(Path(td))
             # SRV-01 exists, GHOST does not
-            l2 = result["errors"]["L2"]
+            l2 = result["errors"]["L2a"]
             assert any("GHOST" in e for e in l2)
             assert not any("SRV-01" in e for e in l2)
 
@@ -122,27 +124,27 @@ class TestStaticCheckYaml:
 class TestLayerScoresFromStatic:
     def test_all_clean(self):
         score = TaskScore(task_id="test", success=False)
-        static = {"errors": {"L0": [], "L1": [], "L2": []}}
+        static = {"errors": {"L0": [], "L1": [], "L2a": []}}
         _layer_scores_from_static(score, static)
         assert score.layers["L0"].passed == 1
         assert score.layers["L1"].passed == 1
-        assert score.layers["L2"].passed == 1
+        assert score.layers["L2a"].passed == 1
         # All layers pass when static checks are clean
         expected = (
-            LAYER_WEIGHTS["L1"] + LAYER_WEIGHTS["L2"] + LAYER_WEIGHTS["L3"] + LAYER_WEIGHTS["L4"]
+            LAYER_WEIGHTS["L1"] + LAYER_WEIGHTS["L2a"] + LAYER_WEIGHTS["L2b"] + LAYER_WEIGHTS["L2c"] + LAYER_WEIGHTS["L3"] + LAYER_WEIGHTS["L4"]
         )
         assert score.overall_score == expected
 
     def test_l1_has_error(self):
         score = TaskScore(task_id="test", success=False)
-        static = {"errors": {"L0": [], "L1": ["missing id"], "L2": []}}
+        static = {"errors": {"L0": [], "L1": ["missing id"], "L2a": []}}
         _layer_scores_from_static(score, static)
         assert score.layers["L1"].passed == 0
         assert score.layers["L1"].failed == 1
 
     def test_preserves_l3_l4_untested_note(self):
         score = TaskScore(task_id="test", success=False)
-        static = {"errors": {"L0": [], "L1": [], "L2": []}}
+        static = {"errors": {"L0": [], "L1": [], "L2a": []}}
         _layer_scores_from_static(score, static)
         # L3/L4 pass when static checks are clean (no errors)
         assert score.layers["L3"].passed == 1
@@ -165,7 +167,7 @@ class TestScoreTask:
         )
         assert score.layers["L0"].passed == 1
         assert score.layers["L1"].passed == 1
-        assert score.layers["L2"].passed == 1
+        assert score.layers["L2a"].passed == 1
 
     @pytest.mark.parametrize(
         "tid",
@@ -178,12 +180,12 @@ class TestScoreTask:
         ],
     )
     def test_scores_all_reference_solutions(self, tasks_dir, tid):
-        """Every task's reference solution should pass L0-L2."""
+        """Every task's reference solution should pass L0-L2c."""
         task_dir = tasks_dir / tid / "solution"
         score = score_task(tid, task_dir)
         assert score.layers["L0"].passed == 1, f"{tid}: L0 failed"
         assert score.layers["L1"].passed == 1, f"{tid}: L1 failed"
-        assert score.layers["L2"].passed == 1, f"{tid}: L2 failed"
+        assert score.layers["L2a"].passed == 1, f"{tid}: L2 failed"
 
     def test_empty_output_scores_zero(self):
         with tempfile.TemporaryDirectory() as td:
@@ -253,12 +255,12 @@ class TestComputePartialCredit:
                 layers={
                     "L0": LayerScore("L0", 1, 1, 0),
                     "L1": LayerScore("L1", 1, 1, 0),
-                    "L2": LayerScore("L2", 1, 0, 1),
+                    "L2a": LayerScore("L2a", 1, 0, 1),
                 },
             ),
         ]
         result = compute_partial_credit(scores)
-        l2 = next(r for r in result if r["layer"] == "L2")
+        l2 = next(r for r in result if r["layer"] == "L2a")
         assert l2["pass_rate"] == 0.0
         l1 = next(r for r in result if r["layer"] == "L1")
         assert l1["pass_rate"] == 1.0

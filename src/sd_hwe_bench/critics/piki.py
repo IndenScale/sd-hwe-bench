@@ -65,7 +65,7 @@ class PikiCritic(Critic):
             )
 
         parsed = result.parsed or {}
-        layer_errors: dict[str, list[str]] = {"L1": [], "L2": [], "L3": [], "L4": []}
+        layer_errors: dict[str, list[str]] = {"L1": [], "L2a": [], "L2b": [], "L2c": [], "L3": [], "L4": []}
 
         for rule_result in parsed.get("results", []):
             if rule_result.get("passed"):
@@ -84,7 +84,7 @@ class PikiCritic(Critic):
 
         layer_scores: dict[str, float] = {}
         comments: list[str] = []
-        for layer in ("L1", "L2", "L3", "L4"):
+        for layer in ("L1", "L2a", "L2b", "L2c", "L3", "L4"):
             errors = layer_errors[layer]
             passed = not errors
             layer_scores[layer] = LAYER_WEIGHTS[layer] if passed else 0.0
@@ -97,7 +97,7 @@ class PikiCritic(Critic):
                 comments.append(f"  ... and {len(errors) - max_errors} more")
 
         score = sum(layer_scores.values())
-        passed = all(layer_errors[layer] == [] for layer in ("L1", "L2", "L3", "L4"))
+        passed = all(layer_errors[layer] == [] for layer in ("L1", "L2a", "L2b", "L2c", "L3", "L4"))
 
         return CriticResult(
             name=self.name,
