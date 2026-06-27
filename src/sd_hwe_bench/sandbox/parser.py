@@ -73,18 +73,39 @@ class YamlBlockParser:
         """Infer file path from YAML content heuristics."""
         id_match = re.search(r"^id:\s*(\S+)", content, re.MULTILINE)
         if not id_match:
-            # Maybe a layout list
             if content.strip().startswith("-"):
                 return "layouts/layout.yaml"
             return None
 
         yaml_id = id_match.group(1)
 
-        if "mate:" in content:
-            mate_m = re.search(r"mate:\s*(\S+)", content)
+        # ── Mate types (use `type:` field, more precise than `mate:`) ──
+        if re.search(r"^type:\s*(\S+)", content, re.MULTILINE):
+            mate_m = re.search(r"^type:\s*(\S+)", content, re.MULTILINE)
             mate_type = mate_m.group(1) if mate_m else "unknown"
             return f"mates/{mate_type}/{yaml_id}.yaml"
 
+        # ── Room / Row / Facility (top-level, not under instances/) ──
+        family_m = re.search(r"^family:\s*(\S+)", content, re.MULTILINE)
+        family = family_m.group(1) if family_m else ""
+
+        if family == "RoomFamily":
+            return f"rooms/{yaml_id}.yaml"
+        if family == "RackRowFamily":
+            return f"rooms/{yaml_id}.yaml"
+        if family == "FacilityFamily":
+            if "facility_type:" in content:
+                ft_m = re.search(r"facility_type:\s*(\S+)", content)
+                ft = ft_m.group(1) if ft_m else ""
+                if ft == "antenna":
+                    return f"instances/antennas/{yaml_id}.yaml"
+                if ft in ("ground-rod", "spd"):
+                    return f"instances/grounding/{yaml_id}.yaml"
+                if ft in ("cooler",):
+                    return f"facilities/{yaml_id}.yaml"
+            return f"facilities/{yaml_id}.yaml"
+
+        # ── Instance sub-directories (content-based heuristics) ──
         if "rack:" in content or "ru_position:" in content or "position_u:" in content:
             if yaml_id == "layout" or content.strip().startswith("-"):
                 return "layouts/layout.yaml"
@@ -93,6 +114,8 @@ class YamlBlockParser:
         if "from_port:" in content or "to_port:" in content:
             if "fiber_type:" in content:
                 return f"instances/fibers/{yaml_id}.yaml"
+            if "cable_type:" in content:
+                return f"instances/cables/{yaml_id}.yaml"
             return f"instances/port_connections/{yaml_id}.yaml"
 
         if "port_type:" in content or ("port_name:" in content and "device_id:" in content):
@@ -106,5 +129,8 @@ class YamlBlockParser:
 
         if "model:" in content and ("sfp" in yaml_id.lower() or "transceiver" in yaml_id.lower()):
             return f"instances/transceivers/{yaml_id}.yaml"
+
+        if "cable_type:" in content:
+            return f"instances/cables/{yaml_id}.yaml"
 
         return f"instances/{yaml_id}.yaml"

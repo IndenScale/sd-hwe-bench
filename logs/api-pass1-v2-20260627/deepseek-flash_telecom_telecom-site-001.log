@@ -1,0 +1,99 @@
+
+Running openai:deepseek-chat on telecom/telecom-site-001 (attempt 1/1)...
+
+FAIL telecom/telecom-site-001 — overall score: 40.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 1 YAML files valid; Missing expected files:      │
+│       │        │ instances/racks/CABINET-01.yaml                             │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 0/1    │ TELECOM-POWER-001: AttributeError: 'types.SimpleNamespace'  │
+│       │        │ object has no attribute 'capacity_w'                        │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 755, in check_pdu_budget                               │
+│       │        │     load_ratio = total_power / pdu.resolved.capacity_w      │
+│       │        │                                ^^^^^^^^^^^^^^^^^^^^^^^      │
+│       │        │ AttributeError: 'types.SimpleNamespace' object has no       │
+│       │        │ attribute 'capacity_w'                                      │
+│       │        │ ; TELECOM-POWER-002: AttributeError: rack_id                │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'rack_id'                                         │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 826, in check_pdu_phase_balance                        │
+│       │        │     rack_phases = total_power                               │
+│       │        │                 ^^^^^^^^^^^                                 │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: rack_id                                     │
+│       │        │ ; TELECOM-POWER-001: AttributeError:                        │
+│       │        │ 'types.SimpleNamespace' object has no attribute             │
+│       │        │ 'capacity_w'                                                │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 755, in check_pdu_budget                               │
+│       │        │     load_ratio = total_power / pdu.resolved.capacity_w      │
+│       │        │                                ^^^^^^^^^^^^^^^^^^^^^^^      │
+│       │        │ AttributeError: 'types.SimpleNamespace' object has no       │
+│       │        │ attribute 'capacity_w'                                      │
+│       │        │                                                             │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 1 YAML files valid
+  • Missing expected files: instances/racks/CABINET-01.yaml
+
+✗ piki (40%)
+  • L1: passed
+  • L2a: failed (1 errors)
+  •   - TELECOM-FK-001: AttributeError: rack_id
+Traceback (most recent call last):
+  File "/src/piki/adl/src/adl/models/base.py", line 97, in __getattr__
+    return self._resolved
+           ~~~~~~~~~~~~~~^^^^^^
+KeyError: 'rack_id'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/src/piki/src/piki/core/engine/checker.py", line 174, in run
+    func(ctx)
+  File "/src/piki/src/piki/extensions/telecom/plugin.py", line 911, in 
+check_foreign_keys
+    assert pdu.rack_id in racks, f"PDU {pdu.id} 引用的机柜 {pdu.rack_id} 不存在"
+           ^^^^^^^^^^^
+  File "/src/piki/adl/src/adl/models/base.py", line 99, in __getattr__
+    raise AttributeError(name) from exc
+AttributeError: rack_id
+
+  • L2b: passed
+  • L2c: passed
+
+✓ deliverable (100%)
+  • No deliverables required for this task
+2026-06-27 16:54:49,277 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:54:51,254 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_085448_telecom_telecom-site-001_openai_openai_deepseek-chat_a000/workspace: 

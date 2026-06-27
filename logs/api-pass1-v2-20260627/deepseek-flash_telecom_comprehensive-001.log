@@ -1,0 +1,108 @@
+
+Running openai:deepseek-chat on telecom/comprehensive-001 (attempt 1/1)...
+
+FAIL telecom/comprehensive-001 — overall score: 46.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 21 YAML files valid; Missing expected files:     │
+│       │        │ instances/racks/RACK-A01.yaml, instances/pdus/PDU-A.yaml,   │
+│       │        │ instances/pdus/PDU-B.yaml,                                  │
+│       │        │ mates/rack-mount/RACK-A01-SRV-01.yaml,                      │
+│       │        │ mates/rack-mount/RACK-A01-SRV-02.yaml,                      │
+│       │        │ mates/rack-mount/RACK-A01-SW-01.yaml,                       │
+│       │        │ mates/rack-mount/RACK-A01-PDU-A.yaml,                       │
+│       │        │ mates/rack-mount/RACK-A01-PDU-B.yaml                        │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 0/1    │ TELECOM-POWER-001: AttributeError: 'types.SimpleNamespace'  │
+│       │        │ object has no attribute 'capacity_w'                        │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 755, in check_pdu_budget                               │
+│       │        │     load_ratio = total_power / pdu.resolved.capacity_w      │
+│       │        │                                ^^^^^^^^^^^^^^^^^^^^^^^      │
+│       │        │ AttributeError: 'types.SimpleNamespace' object has no       │
+│       │        │ attribute 'capacity_w'                                      │
+│       │        │ ; TELECOM-POWER-002: AttributeError: rack_id                │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'rack_id'                                         │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 826, in check_pdu_phase_balance                        │
+│       │        │     rack_phases = total_power                               │
+│       │        │                 ^^^^^^^^^^^                                 │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: rack_id                                     │
+│       │        │ ; TELECOM-POWER-001: AttributeError:                        │
+│       │        │ 'types.SimpleNamespace' object has no attribute             │
+│       │        │ 'capacity_w'                                                │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 755, in check_pdu_budget                               │
+│       │        │     load_ratio = total_power / pdu.resolved.capacity_w      │
+│       │        │                                ^^^^^^^^^^^^^^^^^^^^^^^      │
+│       │        │ AttributeError: 'types.SimpleNamespace' object has no       │
+│       │        │ attribute 'capacity_w'                                      │
+│       │        │                                                             │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Deliverables:
+  ✗ bom-csv
+  ✗ power-budget
+  ✓ port-map
+  ✗ rack-face-panel-svg
+  ✓ cable-list
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 21 YAML files valid
+  • Missing expected files: instances/racks/RACK-A01.yaml, 
+instances/pdus/PDU-A.yaml, instances/pdus/PDU-B.yaml, 
+mates/rack-mount/RACK-A01-SRV-01.yaml, mates/rack-mount/RACK-A01-SRV-02.yaml, 
+mates/rack-mount/RACK-A01-SW-01.yaml, mates/rack-mount/RACK-A01-PDU-A.yaml, 
+mates/rack-mount/RACK-A01-PDU-B.yaml
+
+✗ piki (40%)
+  • L1: passed
+  • L2a: failed (1 errors)
+  •   - TELECOM-FK-001: 设备 PDU-A 引用的机柜 RACK-A01 不存在
+  • L2b: passed
+  • L2c: passed
+
+✗ deliverable (40%)
+  • ✗ bom-csv: bom.csv missing (expected under 
+runs/20260627_085335_telecom_comprehensive-001_openai_openai_deepseek-chat_a000/
+workspace/dist/采购清单)
+  • ✗ power-budget: power-budget.csv missing (expected under 
+runs/20260627_085335_telecom_comprehensive-001_openai_openai_deepseek-chat_a000/
+workspace/dist/设计评审)
+  • ✓ port-map: port-map.csv found
+  • ✗ rack-face-panel-svg: rack-panel*.svg missing (expected under 
+runs/20260627_085335_telecom_comprehensive-001_openai_openai_deepseek-chat_a000/
+workspace/dist/施工图)
+  • ✓ cable-list: cable-list.csv found
+2026-06-27 16:53:35,757 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:53:51,487 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_085335_telecom_comprehensive-001_openai_openai_deepseek-chat_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'LC'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.vali

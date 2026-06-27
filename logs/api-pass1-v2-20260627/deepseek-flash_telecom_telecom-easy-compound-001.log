@@ -1,0 +1,160 @@
+
+Running openai:deepseek-chat on telecom/telecom-easy-compound-001 (attempt 
+1/1)...
+
+FAIL telecom/telecom-easy-compound-001 — overall score: 10.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 24 YAML files valid                              │
+│ L1    │ 0/1    │ SCHEMA-001: 实例 CONN-S01-SW01 Schema 校验失败: 2           │
+│       │        │ validation errors for PortConnectionFamily                  │
+│       │        │ from_port                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ to_port                                                     │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing; SCHEMA-001:     │
+│       │        │ 实例 CONN-S01-SW02 Schema 校验失败: 2 validation errors fo… │
+│       │        │ PortConnectionFamily                                        │
+│       │        │ from_port                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ to_port                                                     │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing; SCHEMA-001:     │
+│       │        │ 实例 CONN-S02-SW01 Schema 校验失败: 2 validation errors fo… │
+│       │        │ PortConnectionFamily                                        │
+│       │        │ from_port                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ to_port                                                     │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│ L3    │ 0/1    │ TELECOM-POWER-001: AttributeError: pdu_id                   │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'pdu_id'                                          │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 765, in check_pdu_budget                               │
+│       │        │     assert device.pdu_id in pdus, f"设备 {device.id} 引用 … │
+│       │        │ PDU {device.pdu_id} 不存在"                                 │
+│       │        │            ^^^^^^^^^^^^^                                    │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: pdu_id                                      │
+│       │        │ ; TELECOM-POWER-001: AttributeError: pdu_id                 │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'pdu_id'                                          │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 765, in check_pdu_budget                               │
+│       │        │     assert device.pdu_id in pdus, f"设备 {device.id} 引用 … │
+│       │        │ PDU {device.pdu_id} 不存在"                                 │
+│       │        │            ^^^^^^^^^^^^^                                    │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: pdu_id                                      │
+│       │        │                                                             │
+│ L4    │ 0/1    │ TELECOM-RACK-003: AttributeError: rack_id                   │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'rack_id'                                         │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 866, in check_device_physical_fit                      │
+│       │        │     rack = racks.get(device.rack_id)                        │
+│       │        │                      ^^^^^^^^^^^^^^                         │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: rack_id                                     │
+│       │        │                                                             │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 24 YAML files valid
+
+✗ piki (10%)
+  • L1: failed (18 errors)
+  •   - SCHEMA-001: 实例 CONN-S01-SW01 Schema 校验失败: 2 validation errors for 
+PortConnectionFamily
+from_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+to_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 CONN-S01-SW02 Schema 校验失败: 2 validation errors for 
+PortConnectionFamily
+from_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+to_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 CONN-S02-SW01 Schema 校验失败: 2 validation errors for 
+PortConnectionFamily
+from_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+to_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 SRV-01-eth0 Schema 校验失败: 2 validation errors for 
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+
+✓ deliverable (100%)
+  • No deliverables required for this task
+2026-06-27 16:54:05,614 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:54:20,554 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_085405_telecom_telecom-easy-compound-001_openai_openai_deepseek-chat_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'LC'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.vali

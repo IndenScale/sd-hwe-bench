@@ -1,0 +1,64 @@
+
+Running openai:deepseek-reasoner on telecom/telecom-rack-010 (attempt 1/1)...
+
+FAIL telecom/telecom-rack-010 — overall score: 70.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 28 YAML files valid                              │
+│ L1    │ 0/1    │ SCHEMA-001: 实例 CONN-S01-SW01 Schema 校验失败: 2           │
+│       │        │ validation errors for PortConnectionFamily                  │
+│       │        │ from_port                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ to_port                                                     │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing; SCHEMA-001:     │
+│       │        │ 实例 CONN-S01-SW01 Schema 校验失败: 2 validation errors fo… │
+│       │        │ PortConnectionFamily                                        │
+│       │        │ from_port                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ to_port                                                     │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│ L3    │ 1/1    │ —                                                           │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 28 YAML files valid
+
+✗ piki (70%)
+  • L1: failed (2 errors)
+  •   - SCHEMA-001: 实例 CONN-S01-SW01 Schema 校验失败: 2 validation errors for 
+PortConnectionFamily
+from_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+to_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 CONN-S01-SW01 Schema 校验失败: 2 validation errors for 
+PortConnectionFamily
+from_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+to_port
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  • L2a: passed
+  • L2b: failed (4 errors)
+
+✓ deliverable (100%)
+  • No deliverables required for this task
+2026-06-27 16:58:36,479 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:58:47,291 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_085836_telecom_telecom-rack-010_openai_openai_deepseek-reasoner_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'SFP28'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.v
