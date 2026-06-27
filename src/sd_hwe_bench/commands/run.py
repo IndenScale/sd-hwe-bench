@@ -7,7 +7,7 @@ import logging
 import os
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 import typer
 
@@ -22,6 +22,18 @@ from sd_hwe_bench.scorer import TaskScore, compute_pass_at_k, score_task
 from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
+
+
+def _output_mode_for_actor(actor_spec: str) -> Literal["cli", "api"]:
+    """Return the prompt output mode suited to the actor driver.
+
+    CLI actors (kimi, codex, gemini) mutate the workspace directly and can read
+    files at runtime, so they receive a concise prompt with file references.
+    API actors (openai/deepseek) receive YAML code blocks, so the design spec
+    and other reference material must be inlined.
+    """
+    driver = actor_spec.split(":", 1)[0].lower() if ":" in actor_spec else actor_spec.lower()
+    return "api" if driver in ("openai", "deepseek") else "cli"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -88,6 +100,7 @@ def _run_rollout(
         task_metadata=task.metadata.model_dump(),
         scaffold_dir=task.scaffold_dir,
         require_generator=True,
+        output_mode=_output_mode_for_actor(actor_spec),
     )
     ws.write_prompt(prompt)
 
@@ -267,6 +280,7 @@ def _run_serial(
                 task_metadata=task.metadata.model_dump(),
                 scaffold_dir=task.scaffold_dir,
                 require_generator=True,
+                output_mode=_output_mode_for_actor(actor),
             )
             ws.write_prompt(prompt)
 

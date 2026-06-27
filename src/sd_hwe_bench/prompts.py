@@ -42,6 +42,19 @@ interfaces:
     direction: bidirectional
 ```
 
+### ⚠️ 关键字段名陷阱（务必遵守）
+
+1. **PDU 用 `capacity_w`，不是 `power_capacity_w`**：
+   scaffold 中的 `instances/racks/RACK-A01.yaml` 可能包含 `power_capacity_w` 字段，
+   但 **PDU 实例必须使用 `capacity_w`**。写成 `power_capacity_w` 会导致 SCHEMA 校验失败。
+
+2. **PDU 必须有 `rack_id`**：
+   每个 PDU 实例必须声明 `rack_id` 字段指向所属机柜。缺少 `rack_id` 会导致外键引用错误
+   （`TELECOM-FK-001`）。
+
+3. **Layout 中的 PDU 也需要 `rack_id`**：
+   `layouts/layout.yaml` 中每个 PDU 条目同样需要 `rack_id` 字段。
+
 ### 端口 Instance（`instances/ports/*.yaml`）
 ```yaml
 id: SRV-01-eth0
@@ -181,6 +194,13 @@ class PromptBuilder:
     def __init__(self, piki_ref_path: Path | None = None):
         self.piki_ref_path = piki_ref_path
 
+    def _load_design_spec(self, scaffold_dir: Path) -> str | None:
+        """Load the project design spec if present in the scaffold."""
+        spec_path = scaffold_dir / "docs" / "rack-design-spec.md"
+        if spec_path.exists():
+            return spec_path.read_text(encoding="utf-8")
+        return None
+
     def build(
         self,
         task_metadata: dict[str, Any],
@@ -218,6 +238,24 @@ class PromptBuilder:
         )
 
         parts.append(_PIKI_QUICKREF)
+
+        # Project design specification: agents must consult engineering standards
+        # before making design decisions. For CLI agents this is a file in the
+        # workspace; for API agents we inline the spec so it is actually visible.
+        design_spec = self._load_design_spec(scaffold_dir)
+        if design_spec:
+            parts.append("## 项目设计规范\n")
+            parts.append(
+                "在执行设计任务前，请先查阅本项目的设计规范 `docs/rack-design-spec.md`。 "
+                "所有设计决策（字段名、U 位分配、目录结构等）都应以规范为依据。 "
+                "未依据规范完成设计会被视为 Poor Practice。\n"
+            )
+            if output_mode == "api":
+                parts.append(design_spec)
+            else:
+                parts.append(
+                    "规范文件已放在 workspace 的 `docs/rack-design-spec.md`，请主动阅读并引用。\n"
+                )
 
         # Optional full piki reference
         if self.piki_ref_path and self.piki_ref_path.exists():
