@@ -1,0 +1,31 @@
+
+Running gemini on telecom/layout-design-001 (attempt 1/1)...
+
+FAIL telecom/layout-design-001 — overall score: 40.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 28 YAML files valid; Missing expected files:     │
+│       │        │ layouts/layout.yaml                                         │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 0/1    │ TELECOM-POWER-001: 设备 SRV-01 引用的 PDU  不存在;          │
+│       │        │ TELECOM-POWER-001: 设备 SRV-01 引用的 PDU  不存在           │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 28 YAML files valid
+  • Missing expected files: layouts/layout.yaml
+
+✗ piki (40%)
+  • L1: passed
+  • L2a: failed (1 errors)
+  •   - TELECOM-FK-001: 设备 SRV-01 引用的机柜  不存在
+  • L2b: passed
+  • L2c: passed
+
+✓ deliverable (100%)
+  • No deliverables required for this task

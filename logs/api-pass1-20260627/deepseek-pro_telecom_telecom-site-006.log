@@ -1,0 +1,38 @@
+
+Running openai:deepseek-reasoner on telecom/telecom-site-006 (attempt 1/1)...
+
+PASS telecom/telecom-site-006 — overall score: 100.00%
+                  Layer Breakdown                  
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                         ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 27 YAML files valid │
+│ L1    │ 1/1    │ —                              │
+│ L3    │ 1/1    │ —                              │
+│ L4    │ 1/1    │ —                              │
+└───────┴────────┴────────────────────────────────┘
+
+Deliverables:
+  ✓ bom-csv
+  ✓ power-budget
+  ✓ port-map
+  ✓ cable-list
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 27 YAML files valid
+
+✓ piki (85%)
+  • L1: passed
+  • L2a: passed
+  • L2b: passed
+  • L2c: passed
+  • L3: passed
+
+✓ deliverable (100%)
+  • ✓ bom-csv: bom.csv found
+  • ✓ power-budget: power-budget.csv found
+  • ✓ port-map: port-map.csv found
+  • ✓ cable-list: cable-list.csv found
+2026-06-27 16:17:46,535 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"

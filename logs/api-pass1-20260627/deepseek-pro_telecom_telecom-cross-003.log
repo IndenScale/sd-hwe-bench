@@ -1,0 +1,93 @@
+
+Running openai:deepseek-reasoner on telecom/telecom-cross-003 (attempt 1/1)...
+
+FAIL telecom/telecom-cross-003 — overall score: 40.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 28 YAML files valid                              │
+│ L1    │ 0/1    │ SCHEMA-001: 实例 PDU-A-outlet-1 Schema 校验失败: 2          │
+│       │        │ validation errors for PortFamily                            │
+│       │        │ port_name                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ port_type                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing; SCHEMA-001:     │
+│       │        │ 实例 PDU-A-outlet-2 Schema 校验失败: 2 validation errors    │
+│       │        │ for PortFamily                                              │
+│       │        │ port_name                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ port_type                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing; SCHEMA-001:     │
+│       │        │ 实例 PDU-B-outlet-1 Schema 校验失败: 2 validation errors    │
+│       │        │ for PortFamily                                              │
+│       │        │ port_name                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ port_type                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│ L3    │ 0/1    │ TELECOM-POWER-002: 机柜 RACK-A01 三相负载不平衡度           │
+│       │        │ 120.0%，超过阈值 15.0%。各相功率: L1=600W,                  │
+│       │        │ single_phase=150W                                           │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Deliverables:
+  ✓ power-budget
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 28 YAML files valid
+
+✗ piki (25%)
+  • L1: failed (28 errors)
+  •   - SCHEMA-001: 实例 PDU-A-outlet-1 Schema 校验失败: 2 validation errors for
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 PDU-A-outlet-2 Schema 校验失败: 2 validation errors for
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 PDU-B-outlet-1 Schema 校验失败: 2 validation errors for
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 PDU-B-outlet-2 Schema 校验失败: 2 validation errors for
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+
+✓ deliverable (100%)
+  • ✓ power-budget: power-budget.csv found
+2026-06-27 16:14:34,110 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:15:35,857 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_081433_telecom_telecom-cross-003_openai_openai_deepseek-reasoner_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'SFP28'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.v

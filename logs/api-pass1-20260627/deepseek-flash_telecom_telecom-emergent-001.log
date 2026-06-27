@@ -1,0 +1,159 @@
+
+Running openai:deepseek-chat on telecom/telecom-emergent-001 (attempt 1/1)...
+
+FAIL telecom/telecom-emergent-001 — overall score: 20.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 17 YAML files valid; Missing expected files:     │
+│       │        │ instances/pdus/PDU-C.yaml                                   │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 0/1    │ TELECOM-POWER-001: AttributeError: pdu_id                   │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'pdu_id'                                          │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 765, in check_pdu_budget                               │
+│       │        │     assert device.pdu_id in pdus, f"设备 {device.id} 引用 … │
+│       │        │ PDU {device.pdu_id} 不存在"                                 │
+│       │        │            ^^^^^^^^^^^^^                                    │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: pdu_id                                      │
+│       │        │ ; TELECOM-POWER-001: AttributeError: pdu_id                 │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'pdu_id'                                          │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 765, in check_pdu_budget                               │
+│       │        │     assert device.pdu_id in pdus, f"设备 {device.id} 引用 … │
+│       │        │ PDU {device.pdu_id} 不存在"                                 │
+│       │        │            ^^^^^^^^^^^^^                                    │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: pdu_id                                      │
+│       │        │                                                             │
+│ L4    │ 0/1    │ TELECOM-RACK-001: TypeError: '<' not supported between      │
+│       │        │ instances of 'int' and 'NoneType'                           │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 775, in check_rack_space                               │
+│       │        │     for d in devices:                                       │
+│       │        │              ^^^^^^^                                        │
+│       │        │   File "/src/piki/src/piki/core/engine/_query_engine.py",   │
+│       │        │ line 146, in __iter__                                       │
+│       │        │     return iter(self._evaluate())                           │
+│       │        │                 ^^^^^^^^^^^^^^^^                            │
+│       │        │   File "/src/piki/src/piki/core/engine/_query_engine.py",   │
+│       │        │ line 239, in _evaluate                                      │
+│       │        │     items.sort(key=lambda item: self._get_value(item,       │
+│       │        │ field), reverse=reverse)                                    │
+│       │        │ TypeError: '<' not supported between instances of 'int' and │
+│       │        │ 'NoneType'                                                  │
+│       │        │ ; TELECOM-RACK-002: AttributeError: 'types.SimpleNamespace' │
+│       │        │ object has no attribute 'height_u'                          │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 803, in check_rack_capacity                            │
+│       │        │     total_height = sum(d.resolved.height_u for d in         │
+│       │        │ devices)                                                    │
+│       │        │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^… │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 803, in <genexpr>                                      │
+│       │        │     total_height = sum(d.resolved.height_u for d in         │
+│       │        │ devices)                                                    │
+│       │        │                        ^^^^^^^^^^^^^^^^^^^                  │
+│       │        │ AttributeError: 'types.SimpleNamespace' object has no       │
+│       │        │ attribute 'height_u'                                        │
+│       │        │ ; TELECOM-RACK-001: TypeError: '<' not supported between    │
+│       │        │ instances of 'int' and 'NoneType'                           │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 775, in check_rack_space                               │
+│       │        │     for d in devices:                                       │
+│       │        │              ^^^^^^^                                        │
+│       │        │   File "/src/piki/src/piki/core/engine/_query_engine.py",   │
+│       │        │ line 146, in __iter__                                       │
+│       │        │     return iter(self._evaluate())                           │
+│       │        │                 ^^^^^^^^^^^^^^^^                            │
+│       │        │   File "/src/piki/src/piki/core/engine/_query_engine.py",   │
+│       │        │ line 239, in _evaluate                                      │
+│       │        │     items.sort(key=lambda item: self._get_value(item,       │
+│       │        │ field), reverse=reverse)                                    │
+│       │        │ TypeError: '<' not supported between instances of 'int' and │
+│       │        │ 'NoneType'                                                  │
+│       │        │                                                             │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 17 YAML files valid
+  • Missing expected files: instances/pdus/PDU-C.yaml
+
+✗ piki (20%)
+  • L1: passed
+  • L2a: failed (1 errors)
+  •   - TELECOM-FK-001: AttributeError: pdu_id
+Traceback (most recent call last):
+  File "/src/piki/adl/src/adl/models/base.py", line 97, in __getattr__
+    return self._resolved
+           ~~~~~~~~~~~~~~^^^^^^
+KeyError: 'pdu_id'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/src/piki/src/piki/core/engine/checker.py", line 174, in run
+    func(ctx)
+  File "/src/piki/src/piki/extensions/telecom/plugin.py", line 907, in 
+check_foreign_keys
+    assert device.pdu_id in pdus, f"设备 {device.id} 引用的 PDU {device.pdu_id} 
+不存在"
+           ^^^^^^^^^^^^^
+  File "/src/piki/adl/src/adl/models/base.py", line 99, in __getattr__
+    raise AttributeError(name) from exc
+AttributeError: pdu_id
+
+  • L2b: passed
+  • L2c: passed
+
+✓ deliverable (100%)
+  • No deliverables required for this task
+2026-06-27 16:11:46,805 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:11:48,732 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_081146_telecom_telecom-emergent-001_openai_openai_deepseek-chat_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'SFP28'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.v

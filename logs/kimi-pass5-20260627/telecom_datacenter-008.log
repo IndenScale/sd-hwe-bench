@@ -1,0 +1,9 @@
+
+Running 5 rollouts with 5 parallel workers...
+PASS telecom/datacenter-008 (attempt 1) — score: 100.00% — elapsed: 40.9s
+PASS telecom/datacenter-008 (attempt 2) — score: 100.00% — elapsed: 39.7s
+PASS telecom/datacenter-008 (attempt 3) — score: 100.00% — elapsed: 34.2s
+PASS telecom/datacenter-008 (attempt 4) — score: 100.00% — elapsed: 43.1s
+PASS telecom/datacenter-008 (attempt 5) — score: 100.00% — elapsed: 38.1s
+
+Pass@1: 100%

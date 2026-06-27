@@ -1,0 +1,89 @@
+
+Running openai:deepseek-chat on telecom/telecom-easy-compound-002 (attempt 
+1/1)...
+
+FAIL telecom/telecom-easy-compound-002 — overall score: 65.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 16 YAML files valid                              │
+│ L1    │ 0/1    │ SCHEMA-001: 实例 SRV-01-eth0 Schema 校验失败: 2 validation  │
+│       │        │ errors for PortFamily                                       │
+│       │        │ port_name                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ port_type                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing; SCHEMA-001:     │
+│       │        │ 实例 SRV-01-eth1 Schema 校验失败: 2 validation errors for   │
+│       │        │ PortFamily                                                  │
+│       │        │ port_name                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ port_type                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing; SCHEMA-001:     │
+│       │        │ 实例 SRV-01-power-a Schema 校验失败: 2 validation errors    │
+│       │        │ for PortFamily                                              │
+│       │        │ port_name                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│       │        │ port_type                                                   │
+│       │        │   Field required                                            │
+│       │        │     For further information visit                           │
+│       │        │ https://errors.pydantic.dev/2.13/v/missing                  │
+│ L3    │ 1/1    │ —                                                           │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 16 YAML files valid
+
+✗ piki (65%)
+  • L1: failed (18 errors)
+  •   - SCHEMA-001: 实例 SRV-01-eth0 Schema 校验失败: 2 validation errors for 
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 SRV-01-eth1 Schema 校验失败: 2 validation errors for 
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 SRV-01-power-a Schema 校验失败: 2 validation errors for
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+  •   - SCHEMA-001: 实例 SRV-02-eth0 Schema 校验失败: 2 validation errors for 
+PortFamily
+port_name
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+port_type
+  Field required 
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+
+✓ deliverable (100%)
+  • No deliverables required for this task
+2026-06-27 16:11:27,526 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:11:32,161 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_081127_telecom_telecom-easy-compound-002_openai_openai_deepseek-chat_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'SFP28'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.v

@@ -1,0 +1,50 @@
+
+Running openai:deepseek-reasoner on telecom/connection-design-001 (attempt 
+1/1)...
+
+PASS telecom/connection-design-001 — overall score: 100.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 35 YAML files valid; Missing expected files:     │
+│       │        │ mates/sfp28-cage/SRV-01-eth0-SFP28-SR-SRV-01-eth0.yaml,     │
+│       │        │ mates/sfp28-cage/SRV-02-eth0-SFP28-SR-SRV-02-eth0.yaml,     │
+│       │        │ mates/sfp28-cage/SW-01-Gi101-SFP28-SR-SW-01-Gi101.yaml,     │
+│       │        │ mates/sfp28-cage/SW-01-Gi102-SFP28-SR-SW-01-Gi102.yaml,     │
+│       │        │ mates/lc-connector/FIBER-SRV01-SW01-end-a-SFP28-SR-SRV-01-… │
+│       │        │ mates/lc-connector/FIBER-SRV01-SW01-end-b-SFP28-SR-SW-01-G… │
+│       │        │ mates/lc-connector/FIBER-SRV02-SW01-end-a-SFP28-SR-SRV-02-… │
+│       │        │ mates/lc-connector/FIBER-SRV02-SW01-end-b-SFP28-SR-SW-01-G… │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 1/1    │ —                                                           │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Deliverables:
+  ✓ port-map
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 35 YAML files valid
+  • Missing expected files: 
+mates/sfp28-cage/SRV-01-eth0-SFP28-SR-SRV-01-eth0.yaml, 
+mates/sfp28-cage/SRV-02-eth0-SFP28-SR-SRV-02-eth0.yaml, 
+mates/sfp28-cage/SW-01-Gi101-SFP28-SR-SW-01-Gi101.yaml, 
+mates/sfp28-cage/SW-01-Gi102-SFP28-SR-SW-01-Gi102.yaml, 
+mates/lc-connector/FIBER-SRV01-SW01-end-a-SFP28-SR-SRV-01-eth0.yaml, 
+mates/lc-connector/FIBER-SRV01-SW01-end-b-SFP28-SR-SW-01-Gi101.yaml, 
+mates/lc-connector/FIBER-SRV02-SW01-end-a-SFP28-SR-SRV-02-eth0.yaml, 
+mates/lc-connector/FIBER-SRV02-SW01-end-b-SFP28-SR-SW-01-Gi102.yaml
+
+✓ piki (85%)
+  • L1: passed
+  • L2a: passed
+  • L2b: passed
+  • L2c: passed
+  • L3: passed
+
+✓ deliverable (100%)
+  • ✓ port-map: port-map.csv found
+2026-06-27 16:12:35,807 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"

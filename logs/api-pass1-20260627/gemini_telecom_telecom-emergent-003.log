@@ -1,0 +1,30 @@
+
+Running gemini on telecom/telecom-emergent-003 (attempt 1/1)...
+
+PASS telecom/telecom-emergent-003 — overall score: 85.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 7 YAML files valid; Missing expected files:      │
+│       │        │ instances/devices/SAN-01.yaml                               │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 1/1    │ —                                                           │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 7 YAML files valid
+  • Missing expected files: instances/devices/SAN-01.yaml
+
+✓ piki (85%)
+  • L1: passed
+  • L2a: passed
+  • L2b: passed
+  • L2c: passed
+  • L3: passed
+
+✓ deliverable (100%)
+  • No deliverables required for this task

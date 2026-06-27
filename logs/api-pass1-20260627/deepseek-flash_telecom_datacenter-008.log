@@ -1,0 +1,46 @@
+
+Running openai:deepseek-chat on telecom/datacenter-008 (attempt 1/1)...
+
+FAIL telecom/datacenter-008 — overall score: 95.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 38 YAML files valid; Missing expected files:     │
+│       │        │ mates/cable-tray-over-row/ROW-A-COOLER-A.yaml,              │
+│       │        │ mates/cable-tray-over-row/ROW-B-COOLER-B.yaml               │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 1/1    │ —                                                           │
+│ L4    │ 1/1    │ —                                                           │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Deliverables:
+  ✓ bom-csv
+  ✓ power-budget
+  ✓ port-map
+  ✓ cable-list
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 38 YAML files valid
+  • Missing expected files: mates/cable-tray-over-row/ROW-A-COOLER-A.yaml, 
+mates/cable-tray-over-row/ROW-B-COOLER-B.yaml
+
+✗ piki (80%)
+  • L1: passed
+  • L2a: failed (2 errors)
+  •   - FK-001: Instance 'ROW-A-COOLER-A' 的字段 'part_b_id' 引用了 不存在的 
+Instance 'COOLER-ROW-A'。
+  •   - FK-001: Instance 'ROW-B-COOLER-B' 的字段 'part_b_id' 引用了 不存在的 
+Instance 'COOLER-ROW-B'。
+  • L2b: passed
+
+✓ deliverable (100%)
+  • ✓ bom-csv: bom.csv found
+  • ✓ power-budget: power-budget.csv found
+  • ✓ port-map: port-map.csv found
+  • ✓ cable-list: cable-list.csv found
+2026-06-27 16:11:09,662 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:11:12,307 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_081109_telecom_datacenter-008_openai_openai_deepseek-chat_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'SFP28'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.v

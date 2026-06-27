@@ -1,0 +1,28 @@
+
+Running gemini on telecom/telecom-site-001 (attempt 1/1)...
+
+FAIL telecom/telecom-site-001 — overall score: 85.00%
+                             Layer Breakdown                             
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                               ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 0/1    │ L0 failed: no YAML instance files found in workspace │
+│ L1    │ 1/1    │ —                                                    │
+│ L3    │ 1/1    │ —                                                    │
+│ L4    │ 1/1    │ —                                                    │
+└───────┴────────┴──────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✗ syntax (0%)
+  • L0 failed: no YAML instance files found in workspace
+
+✓ piki (85%)
+  • L1: passed
+  • L2a: passed
+  • L2b: passed
+  • L2c: passed
+  • L3: passed
+
+✓ deliverable (100%)
+  • No deliverables required for this task

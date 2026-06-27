@@ -1,0 +1,129 @@
+
+Running openai:deepseek-chat on telecom/telecom-site-003 (attempt 1/1)...
+
+FAIL telecom/telecom-site-003 — overall score: 20.00%
+                                Layer Breakdown                                 
+┏━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Layer ┃ Passed ┃ Errors                                                      ┃
+┡━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ L0    │ 1/1    │ L0 passed: 10 YAML files valid; Missing expected files:     │
+│       │        │ instances/antennas/RRU-01.yaml,                             │
+│       │        │ instances/antennas/RRU-02.yaml,                             │
+│       │        │ instances/antennas/ANT-01.yaml,                             │
+│       │        │ instances/antennas/ANT-02.yaml                              │
+│ L1    │ 1/1    │ —                                                           │
+│ L3    │ 0/1    │ TELECOM-POWER-001: AttributeError: pdu_id                   │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'pdu_id'                                          │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 765, in check_pdu_budget                               │
+│       │        │     assert device.pdu_id in pdus, f"设备 {device.id} 引用 … │
+│       │        │ PDU {device.pdu_id} 不存在"                                 │
+│       │        │            ^^^^^^^^^^^^^                                    │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: pdu_id                                      │
+│       │        │ ; TELECOM-POWER-001: AttributeError: pdu_id                 │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'pdu_id'                                          │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 765, in check_pdu_budget                               │
+│       │        │     assert device.pdu_id in pdus, f"设备 {device.id} 引用 … │
+│       │        │ PDU {device.pdu_id} 不存在"                                 │
+│       │        │            ^^^^^^^^^^^^^                                    │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: pdu_id                                      │
+│       │        │                                                             │
+│ L4    │ 0/1    │ TELECOM-RACK-003: AttributeError: rack_id                   │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 97, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     return self._resolved                                   │
+│       │        │            ~~~~~~~~~~~~~~^^^^^^                             │
+│       │        │ KeyError: 'rack_id'                                         │
+│       │        │                                                             │
+│       │        │ The above exception was the direct cause of the following   │
+│       │        │ exception:                                                  │
+│       │        │                                                             │
+│       │        │ Traceback (most recent call last):                          │
+│       │        │   File "/src/piki/src/piki/core/engine/checker.py", line    │
+│       │        │ 174, in run                                                 │
+│       │        │     func(ctx)                                               │
+│       │        │   File "/src/piki/src/piki/extensions/telecom/plugin.py",   │
+│       │        │ line 866, in check_device_physical_fit                      │
+│       │        │     rack = racks.get(device.rack_id)                        │
+│       │        │                      ^^^^^^^^^^^^^^                         │
+│       │        │   File "/src/piki/adl/src/adl/models/base.py", line 99, in  │
+│       │        │ __getattr__                                                 │
+│       │        │     raise AttributeError(name) from exc                     │
+│       │        │ AttributeError: rack_id                                     │
+│       │        │                                                             │
+└───────┴────────┴─────────────────────────────────────────────────────────────┘
+
+Review Comments:
+
+✓ syntax (100%)
+  • L0 passed: 10 YAML files valid
+  • Missing expected files: instances/antennas/RRU-01.yaml, 
+instances/antennas/RRU-02.yaml, instances/antennas/ANT-01.yaml, 
+instances/antennas/ANT-02.yaml
+
+✗ piki (20%)
+  • L1: passed
+  • L2a: failed (1 errors)
+  •   - TELECOM-FK-001: AttributeError: rack_id
+Traceback (most recent call last):
+  File "/src/piki/adl/src/adl/models/base.py", line 97, in __getattr__
+    return self._resolved
+           ~~~~~~~~~~~~~~^^^^^^
+KeyError: 'rack_id'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/src/piki/src/piki/core/engine/checker.py", line 174, in run
+    func(ctx)
+  File "/src/piki/src/piki/extensions/telecom/plugin.py", line 906, in 
+check_foreign_keys
+    assert device.rack_id in racks, f"设备 {device.id} 引用的机柜 
+{device.rack_id} 不存在"
+           ^^^^^^^^^^^^^^
+  File "/src/piki/adl/src/adl/models/base.py", line 99, in __getattr__
+    raise AttributeError(name) from exc
+AttributeError: rack_id
+
+  • L2b: passed
+  • L2c: passed
+
+✓ deliverable (100%)
+  • No deliverables required for this task
+2026-06-27 16:12:21,235 [INFO] httpx: HTTP Request: POST https://api.deepseek.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-06-27 16:12:26,301 [WARNING] sd_hwe_bench.actors.openai_actor: piki check failed for /Users/indenscale/workspace/sd-hwe-bench/runs/20260627_081220_telecom_telecom-site-003_openai_openai_deepseek-chat_a000/workspace: /usr/local/lib/python3.12/site-packages/pydantic/main.py:732: UserWarning: Unknown interface_type: 'SFP28'. Known types: FC-fiber-adapter, FC-fiber-plug, IEC-C13, IEC-C14, QSFP28-cage, QSFP28-module, RJ45-jack, RJ45-plug, SFP28-cage, SFP28-module, TRS-3.5mm-jack, TRS-3.5mm-plug, USB-C-plug, USB-C-receptacle, drawer-slide-female, drawer-slide-male, hinge-frame, hinge-leaf, mx-socket, mx-stem, plate-cutout, rack-mount-ear, rack-mount-rail, screw-hole, standoff
+  return cls.__pydantic_validator__.v

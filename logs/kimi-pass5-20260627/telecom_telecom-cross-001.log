@@ -1,0 +1,9 @@
+
+Running 5 rollouts with 5 parallel workers...
+FAIL telecom/telecom-cross-001 (attempt 1) — score: 72.50% — elapsed: 9.8s
+FAIL telecom/telecom-cross-001 (attempt 2) — score: 92.50% — elapsed: 385.1s
+PASS telecom/telecom-cross-001 (attempt 3) — score: 100.00% — elapsed: 460.3s
+FAIL telecom/telecom-cross-001 (attempt 4) — score: 92.50% — elapsed: 180.2s
+PASS telecom/telecom-cross-001 (attempt 5) — score: 100.00% — elapsed: 396.8s
+
+Pass@1: 0%
