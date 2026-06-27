@@ -1,0 +1,11 @@
+model: compute-node-2u
+family: ServerFamily
+name: 2U 计算节点
+height_u: 2
+tdp_w: 500
+psu_count: 2
+psu_redundancy: true
+depth_mm: 750
+width_mm: 445
+height_mm: 89
+weight_kg: 22.0

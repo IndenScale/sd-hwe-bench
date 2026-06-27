@@ -1,0 +1,106 @@
+project: canonical-telecom-site
+domain: telecom
+base_difficulty: medium
+commit_history:
+- commit: c00
+  step: 0
+  summary: 初始 scaffold：piki.toml + models/
+  is_scaffold_only: true
+- commit: c01
+  step: 1
+  summary: 声明户外机柜 CABINET-01
+  task_type: instance-declaration
+  difficulty: easy
+  requirement: 为户外基站站点声明一个 IP65 户外一体化机柜 CABINET-01。查阅 docs/site-design-spec.md §1。
+  expected_files:
+  - instances/racks/CABINET-01.yaml
+  expected_deliverables: []
+- commit: c02
+  step: 2
+  summary: 部署 CABINET-01
+  task_type: comprehensive
+  difficulty: hard
+  requirement: '完成 CABINET-01 的机柜内部署：
+
+    1. 声明直流电源 DCPS-01（14.4kW，挂载到 CABINET-01，两个 IEC-C14 输出口）
+
+    2. 声明 BBU-01（BBU5900，350W TDP，CPRI 光口）
+
+    3. 布局：DCPS-01 在 U5，BBU-01 在 U10，BBU-01 接入 DCPS-01
+
+    4. 创建 rack-mount 配合
+
+    查阅 docs/site-design-spec.md §2-§4。注意 capacity_w（不是 power_capacity_w）、rack_id 必填、U 位间隔≥1U。'
+  expected_files:
+  - instances/pdus/DCPS-01.yaml
+  - instances/devices/BBU-01.yaml
+  - layouts/layout.yaml
+  - mates/rack-mount/CABINET-01-DCPS-01.yaml
+  - mates/rack-mount/CABINET-01-BBU-01.yaml
+  expected_deliverables: []
+- commit: c03
+  step: 3
+  summary: 声明天线和 RRU
+  task_type: instance-declaration
+  difficulty: easy
+  requirement: 为两个扇区声明 RRU-01/RRU-02 和 ANT-01/ANT-02。查阅 docs/site-design-spec.md §5。
+  expected_files:
+  - instances/antennas/RRU-01.yaml
+  - instances/antennas/RRU-02.yaml
+  - instances/antennas/ANT-01.yaml
+  - instances/antennas/ANT-02.yaml
+  expected_deliverables: []
+- commit: c04
+  step: 4
+  summary: 声明 BBU 端口、馈线及 cable-connection 配合
+  task_type: connection-design
+  difficulty: medium
+  requirement: '1. 为 BBU-01 的 cpri-1/cpri-2/power-a 声明端口实例
+
+    2. 声明馈线 FEEDER-RRU01-ANT01 和 FEEDER-RRU02-ANT02（3m）
+
+    3. 创建 cable-connection 配合（RRU→馈线、馈线→天线）
+
+    查阅 docs/site-design-spec.md §7。'
+  expected_files:
+  - instances/ports/BBU-01-cpri-1.yaml
+  - instances/ports/BBU-01-cpri-2.yaml
+  - instances/ports/BBU-01-power-a.yaml
+  - instances/cables/FEEDER-RRU01-ANT01.yaml
+  - instances/cables/FEEDER-RRU02-ANT02.yaml
+  - mates/cable-connection/RRU01-FEEDER-ANT01.yaml
+  - mates/cable-connection/FEEDER-ANT01-RRU01.yaml
+  - mates/cable-connection/RRU02-FEEDER-ANT02.yaml
+  - mates/cable-connection/FEEDER-ANT02-RRU02.yaml
+  expected_deliverables: []
+- commit: c05
+  step: 5
+  summary: 声明防雷接地系统及配合
+  task_type: comprehensive
+  difficulty: medium
+  requirement: 声明防雷接地系统：GROUND-ROD-01 + SPD-01 + SPD-02，并创建 SPD→接地极的 cable-connection 配合（16mm² 接地线）。查阅 docs/site-design-spec.md
+    §6。
+  expected_files:
+  - instances/grounding/GROUND-ROD-01.yaml
+  - instances/grounding/SPD-01.yaml
+  - instances/grounding/SPD-02.yaml
+  - mates/grounding/SPD01-TO-GROUND-ROD01.yaml
+  - mates/grounding/SPD02-TO-GROUND-ROD01.yaml
+  expected_deliverables: []
+- commit: c06
+  step: 6
+  summary: 添加电源和 must-clear 配合
+  task_type: mating-design
+  difficulty: easy
+  requirement: '1. 创建 DCPS-01→BBU-01 的 power-iec-c14-c13 电源配合
+
+    2. 为天线和 RRU 创建 must-clear 配合'
+  expected_files:
+  - mates/power-iec/DCPS01-BBU01-A.yaml
+  - mates/must-clear/ANT01-RRU01.yaml
+  - mates/must-clear/ANT02-RRU02.yaml
+  expected_deliverables:
+  - bom-csv
+  - power-budget
+  - port-map
+  - cable-list

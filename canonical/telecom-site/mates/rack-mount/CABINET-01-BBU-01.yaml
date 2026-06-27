@@ -1,0 +1,11 @@
+id: CABINET-01-BBU-01
+type: rack-mount-19inch
+part_a_id: CABINET-01
+part_b_id: BBU-01
+attributes:
+  position_u: 10
+  height_u: 2
+  depth_mm:
+    le: 800
+  width_mm:
+    le: 600

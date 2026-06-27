@@ -1,0 +1,6 @@
+id: COOLER-ROW-A
+family: FacilityFamily
+model: in-row-cooler-30kw
+name: "A排列间空调"
+facility_type: cooler
+room_id: DC-ROOM-01

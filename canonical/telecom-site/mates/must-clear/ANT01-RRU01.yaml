@@ -1,0 +1,5 @@
+id: ANT01-RRU01
+type: must-clear
+part_a_id: ANT-01
+part_b_id: RRU-01
+description: "天线与 RRU 不得碰撞"

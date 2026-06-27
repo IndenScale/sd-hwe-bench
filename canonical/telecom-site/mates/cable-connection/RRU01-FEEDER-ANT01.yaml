@@ -1,0 +1,4 @@
+id: RRU01-FEEDER-ANT01
+type: cable-connection
+part_a_id: RRU-01
+part_b_id: FEEDER-RRU01-ANT01

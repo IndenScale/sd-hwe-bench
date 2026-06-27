@@ -1,0 +1,8 @@
+model: spd-dc-48v
+family: FacilityFamily
+name: 直流电源防雷器（-48V）
+facility_type: spd
+width_mm: 90
+depth_mm: 70
+height_mm: 120
+weight_kg: 0.5

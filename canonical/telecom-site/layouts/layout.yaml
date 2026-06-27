@@ -1,0 +1,7 @@
+- instance: DCPS-01
+  rack_id: CABINET-01
+  position_u: 5
+- instance: BBU-01
+  rack_id: CABINET-01
+  position_u: 10
+  pdu_id: DCPS-01

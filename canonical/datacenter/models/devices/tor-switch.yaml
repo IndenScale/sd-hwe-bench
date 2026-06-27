@@ -1,0 +1,11 @@
+model: tor-switch-48p-25g
+family: ServerFamily
+name: ToR 交换机 48×25G + 8×100G
+height_u: 1
+tdp_w: 250
+psu_count: 2
+psu_redundancy: true
+depth_mm: 500
+width_mm: 440
+height_mm: 44
+weight_kg: 8.5

@@ -1,0 +1,6 @@
+id: BBU-01-cpri-2
+family: PortFamily
+device_id: BBU-01
+port_name: cpri-2
+port_type: SFP28
+status: installed

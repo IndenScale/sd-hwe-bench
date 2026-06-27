@@ -1,0 +1,11 @@
+id: RACK-A01-PDU-A01-A
+type: rack-mount-19inch
+part_a_id: RACK-A01
+part_b_id: PDU-A01-A
+attributes:
+  position_u: 40
+  height_u: 0
+  depth_mm:
+    le: 1000
+  width_mm:
+    le: 600

@@ -1,0 +1,11 @@
+model: dcps-48v-300a
+family: PduFamily
+name: -48V 直流电源系统（300A）
+height_u: 5
+tdp_w: 50
+psu_count: 1
+psu_redundancy: false
+depth_mm: 500
+width_mm: 442
+height_mm: 222
+weight_kg: 45.0

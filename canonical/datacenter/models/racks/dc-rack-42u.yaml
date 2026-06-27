@@ -1,0 +1,12 @@
+model: dc-rack-42u
+family: RackFamily
+name: 数据中心 42U 机柜
+total_u: 42
+power_capacity_w: 10000
+depth_mm: 1000
+width_mm: 600
+weight_kg: 150.0
+max_load_kg: 1000
+cooling_capacity_w: 8000
+maintenance_front_mm: 1200
+maintenance_rear_mm: 1000

@@ -1,0 +1,12 @@
+model: outdoor-cabinet-ip65
+family: RackFamily
+name: 户外一体化机柜 IP65
+total_u: 42
+power_capacity_w: 5000
+depth_mm: 800
+width_mm: 600
+weight_kg: 120.0
+max_load_kg: 600
+cooling_capacity_w: 4000
+maintenance_front_mm: 1000
+maintenance_rear_mm: 800

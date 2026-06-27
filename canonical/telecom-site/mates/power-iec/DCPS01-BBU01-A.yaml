@@ -1,0 +1,6 @@
+id: DCPS01-BBU01-A
+type: power-iec-c14-c13
+part_a_id: DCPS-01
+part_a_port: dc-out-1
+part_b_id: BBU-01
+part_b_port: power-a

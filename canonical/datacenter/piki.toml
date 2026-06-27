@@ -1,0 +1,23 @@
+[project]
+name = "canonical-datacenter"
+version = "1.0.0"
+description = "Canonical data center deployment: 2 rows × 4 racks, dual-PDU, in-row cooling, cross-row ToR fabric."
+
+[plugins]
+enabled = ["telecom"]
+
+[plugins.telecom]
+power_threshold = 0.8
+rack_usage_threshold = 0.8
+
+[generators]
+enabled = ["bom-csv", "power-budget", "port-map", "cable-list"]
+
+[generators.dist]
+root = "dist"
+
+[generators.dist.targets]
+bom-csv = "采购清单"
+power-budget = "设计评审"
+port-map = "设计评审"
+cable-list = "采购清单"

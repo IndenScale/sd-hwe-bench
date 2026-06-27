@@ -1,0 +1,4 @@
+id: FEEDER-ANT02-RRU02
+type: cable-connection
+part_a_id: FEEDER-RRU02-ANT02
+part_b_id: ANT-02

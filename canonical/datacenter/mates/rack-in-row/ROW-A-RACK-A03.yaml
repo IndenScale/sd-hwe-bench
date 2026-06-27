@@ -1,0 +1,6 @@
+id: ROW-A-RACK-A03
+type: rack-in-row
+part_a_id: ROW-A
+part_b_id: RACK-A03
+attributes:
+  bay_index: 2

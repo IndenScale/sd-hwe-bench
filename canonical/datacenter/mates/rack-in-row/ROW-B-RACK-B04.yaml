@@ -1,0 +1,6 @@
+id: ROW-B-RACK-B04
+type: rack-in-row
+part_a_id: ROW-B
+part_b_id: RACK-B04
+attributes:
+  bay_index: 3

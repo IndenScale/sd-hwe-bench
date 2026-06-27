@@ -1,0 +1,22 @@
+id: PDU-A01-B
+rack_id: RACK-A01
+family: PduFamily
+model: dc-pdu-3phase-32a
+capacity_w: 22080
+interfaces:
+  - id: outlet-1
+    interface_type: IEC-C14
+    direction: output
+    description: "C13 输出口 1"
+  - id: outlet-2
+    interface_type: IEC-C14
+    direction: output
+    description: "C13 输出口 2"
+  - id: outlet-3
+    interface_type: IEC-C14
+    direction: output
+    description: "C13 输出口 3"
+  - id: outlet-4
+    interface_type: IEC-C14
+    direction: output
+    description: "C13 输出口 4"

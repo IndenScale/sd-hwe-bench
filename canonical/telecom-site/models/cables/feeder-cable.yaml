@@ -1,0 +1,6 @@
+model: feeder-1-2inch-50m
+family: FiberPatchCordFamily
+name: 1/2" 馈线（50m）
+cable_type: RF-FEEDER-1-2INCH
+length_m: 50.0
+weight_kg_per_m: 0.5

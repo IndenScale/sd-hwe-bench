@@ -1,0 +1,5 @@
+id: SPD-02
+family: FacilityFamily
+model: spd-dc-48v
+facility_type: spd
+name: "BBU 信号防雷器"

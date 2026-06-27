@@ -1,0 +1,8 @@
+model: ground-rod-copper-2m
+family: FacilityFamily
+name: 铜包钢接地极（2m）
+facility_type: ground-rod
+width_mm: 20
+depth_mm: 20
+height_mm: 2000
+weight_kg: 5.0

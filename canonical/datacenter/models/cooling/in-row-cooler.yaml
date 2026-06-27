@@ -1,0 +1,8 @@
+model: in-row-cooler-30kw
+family: FacilityFamily
+name: 列间精密空调 30kW
+facility_type: cooler
+width_mm: 600
+depth_mm: 1100
+height_mm: 2000
+weight_kg: 350.0

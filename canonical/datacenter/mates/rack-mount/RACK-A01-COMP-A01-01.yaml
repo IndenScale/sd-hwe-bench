@@ -1,0 +1,11 @@
+id: RACK-A01-COMP-A01-01
+type: rack-mount-19inch
+part_a_id: RACK-A01
+part_b_id: COMP-A01-01
+attributes:
+  position_u: 10
+  height_u: 2
+  depth_mm:
+    le: 1000
+  width_mm:
+    le: 600

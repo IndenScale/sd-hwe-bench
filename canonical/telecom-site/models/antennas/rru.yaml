@@ -1,0 +1,8 @@
+model: rru-4t4r-40w
+family: FacilityFamily
+name: 4T4R 射频拉远单元（40W）
+facility_type: rru
+width_mm: 350
+depth_mm: 150
+height_mm: 480
+weight_kg: 18.0

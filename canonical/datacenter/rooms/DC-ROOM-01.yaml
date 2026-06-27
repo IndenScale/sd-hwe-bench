@@ -1,0 +1,12 @@
+id: DC-ROOM-01
+family: RoomFamily
+name: "数据中心机房 A"
+length_mm: 12000
+width_mm: 8000
+height_mm: 3200
+rack_bay_spacing_mm: 1200
+rack_inline_spacing_mm: 600
+rack_row_count: 2
+racks_per_row: 4
+rack_width_mm: 600
+rack_depth_mm: 1000

@@ -1,0 +1,7 @@
+id: SPD02-TO-GROUND-ROD01
+type: cable-connection
+part_a_id: SPD-02
+part_b_id: GROUND-ROD-01
+description: "SPD-02 接地线至接地极"
+cable_type: GROUND-CABLE-16MM2
+length_m: 3.5

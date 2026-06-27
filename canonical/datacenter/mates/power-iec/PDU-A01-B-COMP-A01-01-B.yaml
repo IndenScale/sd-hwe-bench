@@ -1,0 +1,6 @@
+id: PDU-A01-B-COMP-A01-01-B
+type: power-iec-c14-c13
+part_a_id: PDU-A01-B
+part_a_port: outlet-1
+part_b_id: COMP-A01-01
+part_b_port: power-b

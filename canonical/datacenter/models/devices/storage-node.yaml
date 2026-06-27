@@ -1,0 +1,11 @@
+model: storage-node-4u
+family: ServerFamily
+name: 4U 存储节点
+height_u: 4
+tdp_w: 800
+psu_count: 2
+psu_redundancy: true
+depth_mm: 800
+width_mm: 445
+height_mm: 178
+weight_kg: 45.0

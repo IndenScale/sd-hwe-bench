@@ -1,0 +1,6 @@
+id: ROW-A-RACK-A01
+type: rack-in-row
+part_a_id: ROW-A
+part_b_id: RACK-A01
+attributes:
+  bay_index: 0

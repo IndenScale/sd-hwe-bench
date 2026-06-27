@@ -1,0 +1,11 @@
+model: dc-pdu-3phase-32a
+family: PduFamily
+name: 三相 32A 机柜 PDU
+height_u: 0
+tdp_w: 0
+psu_count: 0
+psu_redundancy: false
+depth_mm: 50
+width_mm: 50
+height_mm: 1800
+weight_kg: 6.0

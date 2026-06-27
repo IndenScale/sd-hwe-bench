@@ -1,0 +1,14 @@
+id: DCPS-01
+rack_id: CABINET-01
+family: PduFamily
+model: dcps-48v-300a
+capacity_w: 14400
+interfaces:
+  - id: dc-out-1
+    interface_type: IEC-C14
+    direction: output
+    description: "-48V 直流输出 1"
+  - id: dc-out-2
+    interface_type: IEC-C14
+    direction: output
+    description: "-48V 直流输出 2"

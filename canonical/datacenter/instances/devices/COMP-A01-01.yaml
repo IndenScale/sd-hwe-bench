@@ -1,0 +1,18 @@
+id: COMP-A01-01
+family: ServerFamily
+model: compute-node-2u
+name: "计算节点-A01-01"
+status: installed
+interfaces:
+  - id: eth0
+    interface_type: SFP28
+    direction: bidirectional
+    description: "25G 业务口"
+  - id: power-a
+    interface_type: IEC-C14
+    direction: input
+    description: "A 路电源"
+  - id: power-b
+    interface_type: IEC-C14
+    direction: input
+    description: "B 路电源"

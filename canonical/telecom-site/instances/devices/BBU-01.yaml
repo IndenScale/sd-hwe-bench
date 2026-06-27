@@ -1,0 +1,18 @@
+id: BBU-01
+family: ServerFamily
+model: bbu-5900
+name: "BBU5900-01"
+status: installed
+interfaces:
+  - id: cpri-1
+    interface_type: SFP28
+    direction: bidirectional
+    description: "CPRI 光口 1"
+  - id: cpri-2
+    interface_type: SFP28
+    direction: bidirectional
+    description: "CPRI 光口 2"
+  - id: power-a
+    interface_type: IEC-C14
+    direction: input
+    description: "直流电源输入"

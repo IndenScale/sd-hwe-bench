@@ -1,0 +1,5 @@
+id: SPD-01
+family: FacilityFamily
+model: spd-dc-48v
+facility_type: spd
+name: "-48V 直流防雷器"

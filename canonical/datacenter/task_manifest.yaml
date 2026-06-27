@@ -1,0 +1,126 @@
+project: canonical-datacenter
+domain: telecom
+base_difficulty: medium
+commit_history:
+- commit: c00
+  step: 0
+  summary: 初始 scaffold：piki.toml + models/
+  is_scaffold_only: true
+- commit: c01
+  step: 1
+  summary: 声明机房和机柜排
+  task_type: instance-declaration
+  difficulty: easy
+  requirement: 声明数据中心机房 DC-ROOM-01（12m×8m×3.2m），以及两排机柜 ROW-A（冷通道侧）和 ROW-B（热通道侧），每排 4 个机柜位。查阅 docs/dc-design-spec.md §1。
+  expected_files:
+  - rooms/DC-ROOM-01.yaml
+  - rooms/ROW-A.yaml
+  - rooms/ROW-B.yaml
+  expected_deliverables: []
+- commit: c02
+  step: 2
+  summary: 声明 ROW-A 机柜
+  task_type: instance-declaration
+  difficulty: easy
+  requirement: 为 A 排声明 4 台数据中心 42U 机柜 RACK-A01 至 RACK-A04。
+  expected_files:
+  - instances/racks/RACK-A01.yaml
+  - instances/racks/RACK-A02.yaml
+  - instances/racks/RACK-A03.yaml
+  - instances/racks/RACK-A04.yaml
+  expected_deliverables: []
+- commit: c03
+  step: 3
+  summary: 声明 ROW-B 机柜
+  task_type: instance-declaration
+  difficulty: easy
+  requirement: 为 B 排声明 4 台数据中心 42U 机柜 RACK-B01 至 RACK-B04。
+  expected_files:
+  - instances/racks/RACK-B01.yaml
+  - instances/racks/RACK-B02.yaml
+  - instances/racks/RACK-B03.yaml
+  - instances/racks/RACK-B04.yaml
+  expected_deliverables: []
+- commit: c04
+  step: 4
+  summary: 添加 ROW-A 机柜入排配合
+  task_type: mating-design
+  difficulty: medium
+  requirement: 为 ROW-A 的 4 个机柜创建 rack-in-row 配合。查阅 docs/dc-design-spec.md §1.3。
+  expected_files:
+  - mates/rack-in-row/ROW-A-RACK-A01.yaml
+  - mates/rack-in-row/ROW-A-RACK-A02.yaml
+  - mates/rack-in-row/ROW-A-RACK-A03.yaml
+  - mates/rack-in-row/ROW-A-RACK-A04.yaml
+  expected_deliverables: []
+- commit: c05
+  step: 5
+  summary: 添加 ROW-B 机柜入排配合
+  task_type: mating-design
+  difficulty: medium
+  requirement: 为 ROW-B 的 4 个机柜创建 rack-in-row 配合。
+  expected_files:
+  - mates/rack-in-row/ROW-B-RACK-B01.yaml
+  - mates/rack-in-row/ROW-B-RACK-B02.yaml
+  - mates/rack-in-row/ROW-B-RACK-B03.yaml
+  - mates/rack-in-row/ROW-B-RACK-B04.yaml
+  expected_deliverables: []
+- commit: c06
+  step: 6
+  summary: 部署 RACK-A01：PDU、计算节点、布局、配合
+  task_type: comprehensive
+  difficulty: hard
+  requirement: '完成 RACK-A01 的完整部署：
+
+    1. 声明双路三相 PDU（A/B 路，22.08kW，4 个 IEC-C14 输出口）
+
+    2. 声明两台计算节点 COMP-A01-01/02（2U，500W，双电源冗余）
+
+    3. 布局：PDU 在 U40/U41，计算节点在 U10/U13
+
+    4. 创建 rack-mount 配合
+
+    5. 创建双路电源配合（A 路 PDU→power-a，B 路 PDU→power-b）
+
+    查阅 docs/dc-design-spec.md §2-§4。注意 capacity_w 字段名、rack_id 必填、U 位间隔规则。'
+  expected_files:
+  - instances/pdus/PDU-A01-A.yaml
+  - instances/pdus/PDU-A01-B.yaml
+  - instances/pdus/PDU-A02-A.yaml
+  - instances/pdus/PDU-A02-B.yaml
+  - instances/devices/COMP-A01-01.yaml
+  - instances/devices/COMP-A01-02.yaml
+  - layouts/layout.yaml
+  - mates/rack-mount/RACK-A01-PDU-A01-A.yaml
+  - mates/rack-mount/RACK-A01-PDU-A01-B.yaml
+  - mates/rack-mount/RACK-A01-COMP-A01-01.yaml
+  - mates/rack-mount/RACK-A01-COMP-A01-02.yaml
+  - mates/power-iec/PDU-A01-A-COMP-A01-01-A.yaml
+  - mates/power-iec/PDU-A01-B-COMP-A01-01-B.yaml
+  - mates/power-iec/PDU-A01-A-COMP-A01-02-A.yaml
+  - mates/power-iec/PDU-A01-B-COMP-A01-02-B.yaml
+  expected_deliverables: []
+- commit: c07
+  step: 7
+  summary: 声明列间精密空调
+  task_type: instance-declaration
+  difficulty: easy
+  requirement: 为 A 排和 B 排各声明一台列间精密空调 COOLER-ROW-A/COOLER-ROW-B（30kW）。
+  expected_files:
+  - facilities/COOLER-ROW-A.yaml
+  - facilities/COOLER-ROW-B.yaml
+  expected_deliverables: []
+- commit: c08
+  step: 8
+  summary: 添加空调 cable-tray 配合
+  task_type: mating-design
+  difficulty: easy
+  requirement: 为两台列间空调创建 cable-tray-over-row 配合，挂载到对应机柜排。
+  expected_files:
+  - mates/cable-tray-over-row/ROW-A-COOLER-A.yaml
+  - mates/cable-tray-over-row/ROW-B-COOLER-B.yaml
+  expected_deliverables:
+  - bom-csv
+  - power-budget
+  - port-map
+  - cable-list

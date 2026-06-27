@@ -1,0 +1,8 @@
+model: panel-antenna-4t4r
+family: FacilityFamily
+name: 4T4R 板状天线
+facility_type: antenna
+width_mm: 350
+depth_mm: 150
+height_mm: 2000
+weight_kg: 25.0

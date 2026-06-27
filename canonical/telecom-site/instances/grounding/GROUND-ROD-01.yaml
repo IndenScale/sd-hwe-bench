@@ -1,0 +1,5 @@
+id: GROUND-ROD-01
+family: FacilityFamily
+model: ground-rod-copper-2m
+facility_type: ground-rod
+name: "主接地极"

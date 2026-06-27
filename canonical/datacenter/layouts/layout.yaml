@@ -1,0 +1,14 @@
+- instance: PDU-A01-A
+  rack_id: RACK-A01
+  position_u: 40
+- instance: PDU-A01-B
+  rack_id: RACK-A01
+  position_u: 41
+- instance: COMP-A01-01
+  rack_id: RACK-A01
+  position_u: 10
+  pdu_id: PDU-A01-A
+- instance: COMP-A01-02
+  rack_id: RACK-A01
+  position_u: 13
+  pdu_id: PDU-A01-A

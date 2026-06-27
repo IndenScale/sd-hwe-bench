@@ -1,0 +1,11 @@
+id: CABINET-01-DCPS-01
+type: rack-mount-19inch
+part_a_id: CABINET-01
+part_b_id: DCPS-01
+attributes:
+  position_u: 5
+  height_u: 5
+  depth_mm:
+    le: 800
+  width_mm:
+    le: 600
