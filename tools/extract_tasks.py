@@ -308,6 +308,17 @@ def extract_task(
     git_archive(project_dir, resolve_ref(project_dir, from_commit["commit"]), scaffold_dir)
     git_archive(project_dir, resolve_ref(project_dir, to_commit["commit"]), solution_dir)
 
+    # Copy project-level design specs into scaffold and solution so agents
+    # can consult engineering standards while working on the task.
+    docs_dir = project_dir / "docs"
+    if docs_dir.exists():
+        if (scaffold_dir / "docs").exists():
+            shutil.rmtree(scaffold_dir / "docs")
+        shutil.copytree(docs_dir, scaffold_dir / "docs")
+        if (solution_dir / "docs").exists():
+            shutil.rmtree(solution_dir / "docs")
+        shutil.copytree(docs_dir, solution_dir / "docs")
+
     task_yaml = build_task_yaml(manifest, from_commit, to_commit, task_id)
     (task_dir / "task.yaml").write_text(
         yaml.safe_dump(task_yaml, sort_keys=False, allow_unicode=True),

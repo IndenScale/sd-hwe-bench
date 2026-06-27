@@ -70,7 +70,8 @@ class Workspace:
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         safe_task = task_id.replace("/", "_")
         safe_actor = actor_name.replace("/", "_")
-        suffix = f"_{model.replace('/', '_')}" if model else ""
+        safe_model = model.replace("/", "_").replace(":", "_") if model else ""
+        suffix = f"_{safe_model}" if safe_model else ""
         attempt_suffix = f"_a{attempt:03d}" if attempt is not None else ""
         run_name = f"{timestamp}_{safe_task}_{safe_actor}{suffix}{attempt_suffix}"
         run_dir = run_root / run_name
