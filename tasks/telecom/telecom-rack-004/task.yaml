@@ -1,0 +1,28 @@
+description: Canonical task extracted from canonical-telecom-rack commit c03 → c04
+difficulty: medium
+domain: telecom
+expected_deliverables: []
+expected_files:
+- instances/devices/SRV-01.yaml
+- layouts/layout.yaml
+name: 声明服务器 SRV-01 并分配 U 位
+plugins:
+- telecom
+requirement: "声明第一台通用服务器 SRV-01，并将其部署到 RACK-A01 的 U10，接入 PDU-A。\n\n要求：\n- 声明 instances/devices/SRV-01.yaml：\n\
+  \  - model: generic-server\n  - 2U 高度，300W TDP\n  - 接口：eth0(SFP28)、eth1(SFP+)、power-a(IEC-C14)、power-b(IEC-C14)\n\
+  \  - status: installed\n- 更新 layouts/layout.yaml，加入 SRV-01 的部署条目\n\nU 位分配规则：查阅 docs/rack-design-spec.md\
+  \ §1 机柜布局。\nSRV-01 为 2U 设备，占用 U10-U11。确保与其他设备 U 位不重叠。"
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+source_commit_from: c03
+source_commit_to: c04
+source_project: canonical-telecom-rack
+task_id: telecom/telecom-rack-004
+task_type: instance-declaration

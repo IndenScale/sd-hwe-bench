@@ -1,0 +1,139 @@
+task_id: telecom/comprehensive-001
+name: 综合设计-完整机柜部署
+description: 端到端设计任务：从零设计一个完整的服务器机柜部署方案，涵盖实例、布局、连接和配合全部环节。
+domain: telecom
+task_type: comprehensive
+difficulty: hard
+requirement: |
+  按照软件定义工程方法，为一个机房扩容项目设计完整的机柜部署方案。
+  机柜、设备、布局、连接和配合均须以结构化 YAML 声明。
+
+  机柜：
+  - RACK-A01：42U 标准机柜，800mm 深，600mm 宽
+    位置："机房A-A列"
+
+  需部署设备：
+  - SRV-01：通用服务器，2U，300W TDP
+    接口：eth0（SFP28）、eth1（SFP+）、power-a（IEC-C14）、power-b（IEC-C14）
+    物理尺寸：715mm 深、445mm 宽、18.5kg
+    名称："服务器-01"，状态：installed
+
+  - SRV-02：通用服务器，2U，250W TDP
+    接口：eth0（SFP28）、eth1（QSFP28）、power-a（IEC-C14）
+    物理尺寸：715mm 深、445mm 宽、16.5kg
+    名称："服务器-02"，状态：installed
+
+  - SW-01：接入交换机，1U，150W TDP
+    接口：Gi1/0/1（SFP28）、Gi1/0/2（SFP28）、power-a（IEC-C14）
+    物理尺寸：460mm 深、440mm 宽、7.2kg
+    名称："接入交换机"，状态：installed
+
+  供电：
+  - PDU-A：2000W 容量，相位 L1
+  - PDU-B：2000W 容量，相位 L1
+
+  布局：
+  - SRV-01 部署于 U10，接入 PDU-A
+  - SRV-02 部署于 U14，接入 PDU-A
+  - SW-01 部署于 U20，接入 PDU-B
+  - PDU-A 位于 RACK-A01
+  - PDU-B 位于 RACK-A01
+
+  连接：
+  - SRV-01:eth0 ↔ SW-01:Gi1/0/1（SFP28-SR 光模块，LC 光纤）
+  - SRV-02:eth0 ↔ SW-01:Gi1/0/2（SFP28-SR 光模块，LC 光纤）
+
+  需创建的配合：
+  - 全部 5 个设备的机柜装配配合（rack-mount-19inch）
+  - 电源 IEC 配合：PDU-A→SRV-01、PDU-A→SRV-02、PDU-B→SRV-01(power-b)、PDU-B→SW-01
+  - 全部 4 次光模块插入的 SFP28 cage 配合
+  - 两条光纤的 LC connector 配合
+
+  项目使用 telecom 插件。设备型号在提供的 scaffold 中。
+  为各设备接口声明端口实例，使用端口连接实例表达逻辑连接关系。
+  确保功率不超出 PDU 容量的 80%，U 位无冲突。
+
+plugins:
+  - telecom
+
+expected_files:
+  - instances/devices/SRV-01.yaml
+  - instances/devices/SRV-02.yaml
+  - instances/devices/SW-01.yaml
+  - instances/racks/RACK-A01.yaml
+  - instances/pdus/PDU-A.yaml
+  - instances/pdus/PDU-B.yaml
+  - layouts/layout.yaml
+  - mates/rack-mount/RACK-A01-SRV-01.yaml
+  - mates/rack-mount/RACK-A01-SRV-02.yaml
+  - mates/rack-mount/RACK-A01-SW-01.yaml
+  - mates/rack-mount/RACK-A01-PDU-A.yaml
+  - mates/rack-mount/RACK-A01-PDU-B.yaml
+
+scoring_layers:
+  - L0
+  - L1
+  - L2a
+  - L2b
+  - L2c
+  - L3
+  - L4
+
+expected_deliverables:
+  - bom-csv
+  - power-budget
+  - port-map
+  - rack-face-panel-svg
+  - cable-list
+
+rubrics:
+  - name: completeness
+    threshold: 0.6
+    criteria:
+      - id: device-instances
+        name: 设备实例完整性
+        description: 所有设备实例(SRV-01, SRV-02, SW-01, RACK-A01, PDU-A, PDU-B)是否都已正确声明，包含正确的 model 引用、物理尺寸、接口和状态字段
+        weight: 0.30
+        evaluation_steps:
+          - 检查 SRV-01 是否声明，model 为 generic-server，height_u=2，tdp_w=300，尺寸和接口正确
+          - 检查 SRV-02 是否声明，model 为 generic-server，height_u=2，tdp_w=250
+          - 检查 SW-01 是否声明，model 为 access-switch，height_u=1，tdp_w=150
+          - 检查 RACK-A01 是否声明，包含正确的 family 和尺寸
+          - 检查 PDU-A 和 PDU-B 是否声明，各 2000W 容量
+      - id: layout-correctness
+        name: 布局分配正确性
+        description: 设备是否正确分配到机柜的指定 U 位(SRV-01@U10, SRV-02@U14, SW-01@U20)，PDU 分配是否正确，无 U 位冲突
+        weight: 0.20
+        evaluation_steps:
+          - 验证 SRV-01 位于 RACK-A01 的 U10
+          - 验证 SRV-02 位于 RACK-A01 的 U14
+          - 验证 SW-01 位于 RACK-A01 的 U20
+          - 验证 PDU-A 和 PDU-B 分配到 RACK-A01
+          - 检查是否存在 U 位重叠冲突
+      - id: connection-completeness
+        name: 连接声明完整性
+        description: 端口连接(CONN-S01-SW01, CONN-S02-SW01)是否正确声明，包含正确的端口引用、光模块类型和方向
+        weight: 0.20
+        evaluation_steps:
+          - 检查 SRV-01:eth0 → SW-01:Gi1/0/1 连接是否声明
+          - 检查 SRV-02:eth0 → SW-01:Gi1/0/2 连接是否声明
+          - 检查光模块实例是否声明 (SFP28-SR)
+          - 检查光纤实例是否声明
+          - 检查端口连接实例的 from_port/to_port 格式是否正确
+      - id: mating-completeness
+        name: 配合约束完整性
+        description: 所有配合声明(rack-mount, power-iec, sfp28-cage, lc-connector)是否都已创建，配合类型和参与者是否正确
+        weight: 0.20
+        evaluation_steps:
+          - 检查 5 个 rack-mount 配合声明是否都存在
+          - 检查 4 个 power-iec 配合声明是否都存在
+          - 检查 sfp28-cage 配合（4 个光模块插入）是否都存在
+          - 检查 lc-connector 配合（2 条光纤×2 端=4 个）是否都存在
+      - id: power-budget
+        name: 功率预算合规性
+        description: 各 PDU 供电设备的 TDP 总和是否不超过 PDU 容量的 80%
+        weight: 0.10
+        evaluation_steps:
+          - 计算 PDU-A 供电设备的总 TDP
+          - 计算 PDU-B 供电设备的总 TDP
+          - 验证不超过 2000W × 80% = 1600W

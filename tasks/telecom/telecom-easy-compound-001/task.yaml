@@ -1,0 +1,21 @@
+description: 在已有 RACK-A01、PDU-A、PDU-B 和布局的基础上，声明 SRV-01（2U/300W/SFP28+SFP+）、SRV-02（2U/250W/SFP28+QSFP28）、SW-01（1U
+difficulty: easy
+domain: telecom
+expected_deliverables: []
+expected_files: []
+name: 声明三台服务器设备
+plugins:
+- telecom
+requirement: '在已有 RACK-A01、PDU-A、PDU-B 和布局的基础上，声明 SRV-01（2U/300W/SFP28+SFP+）、SRV-02（2U/250W/SFP28+QSFP28）、SW-01（1U/150W/SFP28×2）。注意：设备属于
+  ServerFamily，model 引用 scaffold 中的型号，接口类型需与设备规格一致。
+
+
+  查阅 docs/rack-design-spec.md。注意 PDU 使用 capacity_w（不是 power_capacity_w），rack_id 必填。'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+task_id: telecom/telecom-easy-compound-001
+task_type: instance-declaration

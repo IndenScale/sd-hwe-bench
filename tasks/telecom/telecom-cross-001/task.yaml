@@ -1,0 +1,32 @@
+description: 综合 telecom + structural：在承重限制下部署计算节点
+difficulty: hard
+domain: telecom
+expected_deliverables:
+- power-budget
+- rack-face-panel-svg
+expected_files:
+- instances/devices/COMP-A01-01.yaml
+- instances/devices/COMP-A01-02.yaml
+name: 跨专业综合：地板载荷约束下的机柜部署
+plugins:
+- telecom
+requirement: '在 RACK-A01 中部署两台计算节点 COMP-A01-01 和 COMP-A01-02，配置双路 PDU 冗余供电。
+
+
+  查阅 docs/floor-load-spec.md：机房地板最大承重 500kg/m²，机柜自重 120kg。
+
+  计算所有设备的 weight_kg 总和，确保不超过机柜最大容许重量。
+
+
+  注意：dc-compute-node 的型号参数（weight_kg 等）在 scaffold models/ 中。'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+task_id: telecom/telecom-cross-001
+task_type: comprehensive

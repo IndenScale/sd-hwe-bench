@@ -1,0 +1,24 @@
+description: 为 SRV-01/SRV-02/SW-01 的每个接口声明独立的端口实例（instances/ports/），包含正确的 device_id、port_name、port_type。查阅
+  docs/r
+difficulty: easy
+domain: telecom
+expected_deliverables: []
+expected_files: []
+name: 声明所有端口实例
+plugins:
+- telecom
+requirement: '为 SRV-01/SRV-02/SW-01 的每个接口声明独立的端口实例（instances/ports/），包含正确的 device_id、port_name、port_type。查阅
+  docs/rack-design-spec.md §4。
+
+
+  查阅 docs/rack-design-spec.md。注意 PDU 使用 capacity_w（不是 power_capacity_w），rack_id 必填。'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+task_id: telecom/telecom-easy-compound-002
+task_type: instance-declaration

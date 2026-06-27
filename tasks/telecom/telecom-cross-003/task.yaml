@@ -1,0 +1,37 @@
+description: 综合 telecom + electrical：功率预算和 PDU 容量规划
+difficulty: hard
+domain: telecom
+expected_deliverables:
+- power-budget
+expected_files:
+- mates/power-iec/PDU-A-SRV-01-power-a.yaml
+- mates/power-iec/PDU-B-SRV-01-power-b.yaml
+name: 跨专业综合：供电容量规划和设备部署
+plugins:
+- telecom
+requirement: '为关键服务器 SRV-01 配置供电方案。
+
+
+  查阅 docs/power-redundancy-spec.md：
+
+  1. 计算 SRV-01 TDP 与 PDU-A 容量的比值
+
+  2. 确保 PDU 负载 ≤ 80% capacity_w
+
+  3. 声明 phase 字段
+
+  4. 创建 power-iec 配合连接 PDU-A 到 SRV-01
+
+
+  在 layouts/layout.yaml 中为 SRV-01 分配机柜位置和 PDU。'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+task_id: telecom/telecom-cross-003
+task_type: comprehensive

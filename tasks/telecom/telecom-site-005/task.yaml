@@ -1,0 +1,29 @@
+task_id: telecom/telecom-site-005
+name: 声明防雷接地系统及配合
+description: Canonical task extracted from canonical-telecom-site commit c04 → c05
+domain: telecom
+source_project: canonical-telecom-site
+source_commit_from: c04
+source_commit_to: c05
+task_type: comprehensive
+difficulty: medium
+requirement: 声明防雷接地系统：GROUND-ROD-01 + SPD-01 + SPD-02，并创建 SPD→接地极的 cable-connection
+  配合（16mm² 接地线）。查阅 docs/site-design-spec.md §6。
+plugins:
+- telecom
+expected_files:
+- instances/grounding/GROUND-ROD-01.yaml
+- instances/grounding/SPD-01.yaml
+- instances/grounding/SPD-02.yaml
+- mates/grounding/SPD01-TO-GROUND-ROD01.yaml
+- mates/grounding/SPD02-TO-GROUND-ROD01.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

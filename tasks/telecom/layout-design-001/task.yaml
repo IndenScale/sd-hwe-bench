@@ -1,0 +1,80 @@
+task_id: telecom/layout-design-001
+name: 布局设计-机柜部署
+description: 在已有实例声明的基础上，创建设备到机柜位置的布局分配，含 PDU 供电关系。
+domain: telecom
+task_type: layout-design
+difficulty: easy
+requirement: |
+  以下设备已在机柜部署项目中声明，请创建 layout.yaml 文件，将其分配到正确的机柜位置：
+
+  设备清单：
+  - SRV-01：2U 通用服务器（300W）
+  - SRV-02：2U 通用服务器（250W）
+  - SW-01：1U 接入交换机（150W）
+  - PDU-A：1U PDU（2000W 容量）
+  - PDU-B：1U PDU（2000W 容量）
+  - RACK-A01：42U 标准机柜
+
+  布局要求：
+  - SRV-01 部署于 U10
+  - SRV-02 部署于 U14
+  - SW-01 部署于 U20
+  - PDU-A 位于 RACK-A01，相位 L1
+  - PDU-B 位于 RACK-A01，相位 L1
+  - SRV-01 和 SRV-02 接入 PDU-A
+  - SW-01 接入 PDU-B
+
+  所有设备均放入 RACK-A01。使用 rack_id 字段指定机柜，pdu_id 字段指定供电 PDU。
+
+plugins:
+  - telecom
+
+expected_files:
+  - layouts/layout.yaml
+
+scoring_layers:
+  - L0
+  - L1
+  - L2a
+  - L2b
+  - L2c
+  - L3
+  - L4
+
+expected_deliverables: []
+
+rubrics:
+  - name: correctness
+    threshold: 0.6
+    criteria:
+      - id: device-placement
+        name: 设备机位分配
+        description: 每台设备是否部署到正确的 U 位，rack_id 和 position_u 是否正确
+        weight: 0.40
+        evaluation_steps:
+          - 检查 SRV-01 的 rack_id=RACK-A01, position_u=10
+          - 检查 SRV-02 的 rack_id=RACK-A01, position_u=14
+          - 检查 SW-01 的 rack_id=RACK-A01, position_u=20
+          - 检查 PDU-A 和 PDU-B 是否分配到 RACK-A01
+      - id: pdu-assignment
+        name: PDU供电分配
+        description: 各设备的 pdu_id 字段是否指向正确的 PDU
+        weight: 0.30
+        evaluation_steps:
+          - 检查 SRV-01 的 pdu_id 为 PDU-A
+          - 检查 SRV-02 的 pdu_id 为 PDU-A
+          - 检查 SW-01 的 pdu_id 为 PDU-B
+      - id: no-u-conflicts
+        name: 无U位冲突
+        description: 是否存在多台设备占用相同 U 位的情况（考虑设备高度）
+        weight: 0.20
+        evaluation_steps:
+          - 列出所有声明了 position_u 的设备及其高度
+          - 检查是否存在 U 位区间重叠（如 2U 设备占 U10-U11）
+      - id: layout-format
+        name: 布局格式规范
+        description: layout.yaml 是否使用了正确的 YAML 列表格式，每条目包含必要字段
+        weight: 0.10
+        evaluation_steps:
+          - 检查 layout.yaml 是否为 YAML 列表格式
+          - 每个条目是否至少有 instance、rack_id 字段

@@ -1,0 +1,21 @@
+description: 从已有 RACK-A01 推断机柜实例的必填字段
+difficulty: medium
+domain: telecom
+expected_deliverables: []
+expected_files:
+- instances/racks/RACK-A02.yaml
+name: 涌现约束：声明第二个机柜
+plugins:
+- telecom
+requirement: 声明第二个标准机柜 RACK-A02，位于机房A-B列。确保新机柜与已有的 RACK-A01 遵循一致的字段约定。
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+task_id: telecom/telecom-emergent-002
+task_type: instance-declaration

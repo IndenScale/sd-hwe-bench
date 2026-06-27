@@ -1,0 +1,27 @@
+task_id: telecom/telecom-site-003
+name: 声明天线和 RRU
+description: Canonical task extracted from canonical-telecom-site commit c02 → c03
+domain: telecom
+source_project: canonical-telecom-site
+source_commit_from: c02
+source_commit_to: c03
+task_type: instance-declaration
+difficulty: easy
+requirement: 为两个扇区声明 RRU-01/RRU-02 和 ANT-01/ANT-02。查阅 docs/site-design-spec.md §5。
+plugins:
+- telecom
+expected_files:
+- instances/antennas/RRU-01.yaml
+- instances/antennas/RRU-02.yaml
+- instances/antennas/ANT-01.yaml
+- instances/antennas/ANT-02.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

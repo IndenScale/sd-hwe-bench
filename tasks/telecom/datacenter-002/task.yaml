@@ -1,0 +1,27 @@
+task_id: telecom/datacenter-002
+name: 声明 ROW-A 机柜
+description: Canonical task extracted from canonical-datacenter commit c01 → c02
+domain: telecom
+source_project: canonical-datacenter
+source_commit_from: c01
+source_commit_to: c02
+task_type: instance-declaration
+difficulty: easy
+requirement: 为 A 排声明 4 台数据中心 42U 机柜 RACK-A01 至 RACK-A04。
+plugins:
+- telecom
+expected_files:
+- instances/racks/RACK-A01.yaml
+- instances/racks/RACK-A02.yaml
+- instances/racks/RACK-A03.yaml
+- instances/racks/RACK-A04.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

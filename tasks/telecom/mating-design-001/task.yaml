@@ -1,0 +1,94 @@
+task_id: telecom/mating-design-001
+name: 配合设计-机柜装配与供电
+description: 在已有实例和布局的基础上，创建机柜装配配合和电源配合的约束声明。
+domain: telecom
+task_type: mating-design
+difficulty: medium
+requirement: |
+  给定已有的机柜部署实例和布局，创建配合（耦合约束）声明：
+
+  机柜装配配合（rack-mount-19inch 类型）：
+  - RACK-A01 ← SRV-01，U10 起始，占用 2U
+    约束：设备深度 ≤ 机柜深度，设备宽度 ≤ 机柜宽度
+  - RACK-A01 ← SRV-02，U14 起始，占用 2U
+    约束：设备深度 ≤ 机柜深度，设备宽度 ≤ 机柜宽度
+  - RACK-A01 ← SW-01，U20 起始，占用 1U
+    约束：设备深度 ≤ 机柜深度，设备宽度 ≤ 机柜宽度
+  - RACK-A01 ← PDU-A，约束同上
+  - RACK-A01 ← PDU-B，约束同上
+
+  电源配合（power-iec-c14-c13 类型）：
+  - PDU-A/outlet-1 → SRV-01/power-a
+  - PDU-A/outlet-2 → SRV-02/power-a
+  - PDU-B/outlet-1 → SRV-01/power-b
+  - PDU-B/outlet-2 → SW-01/power-a
+
+  每个配合声明为独立的 YAML 文件。
+  机柜装配配合放在 mates/rack-mount/ 下。
+  电源配合放在 mates/power-iec/ 下。
+  命名规范：{parent}-{child}.yaml
+
+  约束违反时的错误消息使用中文描述。
+
+plugins:
+  - telecom
+
+expected_files:
+  - mates/rack-mount/RACK-A01-SRV-01.yaml
+  - mates/rack-mount/RACK-A01-SRV-02.yaml
+  - mates/rack-mount/RACK-A01-SW-01.yaml
+  - mates/rack-mount/RACK-A01-PDU-A.yaml
+  - mates/rack-mount/RACK-A01-PDU-B.yaml
+  - mates/power-iec/PDU-A-SRV-01-A.yaml
+  - mates/power-iec/PDU-A-SRV-02-A.yaml
+  - mates/power-iec/PDU-B-SRV-01-B.yaml
+  - mates/power-iec/PDU-B-SW-01-A.yaml
+
+scoring_layers:
+  - L0
+  - L1
+  - L2a
+  - L2b
+  - L2c
+  - L3
+
+expected_deliverables: []
+
+rubrics:
+  - name: correctness
+    threshold: 0.6
+    criteria:
+      - id: rack-mount-completeness
+        name: 机柜装配配合完整性
+        description: 5 个 rack-mount-19inch 配合声明是否全部存在，parent/child 引用是否正确
+        weight: 0.35
+        evaluation_steps:
+          - 检查 RACK-A01-SRV-01 配合声明是否存在
+          - 检查 RACK-A01-SRV-02 配合声明是否存在
+          - 检查 RACK-A01-SW-01 配合声明是否存在
+          - 检查 RACK-A01-PDU-A 配合声明是否存在
+          - 检查 RACK-A01-PDU-B 配合声明是否存在
+          - 验证每个配合的 mate_type 为 rack-mount-19inch
+      - id: power-iec-completeness
+        name: 电源配合完整性
+        description: 4 个 power-iec-c14-c13 配合声明是否全部存在，端口引用是否正确
+        weight: 0.35
+        evaluation_steps:
+          - 检查 PDU-A-SRV-01-A 电源配合是否存在
+          - 检查 PDU-A-SRV-02-A 电源配合是否存在
+          - 检查 PDU-B-SRV-01-B 电源配合是否存在
+          - 检查 PDU-B-SW-01-A 电源配合是否存在
+          - 验证每个配合的 mate_type 为 power-iec-c14-c13
+      - id: physical-constraints
+        name: 物理约束正确性
+        description: 配合声明中的物理约束（设备深度≤机柜深度、设备宽度≤机柜宽度）是否正确设置
+        weight: 0.20
+        evaluation_steps:
+          - 检查 rack-mount 配合中是否声明了深度和宽度约束
+          - 检查约束阈值是否合理
+      - id: error-messages
+        name: 错误消息语言
+        description: 约束违反时的错误消息是否使用了中文描述
+        weight: 0.10
+        evaluation_steps:
+          - 检查配合声明中的 error_message 或 description 字段是否包含中文

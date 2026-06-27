@@ -1,0 +1,24 @@
+description: 创建 rack-mount-19inch 配合（3 个设备的机柜安装）、sfp28-cage 配合（4 个光模块插入）和 lc-connector
+  配合（4 个光纤头连接）。查阅 docs/rack-
+difficulty: easy
+domain: telecom
+expected_deliverables: []
+expected_files: []
+name: 创建 rack-mount、SFP28-cage 和 LC-connector 配合
+plugins:
+- telecom
+requirement: '创建 rack-mount-19inch 配合（3 个设备的机柜安装）、sfp28-cage 配合（4 个光模块插入）和 lc-connector
+  配合（4 个光纤头连接）。查阅 docs/rack-design-spec.md §7-§8。
+
+
+  查阅 docs/rack-design-spec.md。注意 PDU 使用 capacity_w（不是 power_capacity_w），rack_id 必填。'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+task_id: telecom/telecom-easy-compound-004
+task_type: mating-design

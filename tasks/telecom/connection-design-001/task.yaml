@@ -1,0 +1,103 @@
+task_id: telecom/connection-design-001
+name: 连接设计-服务器上联
+description: 在已有实例和布局的基础上，创建服务器到交换机的光纤连接，含光模块和端口连接的完整声明。
+domain: telecom
+task_type: connection-design
+difficulty: medium
+requirement: |
+  给定已有的机柜部署实例，创建服务器与交换机之间的端口连接：
+
+  已有设备及其接口：
+  - SRV-01：eth0（SFP28）、eth1（SFP+）
+  - SRV-02：eth0（SFP28）、eth1（QSFP28）
+  - SW-01：Gi1/0/1（SFP28）、Gi1/0/2（SFP28）
+
+  连接要求：
+  1. SRV-01 eth0 → SW-01 Gi1/0/1（两端均使用 SFP28-SR 光模块，LC 光纤）
+  2. SRV-02 eth0 → SW-01 Gi1/0/2（两端均使用 SFP28-SR 光模块，LC 光纤）
+
+  每条连接需：
+  - 为各端口声明 SFP28-SR 光模块实例
+  - 声明连接光模块对的光纤实例
+  - 创建端口连接实例
+  - 创建配合声明（SFP28 cage + LC connector）
+
+  所有连接均为双向，25G 速率。
+
+plugins:
+  - telecom
+
+expected_files:
+  - instances/transceivers/SFP28-SR-SRV-01-eth0.yaml
+  - instances/transceivers/SFP28-SR-SRV-02-eth0.yaml
+  - instances/transceivers/SFP28-SR-SW-01-Gi101.yaml
+  - instances/transceivers/SFP28-SR-SW-01-Gi102.yaml
+  - instances/fibers/FIBER-SRV01-SW01.yaml
+  - instances/fibers/FIBER-SRV02-SW01.yaml
+  - instances/port_connections/CONN-SRV01-SW01.yaml
+  - instances/port_connections/CONN-SRV02-SW01.yaml
+  - mates/sfp28-cage/SRV-01-eth0-SFP28-SR-SRV-01-eth0.yaml
+  - mates/sfp28-cage/SRV-02-eth0-SFP28-SR-SRV-02-eth0.yaml
+  - mates/sfp28-cage/SW-01-Gi101-SFP28-SR-SW-01-Gi101.yaml
+  - mates/sfp28-cage/SW-01-Gi102-SFP28-SR-SW-01-Gi102.yaml
+  - mates/lc-connector/FIBER-SRV01-SW01-end-a-SFP28-SR-SRV-01-eth0.yaml
+  - mates/lc-connector/FIBER-SRV01-SW01-end-b-SFP28-SR-SW-01-Gi101.yaml
+  - mates/lc-connector/FIBER-SRV02-SW01-end-a-SFP28-SR-SRV-02-eth0.yaml
+  - mates/lc-connector/FIBER-SRV02-SW01-end-b-SFP28-SR-SW-01-Gi102.yaml
+
+scoring_layers:
+  - L0
+  - L1
+  - L2a
+  - L2b
+  - L2c
+  - L3
+
+expected_deliverables:
+  - port-map
+
+rubrics:
+  - name: correctness
+    threshold: 0.6
+    criteria:
+      - id: transceiver-instances
+        name: 光模块实例声明
+        description: 是否为两对连接声明了 4 个 SFP28-SR 光模块实例，类型和关联端口是否正确
+        weight: 0.25
+        evaluation_steps:
+          - 检查 SFP28-SR-SRV-01-eth0 光模块是否存在
+          - 检查 SFP28-SR-SW-01-Gi101 光模块是否存在
+          - 检查 SFP28-SR-SRV-02-eth0 光模块是否存在
+          - 检查 SFP28-SR-SW-01-Gi102 光模块是否存在
+          - 验证每个光模块的 form_factor 为 SFP28
+      - id: fiber-instances
+        name: 光纤实例声明
+        description: 是否为两条连接声明了光纤实例，光纤类型和终端引用是否正确
+        weight: 0.15
+        evaluation_steps:
+          - 检查 FIBER-SRV01-SW01 光纤是否存在
+          - 检查 FIBER-SRV02-SW01 光纤是否存在
+          - 检查光纤类型和连接器类型是否正确
+      - id: port-connections
+        name: 端口连接声明
+        description: 端口连接实例的 from_port/to_port 格式是否正确，参考的设备/端口是否存在
+        weight: 0.25
+        evaluation_steps:
+          - 检查 CONN-SRV01-SW01 的 from_port/to_port 正确
+          - 检查 CONN-SRV02-SW01 的 from_port/to_port 正确
+          - 端口引用格式是否为 "DeviceID/PortName"
+      - id: mating-completeness
+        name: 配合声明完整性
+        description: sfp28-cage 和 lc-connector 配合声明是否齐全
+        weight: 0.25
+        evaluation_steps:
+          - 检查 4 个 sfp28-cage 配合是否存在
+          - 检查 4 个 lc-connector 配合是否存在
+          - 配合的 source/target 引用是否正确
+      - id: speed-direction
+        name: 速率与方向
+        description: 连接的速率是否为 25G，方向是否为双向
+        weight: 0.10
+        evaluation_steps:
+          - 检查连接声明的 speed 是否为 25Gbps
+          - 检查方向字段指示双向

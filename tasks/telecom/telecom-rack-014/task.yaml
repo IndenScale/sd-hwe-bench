@@ -1,0 +1,43 @@
+description: Canonical task extracted from canonical-telecom-rack commit c13 → c14
+difficulty: medium
+domain: telecom
+expected_deliverables:
+- bom-csv
+- power-budget
+- port-map
+- rack-face-panel-svg
+- cable-list
+expected_files:
+- mates/power-iec/PDU-A-SRV-01-A.yaml
+- mates/power-iec/PDU-A-SRV-02-A.yaml
+- mates/power-iec/PDU-B-SRV-01-B.yaml
+- mates/power-iec/PDU-B-SW-01-A.yaml
+name: 添加电源 IEC 配合
+plugins:
+- telecom
+requirement: '为所有设备创建 power-iec-c14-c13 配合，完成供电连接。
+
+
+  要求：
+
+  - PDU-A/outlet-1 → SRV-01/power-a
+
+  - PDU-A/outlet-2 → SRV-02/power-a
+
+  - PDU-B/outlet-1 → SRV-01/power-b
+
+  - PDU-B/outlet-2 → SW-01/power-a'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+source_commit_from: c13
+source_commit_to: c14
+source_project: canonical-telecom-rack
+task_id: telecom/telecom-rack-014
+task_type: mating-design

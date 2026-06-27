@@ -1,0 +1,27 @@
+task_id: telecom/datacenter-005
+name: 添加 ROW-B 机柜入排配合
+description: Canonical task extracted from canonical-datacenter commit c04 → c05
+domain: telecom
+source_project: canonical-datacenter
+source_commit_from: c04
+source_commit_to: c05
+task_type: mating-design
+difficulty: medium
+requirement: 为 ROW-B 的 4 个机柜创建 rack-in-row 配合。
+plugins:
+- telecom
+expected_files:
+- mates/rack-in-row/ROW-B-RACK-B01.yaml
+- mates/rack-in-row/ROW-B-RACK-B02.yaml
+- mates/rack-in-row/ROW-B-RACK-B03.yaml
+- mates/rack-in-row/ROW-B-RACK-B04.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

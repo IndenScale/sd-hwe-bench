@@ -1,0 +1,24 @@
+task_id: telecom/telecom-site-001
+name: 声明户外机柜 CABINET-01
+description: Canonical task extracted from canonical-telecom-site commit c00 → c01
+domain: telecom
+source_project: canonical-telecom-site
+source_commit_from: c00
+source_commit_to: c01
+task_type: instance-declaration
+difficulty: easy
+requirement: 为户外基站站点声明一个 IP65 户外一体化机柜 CABINET-01。查阅 docs/site-design-spec.md §1。
+plugins:
+- telecom
+expected_files:
+- instances/racks/CABINET-01.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

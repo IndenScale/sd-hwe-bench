@@ -1,0 +1,38 @@
+task_id: telecom/telecom-rack-012
+name: 添加 SFP28 cage 配合
+description: Canonical task extracted from canonical-telecom-rack commit c11 → c12
+domain: telecom
+source_project: canonical-telecom-rack
+source_commit_from: c11
+source_commit_to: c12
+task_type: mating-design
+difficulty: medium
+requirement: '为所有光模块创建 sfp28-cage 配合，将光模块插入对应端口。
+
+
+  涉及配合：
+
+  - SRV-01/eth0 ↔ SFP28-SR-S01-ETH0
+
+  - SRV-02/eth0 ↔ SFP28-SR-S02-ETH0
+
+  - SW-01/Gi1/0/1 ↔ SFP28-SR-SW01-Gi101
+
+  - SW-01/Gi1/0/2 ↔ SFP28-SR-SW01-Gi102'
+plugins:
+- telecom
+expected_files:
+- mates/sfp28-cage/SRV-01-eth0-SFP28-SR-S01-ETH0.yaml
+- mates/sfp28-cage/SRV-02-eth0-SFP28-SR-S02-ETH0.yaml
+- mates/sfp28-cage/SW-01-Gi1-0-1-SFP28-SR-SW01-Gi101.yaml
+- mates/sfp28-cage/SW-01-Gi1-0-2-SFP28-SR-SW01-Gi102.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

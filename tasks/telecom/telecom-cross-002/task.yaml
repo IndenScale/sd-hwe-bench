@@ -1,0 +1,26 @@
+description: 综合 telecom + cooling：在散热限制下规划设备部署
+difficulty: hard
+domain: telecom
+expected_deliverables: []
+expected_files:
+- instances/racks/RACK-A01.yaml
+name: 跨专业综合：散热约束下的机柜规划
+plugins:
+- telecom
+requirement: '规划 RACK-A01 的初始部署。声明机柜实例 RACK-A01（型号 dc-rack-42u，位于冷通道-A），确保机柜散热能力满足后续设备部署需求。
+
+
+  查阅 docs/cooling-spec.md：机柜最大散热量 34,100 BTU/h，对应 10,000W TDP。
+
+  后续将在本机柜中部署多台设备，需预留散热余量。'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+task_id: telecom/telecom-cross-002
+task_type: comprehensive

@@ -1,0 +1,22 @@
+description: 从已有设备和 rack-mount 配合推断深度约束
+difficulty: medium
+domain: telecom
+expected_deliverables: []
+expected_files:
+- instances/devices/SAN-01.yaml
+name: 涌现约束：部署存储节点
+plugins:
+- telecom
+requirement: 在 RACK-A01 中新增一台 SAN 存储节点 SAN-01（型号 san-storage，4U/800W/双电源冗余），部署在 U30。注意：新设备的物理尺寸必须与机柜兼容。查阅已有设备实例和
+  rack-mount 配合确认兼容性约束。
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+task_id: telecom/telecom-emergent-003
+task_type: comprehensive

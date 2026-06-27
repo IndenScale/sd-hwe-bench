@@ -1,0 +1,27 @@
+task_id: telecom/datacenter-004
+name: 添加 ROW-A 机柜入排配合
+description: Canonical task extracted from canonical-datacenter commit c03 → c04
+domain: telecom
+source_project: canonical-datacenter
+source_commit_from: c03
+source_commit_to: c04
+task_type: mating-design
+difficulty: medium
+requirement: 为 ROW-A 的 4 个机柜创建 rack-in-row 配合。查阅 docs/dc-design-spec.md §1.3。
+plugins:
+- telecom
+expected_files:
+- mates/rack-in-row/ROW-A-RACK-A01.yaml
+- mates/rack-in-row/ROW-A-RACK-A02.yaml
+- mates/rack-in-row/ROW-A-RACK-A03.yaml
+- mates/rack-in-row/ROW-A-RACK-A04.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

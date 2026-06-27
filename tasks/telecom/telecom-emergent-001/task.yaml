@@ -1,0 +1,21 @@
+description: 从已有实例推断命名规范和字段约定
+difficulty: medium
+domain: telecom
+expected_deliverables: []
+expected_files:
+- instances/pdus/PDU-C.yaml
+name: 涌现约束：添加第三路 PDU
+plugins:
+- telecom
+requirement: 在 RACK-A01 中新增一路 PDU，容量 3000W，相位 L2。确保新增 PDU 与已有实例遵循一致的命名规范和字段约定。
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+task_id: telecom/telecom-emergent-001
+task_type: instance-declaration

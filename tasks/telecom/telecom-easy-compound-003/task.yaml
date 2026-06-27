@@ -1,0 +1,24 @@
+description: 为 SRV-01:eth0→SW-01:Gi1/0/1 和 SRV-02:eth0→SW-01:Gi1/0/2 声明 SFP28-SR 光模块（instances/transceivers/，mode
+difficulty: easy
+domain: telecom
+expected_deliverables: []
+expected_files: []
+name: 声明光模块、光纤和端口连接
+plugins:
+- telecom
+requirement: '为 SRV-01:eth0→SW-01:Gi1/0/1 和 SRV-02:eth0→SW-01:Gi1/0/2 声明 SFP28-SR
+  光模块（instances/transceivers/，model: sfp28-sr-25g）、OM4-LC-LC 光纤（instances/fibers/，2.0m）和端口连接（instances/port_connections/）。查阅
+  docs/rack-design-spec.md §5-§6。
+
+
+  查阅 docs/rack-design-spec.md。注意 PDU 使用 capacity_w（不是 power_capacity_w），rack_id 必填。'
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+task_id: telecom/telecom-easy-compound-003
+task_type: connection-design

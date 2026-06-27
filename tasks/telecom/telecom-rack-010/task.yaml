@@ -1,0 +1,34 @@
+task_id: telecom/telecom-rack-010
+name: 添加第一条光纤连接
+description: Canonical task extracted from canonical-telecom-rack commit c09 → c10
+domain: telecom
+source_project: canonical-telecom-rack
+source_commit_from: c09
+source_commit_to: c10
+task_type: connection-design
+difficulty: medium
+requirement: '建立 SRV-01 eth0 到 SW-01 Gi1/0/1 的光纤连接。
+
+
+  要求：
+
+  - 声明 port connection CONN-S01-SW01，from_port 为 SRV-01/eth0，to_port 为 SW-01/Gi1/0/1
+
+  - 声明光纤 FIBER-S01-SW01，model om4-lc-lc-3m，长度 2.0m
+
+  - cable_type 为 OM4-LC-LC'
+plugins:
+- telecom
+expected_files:
+- instances/port_connections/CONN-S01-SW01.yaml
+- instances/fibers/FIBER-S01-SW01.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []

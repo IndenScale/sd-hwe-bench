@@ -1,0 +1,72 @@
+task_id: telecom/instance-declare-001
+name: 实例声明-服务器部署
+description: 声明机柜、服务器、交换机、PDU 等基础设施实例，包含正确的型号、物理尺寸和接口信息。
+domain: telecom
+task_type: instance-declaration
+difficulty: easy
+requirement: "为一个小型机房机柜部署声明以下实例：\n\n- SRV-01：通用服务器。2U 高度，300W TDP，单电源，无冗余。\n  物理尺寸：715mm\
+  \ 深、445mm 宽、89mm 高、18.5kg。\n  接口：eth0（SFP28，双向，\"25G 管理口\"），\n  eth1（SFP+，双向，\"\
+  10G 业务口\"），\n  power-a（IEC-C14，输入，\"A 路电源\"），\n  power-b（IEC-C14，输入，\"B 路电源\"）。\n\
+  \  状态：installed。\n\n- SRV-02：通用服务器。2U 高度，250W TDP，单电源，无冗余。\n  物理尺寸：715mm 深、445mm\
+  \ 宽、89mm 高、16.5kg。\n  接口：eth0（SFP28，双向，\"25G 管理口\"），\n  eth1（QSFP28，双向，\"100G 业务口\"\
+  ），\n  power-a（IEC-C14，输入，\"A 路电源\"）。\n  状态：installed。\n\n- SW-01：接入交换机。1U 高度，150W\
+  \ TDP，单电源，无冗余。\n  物理尺寸：460mm 深、440mm 宽、44mm 高、7.2kg。\n  接口：Gi1/0/1（SFP28，双向，\"25G\
+  \ 上联口\"），\n  Gi1/0/2（SFP28，双向，\"25G 上联口\"），\n  power-a（IEC-C14，输入，\"A 路电源\"）。\n\
+  \  状态：installed。\n\n以上三台设备均属于 ServerFamily。\n另需声明一个机柜实例：RACK-A01，RackFamily，型号 standard-rack，42U，800mm\
+  \ 深，600mm 宽。\n另需声明两个 PDU：PDU-A 和 PDU-B，各 2000W 容量。\n\n设备名称：\"服务器-01\"（SRV-01）、\"\
+  服务器-02\"（SRV-02）、\"接入交换机\"（SW-01）、\n\"主列头柜-A01\"（RACK-A01）。\nRACK-A01 位置：\"机房A-A列\"\
+  。\n\nU 位分配规则：查阅 docs/rack-design-spec.md §1 机柜布局。2U 设备占用连续 2U，不同设备 U 位不得重叠，2U 设备间至少间隔\
+  \ 1U。"
+plugins:
+- telecom
+expected_files:
+- instances/devices/SRV-01.yaml
+- instances/devices/SRV-02.yaml
+- instances/devices/SW-01.yaml
+- instances/racks/RACK-A01.yaml
+- instances/pdus/PDU-A.yaml
+- instances/pdus/PDU-B.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+expected_deliverables: []
+rubrics:
+- name: correctness
+  threshold: 0.6
+  criteria:
+  - id: device-count
+    name: 设备实例数量
+    description: 是否声明了全部 6 个实例（3 个设备 + 1 个机柜 + 2 个 PDU）
+    weight: 0.2
+    evaluation_steps:
+    - 统计输出的 device 实例声明数量
+    - 统计输出的 rack 实例声明数量
+    - 统计输出的 pdu 实例声明数量
+  - id: device-attributes
+    name: 设备属性正确性
+    description: 每台设备的 model 引用、物理尺寸、TDP、接口声明是否与要求一致
+    weight: 0.4
+    evaluation_steps:
+    - 检查 SRV-01 的 model=generic-server, height_u=2, tdp_w=300
+    - 检查 SRV-02 的 model=generic-server, height_u=2, tdp_w=250
+    - 检查 SW-01 的 model=access-switch, height_u=1, tdp_w=150
+    - 验证各设备的深度、宽度、重量是否与要求一致
+  - id: interface-correctness
+    name: 接口声明正确性
+    description: 每台设备的接口类型、方向和数量是否与要求一致
+    weight: 0.25
+    evaluation_steps:
+    - 检查 SRV-01 是否有 eth0(SFP28), eth1(SFP+), power-a, power-b
+    - 检查 SRV-02 是否有 eth0(SFP28), eth1(QSFP28), power-a
+    - 检查 SW-01 是否有 Gi1/0/1(SFP28), Gi1/0/2(SFP28), power-a
+  - id: rack-pdu-attributes
+    name: 机柜与PDU属性
+    description: 机柜 RACK-A01 和 PDU 实例的属性是否正确
+    weight: 0.15
+    evaluation_steps:
+    - 检查 RACK-A01 的 family=RackFamily, 42U, 800mm 深, 600mm 宽
+    - 检查 PDU-A 和 PDU-B 的容量均为 2000W

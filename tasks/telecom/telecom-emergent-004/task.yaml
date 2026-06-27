@@ -1,0 +1,22 @@
+description: 从已有布局推断 2U 设备间隔规则
+difficulty: medium
+domain: telecom
+expected_deliverables: []
+expected_files:
+- instances/devices/SRV-03.yaml
+name: 涌现约束：遵循 U 位间隔惯例
+plugins:
+- telecom
+requirement: 在 RACK-A01 中新增一台通用服务器 SRV-03（2U/300W），接入 PDU-A。观察已有布局中的 U 位分配模式，确保新设备的
+  U 位选择符合既有的间隔惯例。
+rubrics: []
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+task_id: telecom/telecom-emergent-004
+task_type: layout-design

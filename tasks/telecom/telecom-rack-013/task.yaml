@@ -1,0 +1,38 @@
+task_id: telecom/telecom-rack-013
+name: 添加 LC connector 配合
+description: Canonical task extracted from canonical-telecom-rack commit c12 → c13
+domain: telecom
+source_project: canonical-telecom-rack
+source_commit_from: c12
+source_commit_to: c13
+task_type: mating-design
+difficulty: medium
+requirement: '为光纤两端创建 lc-connector 配合，将光纤接入光模块 line 口。
+
+
+  涉及配合：
+
+  - FIBER-S01-SW01/end-a ↔ SFP28-SR-S01-ETH0/line
+
+  - FIBER-S01-SW01/end-b ↔ SFP28-SR-SW01-Gi101/line
+
+  - FIBER-S02-SW01/end-a ↔ SFP28-SR-S02-ETH0/line
+
+  - FIBER-S02-SW01/end-b ↔ SFP28-SR-SW01-Gi102/line'
+plugins:
+- telecom
+expected_files:
+- mates/lc-connector/FIBER-S01-SW01-end-a-SFP28-SR-S01-ETH0.yaml
+- mates/lc-connector/FIBER-S01-SW01-end-b-SFP28-SR-SW01-Gi101.yaml
+- mates/lc-connector/FIBER-S02-SW01-end-a-SFP28-SR-S02-ETH0.yaml
+- mates/lc-connector/FIBER-S02-SW01-end-b-SFP28-SR-SW01-Gi102.yaml
+scoring_layers:
+- L0
+- L1
+- L2a
+- L2b
+- L2c
+- L3
+- L4
+expected_deliverables: []
+rubrics: []
