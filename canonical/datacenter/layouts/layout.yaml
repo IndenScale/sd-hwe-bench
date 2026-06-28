@@ -12,3 +12,22 @@
   rack_id: RACK-A01
   position_u: 13
   pdu_id: PDU-A01-A
+- instance: SPINE-01
+  rack_id: RACK-A01
+  position_u: 42
+  pdu_id: PDU-A01-A
+  rack_id: RACK-A01
+  position_u: 41
+  pdu_id: PDU-A01-A
+- instance: SPINE-02
+  rack_id: RACK-A02
+  position_u: 41
+  pdu_id: PDU-A02-A
+- instance: LEAF-A
+  rack_id: RACK-A01
+  position_u: 38
+  pdu_id: PDU-A01-A
+- instance: LEAF-B
+  rack_id: RACK-A03
+  position_u: 38
+  pdu_id: PDU-A02-A

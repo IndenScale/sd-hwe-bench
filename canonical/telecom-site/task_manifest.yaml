@@ -30,7 +30,8 @@ commit_history:
 
     4. 创建 rack-mount 配合
 
-    查阅 docs/site-design-spec.md §2-§4。注意 capacity_w（不是 power_capacity_w）、rack_id 必填、U 位间隔≥1U。'
+    查阅 docs/site-design-spec.md §2-§4。注意 capacity_w（不是 power_capacity_w）、rack_id 必填、U
+    位间隔≥1U。'
   expected_files:
   - instances/pdus/DCPS-01.yaml
   - instances/devices/BBU-01.yaml
@@ -78,8 +79,8 @@ commit_history:
   summary: 声明防雷接地系统及配合
   task_type: comprehensive
   difficulty: medium
-  requirement: 声明防雷接地系统：GROUND-ROD-01 + SPD-01 + SPD-02，并创建 SPD→接地极的 cable-connection 配合（16mm² 接地线）。查阅 docs/site-design-spec.md
-    §6。
+  requirement: 声明防雷接地系统：GROUND-ROD-01 + SPD-01 + SPD-02，并创建 SPD→接地极的 cable-connection
+    配合（16mm² 接地线）。查阅 docs/site-design-spec.md §6。
   expected_files:
   - instances/grounding/GROUND-ROD-01.yaml
   - instances/grounding/SPD-01.yaml
@@ -104,3 +105,78 @@ commit_history:
   - power-budget
   - port-map
   - cable-list
+- commit: c07
+  step: 7
+  summary: 天线参数配置：方位角、下倾角、挂高
+  task_type: instance-declaration
+  difficulty: medium
+  requirement: "为三个扇区的定向天线配置射频参数。\n\n1. 为 ANT-01/ANT-02/ANT-03 分别创建天线参数实例（instances/antennas_params/）：\n\
+    \   - 扇区 α (ANT-01)：方位角 0°，机械下倾 2°，电调下倾 4°\n   - 扇区 β (ANT-02)：方位角 120°，机械下倾 2°，电调下倾\
+    \ 4°\n   - 扇区 γ (ANT-03)：方位角 240°，机械下倾 2°，电调下倾 4°\n   - 所有天线挂高 35m，总下倾角 = 机械 +\
+    \ 电调 = 6°\n\n2. 声明扇区 γ 的天线 ANT-03、RRU-03 和馈线 FEEDER-RRU03-ANT03\n\n查阅 docs/site-design-spec.md\
+    \ §8 天线参数规范。注意：方位角 0°=正北，顺时针增加。"
+  expected_files:
+  - instances/antennas_params/ANT-01-params.yaml
+  - instances/antennas_params/ANT-02-params.yaml
+  - instances/antennas_params/ANT-03-params.yaml
+  - instances/antennas/ANT-03.yaml
+  - instances/antennas/RRU-03.yaml
+  - instances/cables/FEEDER-RRU03-ANT03.yaml
+  expected_deliverables: []
+- commit: c08
+  step: 8
+  summary: 链路预算计算：覆盖半径推导
+  task_type: comprehensive
+  difficulty: hard
+  requirement: "基于天线参数和设备规格，完成基站链路预算计算。\n\n1. 使用 Okumura-Hata 模型（docs/site-design-spec.md\
+    \ §9.2）计算 1950MHz 下的路径损耗。\n   参数：基站天线高度 hb=35m，移动台高度 hm=1.5m，中心频率 f=1950MHz。\n\
+    \n2. 计算链路预算（§9.1）：\n   - EIRP = Ptx + Gtx - Ltx = 40 + 18 - 3.4 = 54.6 dBm\n \
+    \  - 50m 馈线在 1950MHz 损耗：取 2100MHz 和 1800MHz 损耗线性插值\n   - 最大允许路径损耗 = EIRP + Grx\
+    \ - Lrx - (-102) - 10 = 151.2 dB\n\n3. 反推覆盖半径：用 Okumura-Hata 公式，满足边缘信号 ≥ -92 dBm（margin\
+    \ ≥ 10dB）\n\n4. 生成 reports/link-budget.yaml，包含三个扇区的发射/接收/路径损耗/覆盖半径。\n\n查阅 docs/site-design-spec.md\
+    \ §9 链路预算。注意：对数计算使用 log10。"
+  expected_files:
+  - reports/link-budget.yaml
+  expected_deliverables: []
+- commit: c09
+  step: 9
+  summary: 扇区规划报告与频率分配
+  task_type: comprehensive
+  difficulty: hard
+  requirement: "基于链路预算结果，完成三扇区覆盖规划和频率分配。\n\n1. 生成扇区规划报告 reports/sector-plan.yaml，包含：\n\
+    \   - 三扇区方位角（0°/120°/240°）\n   - 各扇区覆盖半径（来自链路预算）\n   - 扇区间重叠分析（§10.3）：overlap_ratio\
+    \ ≥ 0.10\n   - 覆盖连续性检查：max_gap_km = 0\n\n2. 频率规划（§10.4）：使用 1×3×1 复用模式，为三个扇区分配不同频点：\n\
+    \   - α: 1950MHz, β: 1960MHz, γ: 1970MHz\n\n查阅 docs/site-design-spec.md §10 扇区规划。注意：相邻扇区频点间隔\
+    \ ≥ 10MHz 避免邻频干扰。"
+  expected_files:
+  - reports/sector-plan.yaml
+  expected_deliverables: []
+
+- commit: c10
+  step: 10
+  summary: 塔桅风载荷校核：声明塔桅并完成风载荷分析
+  task_type: comprehensive
+  difficulty: hard
+  requirement: "为基站站点声明 30m 角钢格构式通信塔 TOWER-01，并完成风载荷校核分析。\n\n1. 声明 instances/towers/TOWER-01.yaml（model: lattice-angle-steel-tower-30m，family: FacilityFamily）\n\n2. 计算三副 ANT-01/ANT-02/ANT-03 的天线风载荷（挂高 28m）：\n   - 每副天线的迎风面积 A = 0.35m × 2.0m = 0.7 m²\n   - 平板天线阻力系数 Cd = 1.2\n   - 设计风速 v = 40 m/s\n   - F_wind_single = 0.5 × 1.225 × 40² × 1.2 × 0.7 = 823.2 N\n\n3. 计算塔身风载荷：\n   - 塔身轮廓投影面积 = (3.0 + 0.8) / 2 × 30 = 57.0 m²\n   - 格构式挡风系数（solidity ratio）取 0.25\n   - 有效迎风面积 = 57.0 × 0.25 = 14.25 m²\n   - 塔身阻力系数 Cd_tower = 1.0\n   - F_wind_tower = 0.5 × 1.225 × 40² × 1.0 × 14.25 = 13965.0 N\n\n4. 计算倾覆力矩和抗倾覆安全系数：\n   - M_overturn = Σ(F_antenna_i × 28.0) + F_wind_tower × (30.0 / 2)\n   - 塔身自重 = 3500 kg，天线总重 = 3 × 25 kg = 75 kg\n   - M_resist = (3500 + 75) × 9.81 × (3.0 / 2)\n   - FS_overturn = M_resist / M_overturn\n   - 要求 FS_overturn ≥ 1.5\n\n5. 生成 reports/wind-load-report.yaml 包含完整计算过程和结论（pass/fail）。\n\n若 FS_overturn < 1.5，须在报告中给出至少两条可行的改进建议。\n\n查阅 docs/site-design-spec.md §11 塔桅选型与风载荷校核。注意格构式塔的挡风系数。"
+  expected_files:
+  - instances/towers/TOWER-01.yaml
+  - reports/wind-load-report.yaml
+  expected_deliverables: []
+- commit: c11
+  step: 11
+  summary: BBU 散热冗余计算：机柜内部温升与热节流风险评估
+  task_type: comprehensive
+  difficulty: hard
+  requirement: "对 CABINET-01 内的 BBU-01 进行散热冗余分析。\n\n1. 计算总热载荷：\n   - BBU-01 TDP = 350W（查阅 models/devices/bbu.yaml）\n   - P_total = 350W\n\n2. 计算冷却冗余：\n   - 户外机柜模型 outdoor-cabinet-ip65 的 cooling_capacity_w = 4000W\n   - η_cooling = cooling_capacity_w / P_total\n   - 散热冗余要求 η_cooling ≥ 1.2\n\n3. 计算机柜内部温升：\n   - 机柜外表面积 A_surface = 2 × (0.6×2.0 + 0.6×0.8 + 2.0×0.8) = 4.64 m²（宽 W=0.6、高 H=2.0、深 D=0.8，单位 m）\n   - ΔT = P_total / (h × A_surface)，h = 5 W/(m²·K)（自然对流）\n   - 环境最高温度 T_ambient_max = 45°C\n   - T_internal = T_ambient_max + ΔT\n\n4. 评估 BBU 热节流风险：\n   - BBU 热节流温度 = 50°C（查阅 models/devices/bbu.yaml: thermal_throttle_temp_c）\n   - 若 T_internal > 50°C，标记热节流风险\n   - 若存在风险，给出至少两条缓解建议（如增强通风、降低 BBU 功率）\n\n5. 生成 reports/thermal-report.yaml。\n\n查阅 docs/site-design-spec.md §12 BBU 散热冗余设计。注意计算表面积时使用国际单位制（米）。"
+  expected_files:
+  - reports/thermal-report.yaml
+  expected_deliverables: []
+- commit: c12
+  step: 12
+  summary: 频谱干扰协调：三扇区邻频干扰与覆盖重叠干扰分析
+  task_type: comprehensive
+  difficulty: hard
+  requirement: "基于已有的链路预算（reports/link-budget.yaml）和扇区规划（reports/sector-plan.yaml）结果，完成三扇区间干扰协调分析。\n\n1. 邻频干扰分析（三对扇区：α-β、β-γ、γ-α）：\n   - α:1950MHz, β:1960MHz, γ:1970MHz\n   - Δf = f_j - f_i\n   - ACIR = -10 × log10(10^(-ACLR/10) + 10^(-ACS/10))\n   - ACLR = 45dB, ACS = 33dB\n   - 要求 Δf ≥ 10MHz 避免邻频干扰\n\n2. 覆盖重叠区信号强度分析：\n   - 覆盖半径 d_coverage（从 link-budget.yaml 读取）\n   - 水平波束宽度 = 65°\n   - 重叠区距基站距离 = d_overlap = d_coverage × cos(beamwidth/2)\n   - 重叠区 RSSI 差：ΔRSSI = RSSI_serving - RSSI_interferer\n   - 其中 RSSI_serving = EIRP(54.6) - Lpath(d_overlap)\n   - RSSI_interferer = EIRP(54.6) - Lpath(d_coverage - d_overlap × cos(beamwidth/2))\n   - 若 ΔRSSI < 6dB，标记切换干扰风险\n\n3. 生成 reports/interference-report.yaml。\n\n查阅 docs/site-design-spec.md §13 频谱干扰协调。注意 Okumura-Hata 的 Lpath 公式用于计算不同距离的路径损耗。"
+  expected_files:
+  - reports/interference-report.yaml
+  expected_deliverables: []

@@ -1,0 +1,9 @@
+id: ROW-B
+family: RackRowFamily
+name: "B 排（热通道侧）"
+room_id: DC-HALL-A
+row_index: 1
+rack_count: 4
+rack_inline_spacing_mm: 600
+orientation_deg: 270
+cooling_mode: hot_aisle_containment

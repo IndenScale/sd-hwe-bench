@@ -1,0 +1,20 @@
+id: storage-node-2u
+family: StorageFamily
+name: "存储节点 2U"
+description: >
+  2U 存储节点，NVMe SSD，典型 TDP 350W。
+height_u: 2
+depth_mm: 800
+width_mm: 446
+weight_kg: 28
+tdp_w: 350
+idle_power_w: 120
+cpu_util_to_power_ratio: 0.55
+psu_efficiency: 0.94
+interfaces:
+  - id: eth0
+    type: SFP28
+    direction: bidir
+  - id: eth1
+    type: SFP28
+    direction: bidir

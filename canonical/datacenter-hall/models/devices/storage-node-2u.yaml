@@ -1,0 +1,14 @@
+model: storage-node-2u
+family: StorageFamily
+name: "2U 存储节点"
+height_u: 2
+tdp_w: 350
+idle_power_w: 100
+cpu_util_to_power_ratio: 0.5
+psu_count: 2
+psu_redundancy: true
+psu_efficiency: 0.94
+depth_mm: 750
+width_mm: 445
+height_mm: 89
+weight_kg: 28.0

@@ -1,0 +1,6 @@
+id: ANT03-RRU03
+family: MustClearPairFamily
+name: "ANT-03 与 RRU-03 空间隔离"
+participant_a: ANT-03
+participant_b: RRU-03
+min_distance_mm: 500

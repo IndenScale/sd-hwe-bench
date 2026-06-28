@@ -1,0 +1,5 @@
+id: RRU03-FEEDER-ANT03
+family: CableConnectionPartnerFamily
+name: "RRU-03 → 馈线 配合"
+participant_a: RRU-03
+participant_b: FEEDER-RRU03-ANT03

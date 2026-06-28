@@ -1,0 +1,8 @@
+id: RACK-B05
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-B
+position_in_row: 5
+tags:
+  discipline: it
+  security_zone: production

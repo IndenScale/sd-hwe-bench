@@ -1,0 +1,19 @@
+- id: SOLAR-ROOF
+  family: FacilityFamily
+  model: solar-array-20kwp
+  name: "屋顶光伏阵列"
+  facility_type: solar
+
+- id: BATT-01
+  family: FacilityFamily
+  model: battery-storage-50kwh
+  name: "储能柜"
+  facility_type: battery
+
+- id: GRID-MAIN
+  family: FacilityFamily
+  model: grid-connection
+  name: "市电接入"
+  facility_type: grid
+  capacity_kw: 200.0
+  carbon_intensity_kg_per_kwh: 0.581    # 中国电网平均碳排放因子

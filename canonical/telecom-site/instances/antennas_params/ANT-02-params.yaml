@@ -1,0 +1,12 @@
+id: ANT-02-PARAMS
+family: FacilityFamily
+model: panel-antenna-4t4r
+facility_type: antenna-params
+name: "扇区β天线参数"
+antenna_id: "ANT-02"
+sector: "beta"
+azimuth_deg: 120.0
+mechanical_tilt_deg: 2.0
+electrical_tilt_deg: 4.0
+total_tilt_deg: 6.0
+mount_height_m: 35.0

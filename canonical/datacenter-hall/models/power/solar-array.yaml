@@ -1,0 +1,10 @@
+model: solar-array-20kwp
+family: FacilityFamily
+name: "屋顶光伏阵列 20kWp"
+facility_type: solar
+peak_power_kw: 20.0
+inverter_efficiency: 0.97
+degradation_rate_per_year: 0.005
+panel_area_m2: 120.0
+tilt_angle_deg: 15.0
+azimuth_deg: 180.0

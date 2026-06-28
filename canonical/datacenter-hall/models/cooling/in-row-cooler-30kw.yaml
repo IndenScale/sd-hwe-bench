@@ -1,0 +1,22 @@
+model: in-row-cooler-30kw
+family: FacilityFamily
+name: "列间精密空调 30kW"
+facility_type: cooler
+width_mm: 600
+depth_mm: 1100
+height_mm: 2000
+weight_kg: 350.0
+capacity_kw: 30.0
+cop_nominal: 4.5
+# COP 随负载率的曲线 [load_ratio, cop]
+cop_curve:
+  - [0.1, 2.5]
+  - [0.2, 3.0]
+  - [0.4, 3.8]
+  - [0.6, 4.5]
+  - [0.8, 4.8]
+  - [1.0, 5.0]
+free_cooling_threshold_c: 15.0
+water_consumption_l_per_kwh: 0.8
+min_part_load_ratio: 0.2
+supply_air_temp_c: 18.0

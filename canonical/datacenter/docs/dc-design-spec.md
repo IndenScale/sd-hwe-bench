@@ -39,11 +39,13 @@ canonical-datacenter/
 ## 1. 机柜与排
 
 ### 1.1 机柜实例
+
 文件路径：`instances/racks/<RACK-ID>.yaml`
 
 机柜 model: `dc-rack-42u`，42U，1000mm 深，600mm 宽。
 
 ### 1.2 机柜排 (RackRow)
+
 文件路径：`rooms/<ROW-ID>.yaml`
 
 ```yaml
@@ -56,6 +58,7 @@ rack_inline_spacing_mm: 600
 ```
 
 ### 1.3 机柜入排配合
+
 文件路径：`mates/rack-in-row/<ID>.yaml`
 
 ```yaml

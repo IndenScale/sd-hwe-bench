@@ -1,0 +1,6 @@
+id: PDU-A01-A
+rack_id: RACK-A01
+family: PduFamily
+model: pdu-3phase-32a
+name: "A排01号柜-A路PDU"
+capacity_kw: 22.08

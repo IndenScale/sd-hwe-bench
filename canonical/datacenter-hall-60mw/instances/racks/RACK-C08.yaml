@@ -1,0 +1,8 @@
+id: RACK-C08
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-C
+position_in_row: 8
+tags:
+  discipline: it
+  security_zone: production

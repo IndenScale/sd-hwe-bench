@@ -1,0 +1,38 @@
+doc:
+  type: sector-plan-report
+  title: "三扇区覆盖规划"
+  site: "TOWER-MAIN"
+  tower_height_m: 45.0
+  antenna_mount_height_m: 35.0
+
+frequency_plan:
+  reuse_pattern: "1x3x1"
+  sector_frequencies:
+    alpha: 1950
+    beta: 1960
+    gamma: 1970
+
+sectors:
+  - id: alpha
+    antenna_id: ANT-01
+    azimuth_deg: 0.0
+    tilt_deg: 6.0
+    coverage_radius_km: 2.8
+  - id: beta
+    antenna_id: ANT-02
+    azimuth_deg: 120.0
+    tilt_deg: 6.0
+    coverage_radius_km: 2.8
+  - id: gamma
+    antenna_id: ANT-03
+    azimuth_deg: 240.0
+    tilt_deg: 6.0
+    coverage_radius_km: 2.8
+
+inter_sector_overlap:
+  overlap_ratio: 0.15
+  overlap_distance_km: 0.73
+
+coverage_gap_analysis:
+  max_gap_km: 0.0
+  contiguous: true

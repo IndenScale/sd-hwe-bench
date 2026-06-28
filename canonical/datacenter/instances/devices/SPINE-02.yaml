@@ -1,0 +1,24 @@
+id: SPINE-02
+family: ServerFamily
+model: spine-switch
+name: "Spine 交换机 SPINE-02"
+status: installed
+interfaces:
+  - id: swp1
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: swp2
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: swp3
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: swp4
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: power-a
+    interface_type: IEC-C14
+    direction: input
+rack_id: RACK-A02
+position_u: 41
+pdu_id: PDU-A01-A

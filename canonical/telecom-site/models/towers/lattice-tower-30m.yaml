@@ -1,0 +1,15 @@
+model: lattice-angle-steel-tower-30m
+family: FacilityFamily
+name: "30m 角钢格构式通信塔"
+facility_type: tower
+tower_type: lattice-angle-steel
+height_m: 30.0
+base_width_m: 3.0
+top_width_m: 0.8
+max_antenna_count: 6
+max_payload_per_mount_kg: 80
+max_total_payload_kg: 400
+design_wind_speed_ms: 40.0
+survival_wind_speed_ms: 55.0
+foundation_type: reinforced-concrete-pad
+max_antenna_height_m: 30.0

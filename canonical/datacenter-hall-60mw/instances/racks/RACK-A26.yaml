@@ -1,0 +1,8 @@
+id: RACK-A26
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-A
+position_in_row: 26
+tags:
+  discipline: it
+  security_zone: production

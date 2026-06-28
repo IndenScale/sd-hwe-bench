@@ -1,0 +1,6 @@
+id: LEAF-A-up-1
+family: PortFamily
+device_id: LEAF-A
+port_name: up-1
+port_type: QSFP28
+status: installed

@@ -1,0 +1,14 @@
+model: gpu-node-4u
+family: ServerFamily
+name: "4U GPU 节点"
+height_u: 4
+tdp_w: 2000
+idle_power_w: 300
+cpu_util_to_power_ratio: 0.8
+psu_count: 4
+psu_redundancy: true
+psu_efficiency: 0.92
+depth_mm: 850
+width_mm: 445
+height_mm: 178
+weight_kg: 45.0

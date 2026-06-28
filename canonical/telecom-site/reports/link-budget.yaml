@@ -1,0 +1,38 @@
+doc:
+  type: link-budget-report
+  title: "基站链路预算报告"
+  date: "2026-06-27"
+  site: "TOWER-MAIN"
+  frequency_mhz: 1950.0
+  mobile_height_m: 1.5
+
+transmit:
+  tx_power_dbm: 40.0
+  tx_antenna_gain_dbi: 18.0
+  tx_feeder_loss_db: 3.4
+  eirp_dbm: 54.6
+
+receive:
+  rx_antenna_gain_dbi: 18.0
+  rx_feeder_loss_db: 3.4
+
+sensitivity:
+  bbu_sensitivity_dbm: -102.0
+  required_margin_db: 10.0
+
+results:
+  max_path_loss_db: 151.2
+  coverage_radius_km: 2.8
+  received_power_at_edge_dbm: -92.0
+  margin_at_edge_db: 10.0
+
+sectors:
+  - sector: alpha
+    azimuth_deg: 0.0
+    coverage_radius_km: 2.8
+  - sector: beta
+    azimuth_deg: 120.0
+    coverage_radius_km: 2.8
+  - sector: gamma
+    azimuth_deg: 240.0
+    coverage_radius_km: 2.8

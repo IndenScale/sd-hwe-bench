@@ -1,0 +1,27 @@
+- id: COOLER-A1
+  family: FacilityFamily
+  model: in-row-cooler-30kw
+  name: "A排列间空调-1"
+  row_id: ROW-A
+  facility_type: cooler
+
+- id: COOLER-A2
+  family: FacilityFamily
+  model: in-row-cooler-30kw
+  name: "A排列间空调-2"
+  row_id: ROW-A
+  facility_type: cooler
+
+- id: COOLER-B1
+  family: FacilityFamily
+  model: in-row-cooler-30kw
+  name: "B排列间空调-1"
+  row_id: ROW-B
+  facility_type: cooler
+
+- id: COOLER-B2
+  family: FacilityFamily
+  model: in-row-cooler-30kw
+  name: "B排列间空调-2"
+  row_id: ROW-B
+  facility_type: cooler

@@ -124,3 +124,32 @@ commit_history:
   - power-budget
   - port-map
   - cable-list
+
+- commit: c09
+  step: 9
+  summary: Spine-Leaf 组网设计：Spine/Leaf 交换机声明、全互联、收敛比
+  task_type: comprehensive
+  difficulty: hard
+  requirement: "为数据中心机房设计 Spine-Leaf 网络拓扑。\n\n1. 声明两台 Spine 交换机 SPINE-01、SPINE-02（model: spine-switch，64口 100G QSFP28，500W），部署在 RACK-A01 和 RACK-A02 的 U41。\n\n2. 声明两台 Leaf 交换机 LEAF-A、LEAF-B（model: leaf-switch，48口 25G + 4口 100G 上行，250W），部署在 RACK-A01 和 RACK-A03 的 U38。\n\n3. 创建端口实例：每台 Spine 用 swp1-swp4，每台 Leaf 用 up-1/up-2（100G QSFP28）。\n\n4. 创建全互联 port_connection：\n   - LEAF-A/up-1 ↔ SPINE-01/swp1\n   - LEAF-A/up-2 ↔ SPINE-02/swp1\n   - LEAF-B/up-1 ↔ SPINE-01/swp2\n   - LEAF-B/up-2 ↔ SPINE-02/swp2\n   - 每台 Leaf 必须连接所有 Spine（全互联）\n\n5. 确保收敛比（下行口数 / 上行口数）≤ 3:1。\n\n查阅 docs/dc-design-spec.md。注意 Spine-Leaf 全互联的拓扑要求，避免\"孤儿 Leaf\"或\"孤星 Spine\"。"
+  expected_files:
+  - instances/devices_spine_leaf/SPINE-01.yaml
+  - instances/devices_spine_leaf/SPINE-02.yaml
+  - instances/devices_spine_leaf/LEAF-A.yaml
+  - instances/devices_spine_leaf/LEAF-B.yaml
+  - instances/ports_spine_leaf/SPINE-01-swp1.yaml
+  - instances/ports_spine_leaf/SPINE-01-swp2.yaml
+  - instances/ports_spine_leaf/SPINE-01-swp3.yaml
+  - instances/ports_spine_leaf/SPINE-01-swp4.yaml
+  - instances/ports_spine_leaf/SPINE-02-swp1.yaml
+  - instances/ports_spine_leaf/SPINE-02-swp2.yaml
+  - instances/ports_spine_leaf/SPINE-02-swp3.yaml
+  - instances/ports_spine_leaf/SPINE-02-swp4.yaml
+  - instances/ports_spine_leaf/LEAF-A-up-1.yaml
+  - instances/ports_spine_leaf/LEAF-A-up-2.yaml
+  - instances/ports_spine_leaf/LEAF-B-up-1.yaml
+  - instances/ports_spine_leaf/LEAF-B-up-2.yaml
+  - instances/port_connections_spine_leaf/CONN-LEAF-A-SPINE-01.yaml
+  - instances/port_connections_spine_leaf/CONN-LEAF-A-SPINE-02.yaml
+  - instances/port_connections_spine_leaf/CONN-LEAF-B-SPINE-01.yaml
+  - instances/port_connections_spine_leaf/CONN-LEAF-B-SPINE-02.yaml
+  expected_deliverables: []

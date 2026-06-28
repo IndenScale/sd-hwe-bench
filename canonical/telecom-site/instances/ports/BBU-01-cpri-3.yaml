@@ -1,0 +1,6 @@
+id: BBU-01-cpri-3
+family: PortFamily
+device_id: BBU-01
+port_name: cpri-3
+port_type: QSFP28
+status: installed

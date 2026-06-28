@@ -1,0 +1,24 @@
+id: LEAF-B
+family: ServerFamily
+model: leaf-switch
+name: "Leaf 交换机 LEAF-B"
+status: installed
+interfaces:
+  - id: down-1
+    interface_type: SFP28-module
+    direction: bidirectional
+  - id: down-2
+    interface_type: SFP28-module
+    direction: bidirectional
+  - id: up-1
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: up-2
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: power-a
+    interface_type: IEC-C14
+    direction: input
+rack_id: RACK-A03
+position_u: 38
+pdu_id: PDU-A01-A

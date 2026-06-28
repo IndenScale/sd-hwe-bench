@@ -1,0 +1,181 @@
+id: DC-HALL-60MW
+family: RoomFamily
+name: "AIDC 60MW 主机房"
+description: >
+  80m × 40m × 5.5m 主机房，4 排 × 50 机柜 = 200 台 42U 机柜。
+  设计 IT 负载 60MW，单机柜 30kW 高密度。
+  支持风冷（中央冷水机组 + CRAH）与液冷（CDU + 冷板）两种冷却架构。
+  中压 110/10kV 配电，双路 40MVA 变压器 N+1，20MWh 储能，5MWp 光伏。
+length_mm: 80000
+width_mm: 40000
+height_mm: 5500
+floor_area_m2: 3200.0
+room_volume_m3: 176000.0
+
+# 热物理参数（供仿真引擎使用）
+thermal:
+  envelope_u_value_w_m2k: 0.35        # 大型机房围护结构传热系数 W/(m²·K)
+  envelope_area_m2: 11680.0           # 四面墙 + 屋顶 + 地面总面积
+  thermal_capacity_kj_k: 4500000.0    # 房间热容 kJ/K（空气 + 结构 + IT 设备热惯量）
+  design_indoor_temp_c: 25.0          # 设计室内温度 ℃
+  supply_air_temp_c: 20.0             # 送风温度（冷通道）℃
+  hot_aisle_temp_limit_c: 45.0        # 热通道温度上限 ℃
+
+# 机柜排布局
+rack_rows:
+  - id: ROW-A
+    name: "A 排（冷通道侧）"
+    rack_count: 50
+    rack_power_capacity_kw: 30.0      # 单机柜额定功率 kW
+    rack_cooling_capacity_kw: 30.0
+  - id: ROW-B
+    name: "B 排（热通道侧）"
+    rack_count: 50
+    rack_power_capacity_kw: 30.0
+    rack_cooling_capacity_kw: 30.0
+  - id: ROW-C
+    name: "C 排（冷通道侧）"
+    rack_count: 50
+    rack_power_capacity_kw: 30.0
+    rack_cooling_capacity_kw: 30.0
+  - id: ROW-D
+    name: "D 排（热通道侧）"
+    rack_count: 50
+    rack_power_capacity_kw: 30.0
+    rack_cooling_capacity_kw: 30.0
+
+# 冷却系统
+# 默认配置：风冷，8 台 10MW 冷水机组（N+1 冗余，常用 6 台即可满足 60MW）
+cooling:
+  architecture: "air-cooled"          # air-cooled | liquid-cooled | hybrid
+  total_capacity_kw: 80000.0          # 总额定制冷量 kW（含 N+1 冗余）
+  units:
+    - id: CHILLER-01
+      model: chiller-10mw
+      row: ROW-A
+      capacity_kw: 10000.0
+      cop_nominal: 4.5                # 高温夏季离心冷水机组名义 COP
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0  # 湿球温度低于此值可部分免费冷却（夜间/过渡季）
+      water_consumption_l_per_kwh: 1.2  # 冷却塔蒸发/漂水 L/kWh_th
+    - id: CHILLER-02
+      model: chiller-10mw
+      row: ROW-B
+      capacity_kw: 10000.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0
+      water_consumption_l_per_kwh: 1.2
+    - id: CHILLER-03
+      model: chiller-10mw
+      row: ROW-C
+      capacity_kw: 10000.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0
+      water_consumption_l_per_kwh: 1.2
+    - id: CHILLER-04
+      model: chiller-10mw
+      row: ROW-D
+      capacity_kw: 10000.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0
+      water_consumption_l_per_kwh: 1.2
+    - id: CHILLER-05
+      model: chiller-10mw
+      row: ROW-A
+      capacity_kw: 10000.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0
+      water_consumption_l_per_kwh: 1.2
+    - id: CHILLER-06
+      model: chiller-10mw
+      row: ROW-B
+      capacity_kw: 10000.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0
+      water_consumption_l_per_kwh: 1.2
+    - id: CHILLER-07
+      model: chiller-10mw
+      row: ROW-C
+      capacity_kw: 10000.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0
+      water_consumption_l_per_kwh: 1.2
+    - id: CHILLER-08
+      model: chiller-10mw
+      row: ROW-D
+      capacity_kw: 10000.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 4.5]]
+      free_cooling_threshold_c: 24.0
+      water_consumption_l_per_kwh: 1.2
+
+# 配电系统
+power:
+  grid_capacity_kw: 80000.0           # 市电容量 kW
+  voltage_kv: 10.0                    # 进线电压 kV
+  solar_capacity_kwp: 5000.0          # 光伏峰值功率 kWp
+  battery_capacity_kwh: 20000.0       # 储能容量 kWh
+  battery_charge_efficiency: 0.94     # 充放电效率
+  battery_max_charge_rate_kw: 5000.0  # 最大充电功率 kW
+  battery_max_discharge_rate_kw: 5000.0 # 最大放电功率 kW
+  pue_mechanical_baseline: 0.05       # 机械系统基础功耗占比（不含冷却，大型机房更低）
+  pue_electrical_loss: 0.02          # 配电损耗占比（基础值，实际按变压器效率计算）
+
+  # 变压器规格
+  transformers:
+    - id: TR-A
+      model: transformer-40mva
+      capacity_mva: 40.0
+      efficiency_curve: [[0.1, 0.985], [0.25, 0.992], [0.5, 0.996], [0.75, 0.9975], [1.0, 0.996]]
+    - id: TR-B
+      model: transformer-40mva
+      capacity_mva: 40.0
+      efficiency_curve: [[0.1, 0.985], [0.25, 0.992], [0.5, 0.996], [0.75, 0.9975], [1.0, 0.996]]
+
+  # 分时电价（元/kWh）
+  electricity_price_profile:
+    - hours: "0-7,23"   # 谷
+      price: 0.35
+    - hours: "8-11,13-17,22"  # 平
+      price: 0.65
+    - hours: "12,18-21"  # 峰
+      price: 1.05
+
+  # 电网碳排放强度（kgCO₂/kWh），可分时
+  grid_carbon_intensity_profile:
+    - hours: "0-23"
+      intensity: 0.581
+
+# 全生命周期成本参数（CAPEX / OPEX）
+lifecycle:
+  project_lifetime_years: 15
+  discount_rate: 0.08
+  # 设备单位成本（CAPEX）
+  capex:
+    chiller_10mw_cny_per_kw: 1200.0     # 冷水机组 元/kW
+    cdu_2mw_cny_per_kw: 2500.0          # CDU 元/kW（液冷）
+    cooling_tower_cny_per_kw: 300.0     # 冷却塔 元/kW
+    transformer_40mva_cny_per_mva: 800000.0  # 变压器 元/MVA
+    ups_cny_per_kw: 400.0               # UPS 元/kW
+    battery_cny_per_kwh: 1200.0         # 储能 元/kWh
+    solar_cny_per_kwp: 3500.0           # 光伏 元/kWp
+    rack_cny_per_unit: 80000.0          # 机柜 元/台
+    civil_cny_per_m2: 12000.0           # 土建 元/m²
+  # 年度 OPEX 费率（占 CAPEX 比例）
+  opex_rate:
+    cooling: 0.04
+    electrical: 0.025
+    battery: 0.03
+    solar: 0.015
+  # 水费（元/m³）
+  water_price_cny_per_m3: 5.0
+  # 早投产收益 / GPU 折旧
+  revenue:
+    it_revenue_cny_per_kw_year: 8000.0  # IT 负载年租金收益 元/kW/年
+    gpu_depreciation_years: 4

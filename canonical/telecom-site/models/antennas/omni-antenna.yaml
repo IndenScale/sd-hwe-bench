@@ -1,0 +1,21 @@
+model: omni-antenna-6dbi
+family: FacilityFamily
+name: "6dBi 全向天线（800MHz）"
+facility_type: antenna
+diameter_mm: 50
+height_mm: 1500
+weight_kg: 5.0
+# 射频参数
+frequency_range_mhz: [824, 960]
+gain_dbi: 6.0
+horizontal_beamwidth_deg: 360.0
+vertical_beamwidth_deg: 15.0
+electrical_tilt_range_deg: [0, 0]
+mechanical_tilt_range_deg: [0, 5]
+max_input_power_w: 200
+polarization: vertical
+ports: 1
+connector_type: "N Female"
+# 安装约束
+mount_type: pole-mount
+max_wind_load_n: 300

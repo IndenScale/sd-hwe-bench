@@ -1,0 +1,42 @@
+tower_model: lattice-angle-steel-tower-30m
+design_wind_speed_ms: 40.0
+air_density_kgm3: 1.225
+antennas:
+  - id: ANT-01
+    model: panel-antenna-4t4r
+    width_mm: 350
+    height_mm: 2000
+    frontal_area_m2: 0.7
+    drag_coefficient: 1.2
+    wind_force_n: 823.2
+    mount_height_m: 28.0
+  - id: ANT-02
+    model: panel-antenna-4t4r
+    width_mm: 350
+    height_mm: 2000
+    frontal_area_m2: 0.7
+    drag_coefficient: 1.2
+    wind_force_n: 823.2
+    mount_height_m: 28.0
+  - id: ANT-03
+    model: panel-antenna-4t4r
+    width_mm: 350
+    height_mm: 2000
+    frontal_area_m2: 0.7
+    drag_coefficient: 1.2
+    wind_force_n: 823.2
+    mount_height_m: 28.0
+antenna_total_wind_force_n: 2469.6
+tower_profile_area_m2: 57.0
+tower_solidity_ratio: 0.25
+tower_effective_area_m2: 14.25
+tower_drag_coefficient: 1.0
+tower_wind_force_n: 13965.0
+total_wind_force_n: 16434.6
+overturning_moment_nm: 278632.8
+total_antenna_payload_kg: 75.0
+tower_self_weight_kg: 3500.0
+resisting_moment_nm: 52611.075
+safety_factor: 0.189
+pass: false
+failure_reason: "抗倾覆安全系数 0.189 远低于 1.5，当前塔型无法承受 40m/s 设计风速。建议：(1) 选更大基底宽度塔型（如 40m 塔基宽 4m）；(2) 增加塔基配重；或 (3) 降低天线挂高。"

@@ -1,0 +1,12 @@
+id: chiller-10mw
+family: CoolingFamily
+name: "10MW 离心式冷水机组"
+description: >
+  大型离心式冷水机组，额定制冷量 10MW，名义 COP 6.0，
+  配套冷却塔使用。
+capacity_kw: 10000
+cop_nominal: 6.0
+cop_curve: [[0.2, 4.0], [0.4, 5.2], [0.6, 6.0], [0.8, 6.3], [1.0, 6.0]]
+free_cooling_threshold_c: 10.0
+water_consumption_l_per_kwh: 1.2
+min_part_load_ratio: 0.2

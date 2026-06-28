@@ -1,0 +1,13 @@
+id: dc-rack-42u-300kw
+family: RackFamily
+name: "42U 数据中心机柜（300kW 液冷 / 30kW 风冷）"
+description: >
+  标准 19 英寸 42U 机柜，风冷配置支持 30kW，
+  液冷配置下可支持 300kW 峰值功率。
+total_u: 42
+depth_mm: 1200
+width_mm: 600
+height_mm: 2057
+weight_capacity_kg: 1800
+power_capacity_w: 300000
+cooling_capacity_w: 300000

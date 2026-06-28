@@ -1,0 +1,82 @@
+id: DC-HALL-A
+family: RoomFamily
+name: "AIDC 主机房 A"
+description: >
+  12m × 8m × 3.2m 主机房，2 排 × 4 机柜，冷热通道封闭。
+  列间精密空调（每排 2 台），双路 PDU 配电。
+  屋顶光伏 20kWp，室外储能柜 50kWh。
+length_mm: 12000
+width_mm: 8000
+height_mm: 3200
+floor_area_m2: 96.0
+room_volume_m3: 307.2
+
+# 热物理参数（供仿真引擎使用）
+thermal:
+  envelope_u_value_w_m2k: 0.5        # 围护结构传热系数 W/(m²·K)
+  envelope_area_m2: 256.0            # 围护结构总面积（四面墙+屋顶+地面）
+  thermal_capacity_kj_k: 15000.0     # 房间热容 kJ/K（含空气+结构）
+  design_indoor_temp_c: 24.0         # 设计室内温度 ℃
+  supply_air_temp_c: 18.0            # 送风温度（冷通道）℃
+
+# 机柜排布局
+rack_rows:
+  - id: ROW-A
+    name: "A 排（冷通道侧）"
+    rack_count: 4
+    rack_power_capacity_kw: 10.0      # 单机柜额定功率 kW
+    rack_cooling_capacity_kw: 8.0
+
+  - id: ROW-B
+    name: "B 排（热通道侧）"
+    rack_count: 4
+    rack_power_capacity_kw: 10.0
+    rack_cooling_capacity_kw: 8.0
+
+# 冷却系统
+cooling:
+  total_capacity_kw: 120.0           # 总额定制冷量 kW
+  units:
+    - id: COOLER-A1
+      model: in-row-cooler-30kw
+      row: ROW-A
+      capacity_kw: 30.0
+      cop_nominal: 4.5               # 名义 COP
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 5.0]]
+      free_cooling_threshold_c: 15.0 # 室外温度低于此值可免费冷却
+      water_consumption_l_per_kwh: 0.8  # 冷却塔耗水 L/kWh_th
+    - id: COOLER-A2
+      model: in-row-cooler-30kw
+      row: ROW-A
+      capacity_kw: 30.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 5.0]]
+      free_cooling_threshold_c: 15.0
+      water_consumption_l_per_kwh: 0.8
+    - id: COOLER-B1
+      model: in-row-cooler-30kw
+      row: ROW-B
+      capacity_kw: 30.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 5.0]]
+      free_cooling_threshold_c: 15.0
+      water_consumption_l_per_kwh: 0.8
+    - id: COOLER-B2
+      model: in-row-cooler-30kw
+      row: ROW-B
+      capacity_kw: 30.0
+      cop_nominal: 4.5
+      cop_curve: [[0.2, 3.0], [0.4, 3.8], [0.6, 4.5], [0.8, 4.8], [1.0, 5.0]]
+      free_cooling_threshold_c: 15.0
+      water_consumption_l_per_kwh: 0.8
+
+# 配电系统
+power:
+  grid_capacity_kw: 200.0            # 市电容量
+  solar_capacity_kwp: 20.0           # 屋顶光伏峰值功率 kWp
+  battery_capacity_kwh: 50.0         # 储能容量 kWh
+  battery_charge_efficiency: 0.92    # 充放电效率
+  battery_max_charge_rate_kw: 25.0   # 最大充电功率
+  battery_max_discharge_rate_kw: 25.0 # 最大放电功率
+  pue_mechanical_baseline: 0.15      # 机械系统基础功耗占比（不含冷却）
+  pue_electrical_loss: 0.03          # 配电损耗占比

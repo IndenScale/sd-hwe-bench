@@ -1,0 +1,20 @@
+model: parabolic-antenna-0-6m
+family: FacilityFamily
+name: "0.6m 抛物面微波天线（7GHz）"
+facility_type: antenna
+diameter_m: 0.6
+weight_kg: 12.0
+# 射频参数
+frequency_range_mhz: [6425, 7125]
+gain_dbi: 31.0
+horizontal_beamwidth_deg: 4.5
+vertical_beamwidth_deg: 4.5
+electrical_tilt_range_deg: [0, 0]
+mechanical_tilt_range_deg: [-5, 15]
+max_input_power_w: 100
+polarization: single-polarized
+ports: 1
+connector_type: "WG-112"
+# 安装约束
+mount_type: pole-mount
+max_wind_load_n: 500

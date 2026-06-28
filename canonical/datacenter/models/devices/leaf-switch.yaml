@@ -1,0 +1,26 @@
+model: leaf-switch
+family: ServerFamily
+name: "Leaf 交换机 48p 25G + 4p 100G 上行"
+height_u: 1
+tdp_w: 250
+depth_mm: 500
+width_mm: 440
+weight_kg: 10.0
+interfaces:
+  - id: down-1
+    interface_type: SFP28-module
+    direction: bidirectional
+  - id: down-2
+    interface_type: SFP28-module
+    direction: bidirectional
+  - id: up-1
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: up-2
+    interface_type: QSFP28-module
+    direction: bidirectional
+  - id: power-a
+    interface_type: IEC-C14
+    direction: input
+psu_count: 2
+psu_redundancy: true

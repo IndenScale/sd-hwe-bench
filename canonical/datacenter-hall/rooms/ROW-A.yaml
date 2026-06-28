@@ -1,0 +1,9 @@
+id: ROW-A
+family: RackRowFamily
+name: "A 排（冷通道侧）"
+room_id: DC-HALL-A
+row_index: 0
+rack_count: 4
+rack_inline_spacing_mm: 600
+orientation_deg: 90
+cooling_mode: cold_aisle_containment

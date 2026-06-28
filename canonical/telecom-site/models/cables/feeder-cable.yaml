@@ -1,6 +1,12 @@
 model: feeder-1-2inch-50m
 family: FiberPatchCordFamily
-name: 1/2" 馈线（50m）
+name: "1/2\" 馈线（50m）"
 cable_type: RF-FEEDER-1-2INCH
 length_m: 50.0
 weight_kg_per_m: 0.5
+# 射频传输参数
+frequency_range_mhz: [0, 3000]
+loss_db_per_100m_at_1800mhz: 6.8
+loss_db_per_100m_at_2100mhz: 7.5
+loss_db_per_100m_at_900mhz: 4.5
+connector_type: "7/16 DIN Male"

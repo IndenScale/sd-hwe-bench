@@ -1,0 +1,18 @@
+total_tdp_w: 350.0
+devices:
+  - id: BBU-01
+    tdp_w: 350.0
+cooling_capacity_w: 4000.0
+cooling_ratio: 11.43
+cooling_pass: true
+cabinet_width_m: 0.6
+cabinet_height_m: 2.0
+cabinet_depth_m: 0.8
+cabinet_surface_area_m2: 4.64
+heat_transfer_coeff_wm2k: 5.0
+temp_rise_c: 15.1
+ambient_max_temp_c: 45.0
+internal_temp_c: 60.1
+thermal_throttle_temp_c: 50.0
+thermal_throttle_risk: true
+recommendation: "机柜内部温度 60.1°C 超出 BBU 热节流阈值 50°C。建议：(1) 增强机柜通风（加装强制排风扇提升 h 到 15 W/m²·K）；(2) 升级空调制冷量；或 (3) 限制 BBU 发射功率降低 TDP。"

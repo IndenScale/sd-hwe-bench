@@ -1,0 +1,7 @@
+id: CONN-LEAF-B-SPINE-01
+family: PortConnectionFamily
+from_port: LEAF-B/up-1
+to_port: SPINE-01/swp2
+cable_type: DAC-QSFP28
+length_m: 3.0
+status: installed

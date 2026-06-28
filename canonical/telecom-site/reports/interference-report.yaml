@@ -1,0 +1,35 @@
+sector_pairs:
+  - sectors: [alpha, beta]
+    sector_freq_mhz: [1950, 1960]
+    frequency_separation_mhz: 10.0
+    aclr_db: 45.0
+    acs_db: 33.0
+    acir_db: 32.74
+    separation_risk: false
+    coverage_radius_km: 2.8
+    horizontal_beamwidth_deg: 65.0
+    overlap_zone_rssi_delta_db: 8.5
+    handover_risk: false
+  - sectors: [beta, gamma]
+    sector_freq_mhz: [1960, 1970]
+    frequency_separation_mhz: 10.0
+    aclr_db: 45.0
+    acs_db: 33.0
+    acir_db: 32.74
+    separation_risk: false
+    coverage_radius_km: 2.8
+    horizontal_beamwidth_deg: 65.0
+    overlap_zone_rssi_delta_db: 8.5
+    handover_risk: false
+  - sectors: [gamma, alpha]
+    sector_freq_mhz: [1970, 1950]
+    frequency_separation_mhz: 20.0
+    aclr_db: 45.0
+    acs_db: 33.0
+    acir_db: 32.74
+    separation_risk: false
+    coverage_radius_km: 2.8
+    horizontal_beamwidth_deg: 65.0
+    overlap_zone_rssi_delta_db: 13.2
+    handover_risk: false
+overall_risk: false

@@ -1,0 +1,6 @@
+id: PDU-A04-B
+rack_id: RACK-A04
+family: PduFamily
+model: pdu-3phase-32a
+name: "A排04号柜-B路PDU"
+capacity_kw: 22.08

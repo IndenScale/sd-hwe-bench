@@ -1,0 +1,18 @@
+model: bbu-5900
+family: ServerFamily
+name: "BBU 5900 基带处理单元"
+height_u: 2
+tdp_w: 350
+max_operating_temp_c: 55
+cooling_method: forced-air
+interfaces:
+  - id: cpri-1
+    interface_type: CPRI
+    direction: bidirectional
+  - id: cpri-2
+    interface_type: CPRI
+    direction: bidirectional
+  - id: power-a
+    interface_type: IEC-C14
+    direction: input
+thermal_throttle_temp_c: 50

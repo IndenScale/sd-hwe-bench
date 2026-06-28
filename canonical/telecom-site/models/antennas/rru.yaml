@@ -1,8 +1,18 @@
 model: rru-4t4r-40w
 family: FacilityFamily
-name: 4T4R 射频拉远单元（40W）
+name: "4T4R 射频拉远单元（40W/通道）"
 facility_type: rru
 width_mm: 350
 depth_mm: 150
 height_mm: 480
 weight_kg: 18.0
+# 射频参数
+tx_power_per_channel_dbm: 40
+channels: 4
+noise_figure_db: 2.5
+supported_frequencies_mhz: [1710, 2170]
+# 接口
+cpri_ports: 2
+rf_ports: 4
+power_consumption_w: 200
+connector_type_rf: "7/16 DIN Female"

@@ -1,0 +1,7 @@
+id: CONN-LEAF-B-SPINE-02
+family: PortConnectionFamily
+from_port: LEAF-B/up-2
+to_port: SPINE-02/swp2
+cable_type: AOC-100G-3m
+length_m: 3.0
+status: installed

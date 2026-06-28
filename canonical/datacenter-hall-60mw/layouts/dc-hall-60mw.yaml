@@ -1,0 +1,10 @@
+# 60MW 主机房布局：4 排 × 50 机柜
+room_id: DC-HALL-60MW
+placements:
+  - rack_id: RACK-A01
+    row: ROW-A
+    position: 1
+  - rack_id: RACK-A02
+    row: ROW-A
+    position: 2
+  # ...（由生成器展开，占位示意）

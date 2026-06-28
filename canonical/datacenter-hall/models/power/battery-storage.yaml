@@ -1,0 +1,11 @@
+model: battery-storage-50kwh
+family: FacilityFamily
+name: "锂电储能柜 50kWh"
+facility_type: battery
+capacity_kwh: 50.0
+max_charge_rate_kw: 25.0
+max_discharge_rate_kw: 25.0
+roundtrip_efficiency: 0.92
+cycle_life: 6000
+depth_of_discharge: 0.90
+standby_loss_kw: 0.05

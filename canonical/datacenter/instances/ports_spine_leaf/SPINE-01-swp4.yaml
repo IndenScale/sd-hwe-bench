@@ -1,0 +1,6 @@
+id: SPINE-01-swp4
+family: PortFamily
+device_id: SPINE-01
+port_name: swp4
+port_type: QSFP28
+status: installed

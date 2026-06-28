@@ -1,11 +1,24 @@
 model: bbu-5900
 family: ServerFamily
-name: BBU5900 基带处理单元
+name: "BBU 5900 基带处理单元"
 height_u: 2
 tdp_w: 350
+max_operating_temp_c: 55
+cooling_method: forced-air
 psu_count: 1
 psu_redundancy: false
 depth_mm: 350
 width_mm: 442
 height_mm: 89
 weight_kg: 12.0
+interfaces:
+  - id: cpri-1
+    interface_type: CPRI
+    direction: bidirectional
+  - id: cpri-2
+    interface_type: CPRI
+    direction: bidirectional
+  - id: power-a
+    interface_type: IEC-C14
+    direction: input
+thermal_throttle_temp_c: 50

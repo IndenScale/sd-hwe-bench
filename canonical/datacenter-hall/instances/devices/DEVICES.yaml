@@ -1,0 +1,210 @@
+# 计算节点（每机柜 2 台）
+- id: COMP-A01-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A01-01"
+  rack_id: RACK-A01
+  position_u: 10
+  pdu_id: PDU-A01-A
+
+- id: COMP-A01-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A01-02"
+  rack_id: RACK-A01
+  position_u: 13
+  pdu_id: PDU-A01-A
+
+- id: COMP-A02-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A02-01"
+  rack_id: RACK-A02
+  position_u: 10
+  pdu_id: PDU-A02-A
+
+- id: COMP-A02-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A02-02"
+  rack_id: RACK-A02
+  position_u: 13
+  pdu_id: PDU-A02-A
+
+- id: COMP-A03-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A03-01"
+  rack_id: RACK-A03
+  position_u: 10
+  pdu_id: PDU-A03-A
+
+- id: COMP-A03-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A03-02"
+  rack_id: RACK-A03
+  position_u: 13
+  pdu_id: PDU-A03-A
+
+- id: COMP-A04-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A04-01"
+  rack_id: RACK-A04
+  position_u: 10
+  pdu_id: PDU-A04-A
+
+- id: COMP-A04-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-A04-02"
+  rack_id: RACK-A04
+  position_u: 13
+  pdu_id: PDU-A04-A
+
+- id: COMP-B01-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B01-01"
+  rack_id: RACK-B01
+  position_u: 10
+  pdu_id: PDU-B01-A
+
+- id: COMP-B01-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B01-02"
+  rack_id: RACK-B01
+  position_u: 13
+  pdu_id: PDU-B01-A
+
+- id: COMP-B02-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B02-01"
+  rack_id: RACK-B02
+  position_u: 10
+  pdu_id: PDU-B02-A
+
+- id: COMP-B02-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B02-02"
+  rack_id: RACK-B02
+  position_u: 13
+  pdu_id: PDU-B02-A
+
+- id: COMP-B03-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B03-01"
+  rack_id: RACK-B03
+  position_u: 10
+  pdu_id: PDU-B03-A
+
+- id: COMP-B03-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B03-02"
+  rack_id: RACK-B03
+  position_u: 13
+  pdu_id: PDU-B03-A
+
+- id: COMP-B04-01
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B04-01"
+  rack_id: RACK-B04
+  position_u: 10
+  pdu_id: PDU-B04-A
+
+- id: COMP-B04-02
+  family: ServerFamily
+  model: compute-node-2u
+  name: "计算节点-B04-02"
+  rack_id: RACK-B04
+  position_u: 13
+  pdu_id: PDU-B04-A
+
+# 存储节点（每机柜 1 台）
+- id: STOR-A01-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-A01-01"
+  rack_id: RACK-A01
+  position_u: 16
+  pdu_id: PDU-A01-A
+
+- id: STOR-A02-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-A02-01"
+  rack_id: RACK-A02
+  position_u: 16
+  pdu_id: PDU-A02-A
+
+- id: STOR-A03-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-A03-01"
+  rack_id: RACK-A03
+  position_u: 16
+  pdu_id: PDU-A03-A
+
+- id: STOR-A04-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-A04-01"
+  rack_id: RACK-A04
+  position_u: 16
+  pdu_id: PDU-A04-A
+
+- id: STOR-B01-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-B01-01"
+  rack_id: RACK-B01
+  position_u: 16
+  pdu_id: PDU-B01-A
+
+- id: STOR-B02-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-B02-01"
+  rack_id: RACK-B02
+  position_u: 16
+  pdu_id: PDU-B02-A
+
+- id: STOR-B03-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-B03-01"
+  rack_id: RACK-B03
+  position_u: 16
+  pdu_id: PDU-B03-A
+
+- id: STOR-B04-01
+  family: StorageFamily
+  model: storage-node-2u
+  name: "存储节点-B04-01"
+  rack_id: RACK-B04
+  position_u: 16
+  pdu_id: PDU-B04-A
+
+# GPU 节点（仅 A01/A02 各 1 台）
+- id: GPU-A01-01
+  family: ServerFamily
+  model: gpu-node-4u
+  name: "GPU节点-A01-01"
+  rack_id: RACK-A01
+  position_u: 20
+  pdu_id: PDU-A01-A
+
+- id: GPU-A02-01
+  family: ServerFamily
+  model: gpu-node-4u
+  name: "GPU节点-A02-01"
+  rack_id: RACK-A02
+  position_u: 20
+  pdu_id: PDU-A02-A

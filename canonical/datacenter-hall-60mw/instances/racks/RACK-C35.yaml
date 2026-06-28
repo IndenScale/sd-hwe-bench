@@ -1,0 +1,8 @@
+id: RACK-C35
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-C
+position_in_row: 35
+tags:
+  discipline: it
+  security_zone: production

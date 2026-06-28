@@ -1,0 +1,6 @@
+id: PDU-B02-A
+rack_id: RACK-B02
+family: PduFamily
+model: pdu-3phase-32a
+name: "B排02号柜-A路PDU"
+capacity_kw: 22.08

@@ -1,0 +1,17 @@
+[project]
+name = "canonical-datacenter-hall"
+version = "1.0.0"
+description = "AIDC 运营优化 canonical 项目：2 排 × 4 机柜，列间冷却，双路配电，光伏+储能。ADL 层提供高精度房间模型，驱动物理仿真引擎。"
+
+[plugins]
+enabled = ["telecom"]
+
+[plugins.telecom]
+power_threshold = 0.8
+rack_usage_threshold = 0.8
+
+[generators]
+enabled = ["bom-csv", "power-budget", "port-map"]
+
+[generators.dist]
+root = "dist"

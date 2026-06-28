@@ -1,0 +1,8 @@
+id: RACK-D15
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-D
+position_in_row: 15
+tags:
+  discipline: it
+  security_zone: production

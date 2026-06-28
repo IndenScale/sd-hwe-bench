@@ -1,0 +1,17 @@
+[project]
+name = "canonical-datacenter-hall-60mw"
+version = "1.0.0"
+description = "60MW AIDC 主机房 canonical 项目：200 台高密度机柜，风冷/液冷可选，中压配电，MWh 储能，MW 级光伏。"
+
+[plugins]
+enabled = ["telecom"]
+
+[plugins.telecom]
+power_threshold = 0.8
+rack_usage_threshold = 0.8
+
+[generators]
+enabled = ["bom-csv", "power-budget", "port-map"]
+
+[generators.dist]
+root = "dist"
