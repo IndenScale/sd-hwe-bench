@@ -57,6 +57,7 @@
 ### 2.1 Model（型号定义，`models/` 下）
 
 #### ServerFamily — 计算/网络设备型号
+
 ```yaml
 model: generic-server       # 型号标识符
 family: ServerFamily        # 家族
@@ -72,6 +73,7 @@ weight_kg: 22.0             # 重量 (kg)
 ```
 
 #### RackFamily — 机柜型号
+
 ```yaml
 model: standard-rack
 family: RackFamily
@@ -87,6 +89,7 @@ maintenance_rear_mm: 1000   # 后维护空间 (mm)
 ```
 
 #### PduFamily — PDU 型号
+
 ```yaml
 model: dc-pdu-3phase-32a
 family: PduFamily
@@ -101,6 +104,7 @@ weight_kg: 6.0
 ```
 
 #### TransceiverFamily — 光模块型号
+
 ```yaml
 model: sfp28-sr-25g
 family: TransceiverFamily
@@ -111,6 +115,7 @@ wavelength_nm: 850
 ```
 
 #### FacilityFamily — 基础设施型号
+
 ```yaml
 model: in-row-cooler-30kw
 family: FacilityFamily
@@ -122,6 +127,7 @@ weight_kg: 350.0
 ```
 
 #### FiberPatchCordFamily — 线缆型号
+
 ```yaml
 model: om4-lc-lc-3m
 family: FiberPatchCordFamily
@@ -132,6 +138,7 @@ length_m: 3.0
 ### 2.2 Instance（实例定义，`instances/` 下）
 
 #### 设备实例 (`instances/devices/`)
+
 ```yaml
 id: SRV-01                  # 唯一标识符（必填）
 family: ServerFamily        # 家族（必填，或省略则从 model 推导）
@@ -148,6 +155,7 @@ interfaces:                 # 接口列表
 ```
 
 #### 机柜实例 (`instances/racks/`)
+
 ```yaml
 id: RACK-A01
 family: RackFamily
@@ -157,7 +165,8 @@ location: 机房A-A列         # 物理位置（可选）
 power_capacity_w: 2000      # 实际分配的供电容量
 ```
 
-#### PDU 实例 (`instances/pdus/`) ⚠️ 关键陷阱！
+#### PDU 实例 (`instances/pdus/`) ⚠️ 关键陷阱
+
 ```yaml
 id: PDU-A
 family: PduFamily
@@ -172,6 +181,7 @@ interfaces:
 ```
 
 #### 端口实例 (`instances/ports/`)
+
 ```yaml
 id: SRV-01-eth0             # 命名: {设备ID}-{端口名}
 family: PortFamily
@@ -182,6 +192,7 @@ status: installed
 ```
 
 #### 光模块实例 (`instances/transceivers/`)
+
 ```yaml
 id: SFP28-SR-S01-ETH0
 family: TransceiverFamily
@@ -191,6 +202,7 @@ status: installed
 ```
 
 #### 光纤实例 (`instances/fibers/`)
+
 ```yaml
 id: FIBER-S01-SW01
 family: FiberPatchCordFamily
@@ -201,6 +213,7 @@ status: installed
 ```
 
 #### 端口连接实例 (`instances/port_connections/`)
+
 ```yaml
 id: CONN-S01-SW01
 family: PortConnectionFamily
@@ -212,6 +225,7 @@ status: installed
 ```
 
 #### 天线实例 (`instances/antennas/`)
+
 ```yaml
 id: ANT-01
 family: FacilityFamily
@@ -221,6 +235,7 @@ name: "扇区1天线"
 ```
 
 #### 接地/防雷实例 (`instances/grounding/`)
+
 ```yaml
 id: GROUND-ROD-01
 family: FacilityFamily
@@ -232,6 +247,7 @@ name: "主接地极"
 ### 2.3 机房/排/设施 (`rooms/`, `facilities/`)
 
 #### 排定义 (`rooms/ROW-A.yaml`)
+
 ```yaml
 id: ROW-A
 family: RackRowFamily
@@ -240,6 +256,7 @@ rack_slots: 4              # 该排机柜位数
 ```
 
 #### 设施 (`facilities/`)
+
 ```yaml
 id: COOLER-ROW-A
 family: FacilityFamily
@@ -250,6 +267,7 @@ facility_type: cooler
 ### 2.4 Mate（配合定义，`mates/` 下）
 
 #### rack-mount-19inch — 设备安装到机柜
+
 ```yaml
 type: rack-mount-19inch
 parent: RACK-A01             # 机柜 ID
@@ -265,6 +283,7 @@ constrains:                  # 物理约束检查
 ```
 
 #### rack-in-row — 机柜部署到排
+
 ```yaml
 type: rack-in-row
 part_a_id: ROW-A
@@ -274,6 +293,7 @@ attributes:
 ```
 
 #### power-iec-c14-c13 — PDU 供电
+
 ```yaml
 type: power-iec-c14-c13
 parent: PDU-A/outlet-1       # 格式: {PDU ID}/{接口ID}
@@ -281,6 +301,7 @@ child: SRV-01/power-a        # 格式: {设备ID}/{接口ID}
 ```
 
 #### sfp28-cage — 光模块插入
+
 ```yaml
 type: sfp28-cage
 parent: SRV-01/eth0          # 格式: {设备ID}/{端口名}
@@ -288,6 +309,7 @@ child: SFP28-SR-S01-ETH0/host
 ```
 
 #### lc-connector — 光纤接头
+
 ```yaml
 type: lc-connector
 parent: SFP28-SR-S01-ETH0/line
@@ -295,6 +317,7 @@ child: FIBER-S01-SW01/end-a
 ```
 
 #### cable-connection — 线缆连接
+
 ```yaml
 type: cable-connection
 part_a_id: FEEDER-RRU01-ANT01
@@ -302,6 +325,7 @@ part_b_id: ANT-01
 ```
 
 #### cable-tray-over-row — 走线架
+
 ```yaml
 type: cable-tray-over-row
 part_a_id: ROW-A
@@ -309,6 +333,7 @@ part_b_id: COOLER-ROW-A
 ```
 
 #### must-clear — 禁止干涉
+
 ```yaml
 type: must-clear
 part_a_id: ANT-01
@@ -330,7 +355,7 @@ description: "天线与 RRU 不得碰撞"
 
 ### 3.2 引用链
 
-```
+```text
 Room/Row → RACK → PDU/Device → Port → Transceiver → Fiber/Connection
 ```
 

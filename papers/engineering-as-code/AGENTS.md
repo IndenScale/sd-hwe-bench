@@ -68,7 +68,7 @@ make arxiv-source            # arXiv tar.gz
 ## 写作语言与术语
 
 1. `arxiv/src/sections-en/` 是 arXiv 投稿真相源（完整版 Position Paper）。
-2. `arxiv/src/appendix/` 采用 _zh / _en 双版本。
+2. `arxiv/src/appendix/` 采用 _zh /_en 双版本。
 3. 术语：EaC（Engineering as Code）、ADL（三层子语言：PDL/PML/PLL）、ESA（L0-L4 分层静态分析）、EPM/AssemblyHub（包管理与协作）。不再使用 SDE、X-CCA、X-DRC。
 
 ## 引用管理

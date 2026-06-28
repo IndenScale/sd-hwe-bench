@@ -1,6 +1,21 @@
-# Markdownlint-cli2 configuration for engineering-as-code paper
-# Scans the paper directory with the paper-specific rules
+# Markdownlint-cli2 configuration for SD-HWE-Bench
+# Lints all project Markdown except generated / dependency / runtime output dirs.
 config:
-  papers/engineering-as-code/.markdownlint.yaml
+  .markdownlint.yaml
 globs:
-  - papers/engineering-as-code/**/*.md
+  - "**/*.md"
+  - "!.venv"
+  - "!.pytest_cache"
+  - "!.ruff_cache"
+  - "!node_modules"
+  - "!dist"
+  - "!papers/**/dist"
+  - "!papers/**/node_modules"
+  - "!canonical/**/node_modules"
+  - "!site"
+  - "!logs"
+  - "!runs"
+  - "!work"
+  - "!datasets"
+  - "!jobs"
+  - "!results"

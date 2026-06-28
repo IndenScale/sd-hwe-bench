@@ -35,7 +35,7 @@
 
 ## Task Directory Structure
 
-```
+```text
 tasks/{domain}/{task-id}/
 ├── task.yaml              # Task metadata + requirement
 ├── scaffold/              # Files given to the agent as starting point

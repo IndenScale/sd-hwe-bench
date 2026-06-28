@@ -5,6 +5,7 @@
 **已实现**，2026-06-25。
 
 实现概要：
+
 - `src/sd_hwe_bench/commands/run.py` 新增 `--jobs` / `-j` 选项，默认 `-1` 表示自动选择 `min(4, cpu_count)`，`1` 表示串行。
 - 使用 `concurrent.futures.ProcessPoolExecutor` 进程池并发执行 `(task_id, attempt)` rollout。
 - `Workspace.create()` 增加 `attempt` 参数，目录名加入 `_aNNN` 后缀以避免并发冲突。
@@ -16,8 +17,8 @@ SD-HWE-Bench 目前已将评分（`piki check`）和交付物生成（`piki gene
 
 ```python
 for tid in task_ids:
-    for attempt in range(passes):
-        ...  # 一次只跑一个 rollout
+ for attempt in range(passes):
+ ... # 一次只跑一个 rollout
 ```
 
 在计划的 M2 阶段（30+ 任务 × 多个 Actor × pass@5），串行执行将成为瓶颈。仅一个 canonical 工程就能产生 14 个任务；如果 3 个 Actor 各跑 5 轮，就是 210 个相互独立的 rollout。
@@ -40,7 +41,7 @@ sd-hwe-bench run telecom/ --actor kimi --passes 5 --jobs 4
 
 | 风险 | 待评估的缓解措施 |
 |---|---|
-| Agent CLI 全局锁 | 在同一主机上测试并发 `kimi` / `codex` / `gemini` 进程。某些 CLI 可能存在单实例锁或共享锁文件。 |
+| Agent CLI 全局锁 | 在同一主机上测试并发 `kimi` / `codex` / `` 进程。某些 CLI 可能存在单实例锁或共享锁文件。 |
 | API 限流 | 模型服务商（Kimi / OpenAI / Google）可能因并发调用触发速率限制。`--jobs` 应能按 Actor/模型 灵活配置。 |
 | 容器资源争用 | 同时启动过多 `docker run` 会消耗 CPU/内存。默认 `--jobs` 应保守，例如 `min(4, os.cpu_count())`。 |
 | 控制台输出顺序 | 并行 worker 同时输出会交错。需要按 job 加前缀，或等全部结束后再汇总打印。 |
@@ -54,8 +55,8 @@ sd-hwe-bench run telecom/ --actor kimi --passes 5 --jobs 4
 
 ```python
 jobs: int = typer.Option(
-    1, "--jobs", "-j",
-    help="最大并行 rollout 数量（任务 × 轮次组合）。",
+ 1, "--jobs", "-j",
+ help="最大并行 rollout 数量（任务 × 轮次组合）。",
 )
 ```
 
@@ -66,9 +67,9 @@ jobs: int = typer.Option(
 ```python
 @dataclass
 class RolloutJob:
-    task_id: str
-    attempt: int
-    actor: str
+ task_id: str
+ attempt: int
+ actor: str
 ```
 
 ### 执行器选择

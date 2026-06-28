@@ -35,7 +35,7 @@
 
 ## 任务目录结构
 
-```
+```text
 tasks/{领域}/{任务id}/
 ├── task.yaml              # 任务元数据 + 需求
 ├── scaffold/              # 给 Agent 的起始文件

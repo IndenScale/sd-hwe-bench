@@ -2,7 +2,7 @@
 
 ---
 
-**The single most important bottleneck in AI for engineering is not model capability. It's the "representation gap."**
+## The single most important bottleneck in AI for engineering is not model capability. It's the "representation gap."**
 
 We don't have a SWE-bench for hardware engineering. Without it, AI can't learn to design.
 

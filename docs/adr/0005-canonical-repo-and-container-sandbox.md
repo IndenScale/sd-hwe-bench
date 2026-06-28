@@ -31,9 +31,9 @@
 
 ```bash
 python tools/extract_tasks.py \
-    --project-dir canonical/telecom-rack \
-    --output-dir tasks \
-    --validate
+ --project-dir canonical/telecom-rack \
+ --output-dir tasks \
+ --validate
 ```
 
 每个任务包含：
@@ -44,12 +44,12 @@ python tools/extract_tasks.py \
 
 ### 3. 容器沙箱只覆盖 piki，不覆盖 Actor
 
-容器镜像 `sd-hwe-bench-piki:latest` 只包含 `piki` 规则引擎，**不包含** Kimi Code / Codex / Gemini / Claude Code 等 Actor CLI。
+容器镜像 `sd-hwe-bench-piki:latest` 只包含 `piki` 规则引擎，**不包含** Kimi Code / Codex /Claude Code 等 Actor CLI。
 
 执行模型：
 
 ```text
-宿主机 Actor (kimi/codex/gemini/...)  →  修改 workspace/  →  容器内 piki check/generate
+宿主机 Actor (kimi/codex/...) → 修改 workspace/ → 容器内 piki check/generate
 ```
 
 理由：
@@ -64,7 +64,7 @@ python tools/extract_tasks.py \
 FROM python:3.12-slim
 COPY . /src/piki
 RUN pip install --no-cache-dir -e "/src/piki/adl" && \
-    pip install --no-cache-dir -e "/src/piki"
+ pip install --no-cache-dir -e "/src/piki"
 WORKDIR /work
 # 无 ENTRYPOINT：runner 直接传入 python -m piki <subcommand>
 ```

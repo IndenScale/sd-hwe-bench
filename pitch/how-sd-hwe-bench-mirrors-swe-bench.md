@@ -79,7 +79,7 @@ SD-HWE-Bench does the same, but for engineering design.
 
 We maintain **canonical ADL projects** — complete, incrementally-built engineering designs in a specific domain (currently telecom rack design). Each canonical project evolves through a git history where each commit represents a distinct design increment:
 
-```
+```text
 canonical/telecom-rack/
 ├── git history:
 │   commit 1: Declare 4 servers with correct TDP and interfaces
@@ -88,7 +88,7 @@ canonical/telecom-rack/
 │   ...
 │   commit N: Full 42U rack with all devices, connections, and mates
 └── task_manifest.yaml   ← maps commit boundaries to task definitions
-```
+```text
 
 From each commit boundary, `extract_tasks.py` generates a task:
 
@@ -115,7 +115,7 @@ for task in benchmark.tasks():
     score = verifier.check(patch, task.expected())
 
     pipeline.record(task, patch, score)
-```
+```text
 
 That's it. The same pipeline that trains on SWE-bench trains on SD-HWE-Bench. Same infra. Same abstractions. Same scaling properties.
 

@@ -17,21 +17,21 @@
 
 ```text
 canonical/<domain>-<name>/
-├── README.md                       # 项目说明与任务提取说明
-├── task_manifest.yaml              # 任务序列与 requirement 定义
-├── piki.toml                       # piki 项目配置
-├── models/                         # 型号默认值
-├── docs/                           # 项目设计规范（关键）
-│   ├── index.md                    # 规范总览与索引
-│   ├── disciplines/                # 各专业规范
-│   │   ├── electrical.md
-│   │   ├── structural.md
-│   │   ├── fire-safety.md
-│   │   └── lightning.md
-│   └── thresholds.yaml             # 可解析的底线阈值
-├── instances/                      # 实例声明（随 commit 演进）
-├── layouts/                        # 布局
-└── mates/                          # 配合约束
+├── README.md # 项目说明与任务提取说明
+├── task_manifest.yaml # 任务序列与 requirement 定义
+├── piki.toml # piki 项目配置
+├── models/ # 型号默认值
+├── docs/ # 项目设计规范（关键）
+│ ├── index.md # 规范总览与索引
+│ ├── disciplines/ # 各专业规范
+│ │ ├── electrical.md
+│ │ ├── structural.md
+│ │ ├── fire-safety.md
+│ │ └── lightning.md
+│ └── thresholds.yaml # 可解析的底线阈值
+├── instances/ # 实例声明（随 commit 演进）
+├── layouts/ # 布局
+└── mates/ # 配合约束
 ```
 
 ## 3. 规范文档编写原则
@@ -48,14 +48,14 @@ canonical/<domain>-<name>/
 
 ```yaml
 requirement: |
-  声明 PDU-A，使用 capacity_w: 2000，rack_id: RACK-A01。
+ 声明 PDU-A，使用 capacity_w: 2000，rack_id: RACK-A01。
 ```
 
 **更好**：
 
 ```yaml
 requirement: |
-  为机柜 RACK-A01 声明一路 PDU-A，额定容量 2000W。
+ 为机柜 RACK-A01 声明一路 PDU-A，额定容量 2000W。
 ```
 
 字段名（`capacity_w`、`rack_id`）应当由 Agent 去规范文档中查找。
@@ -82,12 +82,13 @@ PDU 实例必须包含：
 
 机柜内设备总功耗不得超过 PDU 额定容量：
 
-```
+```text
+
 sum(device.tdp_w for device in rack) <= pdu.capacity_w * 0.8
+
 ```
 
 底线阈值：负载率不得超过 80%。
-```
 
 ### 3.3 多专业重复表述的处理
 
@@ -106,11 +107,11 @@ sum(device.tdp_w for device in rack) <= pdu.capacity_w * 0.8
 
 ```yaml
 rack:
-  max_load_ratio: 0.80        # 电气：PDU 最大负载率
-  max_weight_kg: 800          # 结构：机柜最大承重
-  max_power_density_w_per_u: 150  # 消防：每 U 功率密度
+ max_load_ratio: 0.80 # 电气：PDU 最大负载率
+ max_weight_kg: 800 # 结构：机柜最大承重
+ max_power_density_w_per_u: 150 # 消防：每 U 功率密度
 layout:
-  min_u_gap_between_2u_devices: 1   # 布局：2U 设备间最小间隔
+ min_u_gap_between_2u_devices: 1 # 布局：2U 设备间最小间隔
 ```
 
 ## 4. 让 Agent 主动查规范
@@ -127,7 +128,7 @@ layout:
 ```
 
 对于 API 模式 Actor（DeepSeek/OpenAI），规范内容会内联到 prompt 中；
-对于 CLI 模式 Actor（Kimi/Codex/Gemini），规范文件会保留在 workspace 中供其主动阅读。
+对于 CLI 模式 Actor（Kimi/Codex/），规范文件会保留在 workspace 中供其主动阅读。
 
 ### 4.2 评分时检查规范引用（可选）
 
@@ -177,14 +178,14 @@ layout:
 canonical/telecom-rack/docs/
 ├── index.md
 ├── disciplines/
-│   ├── electrical.md      # 功率、PDU、接口
-│   ├── structural.md      # 机柜承重、设备安装
-│   ├── thermal.md         # 散热、功率密度
-│   └── cabling.md         # 光纤、电缆规范
+│ ├── electrical.md # 功率、PDU、接口
+│ ├── structural.md # 机柜承重、设备安装
+│ ├── thermal.md # 散热、功率密度
+│ └── cabling.md # 光纤、电缆规范
 └── thresholds.yaml
 ```
 
-## 7.  checklist
+## 7. checklist
 
 新建 canonical project 时，请确认：
 

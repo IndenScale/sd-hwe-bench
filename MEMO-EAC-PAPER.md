@@ -18,16 +18,19 @@
 ## 已修复的 Bug（共 3 项）
 
 ### 1. LAYOUT-001 空字符串判空缺陷
+
 - **文件**：`adl/src/adl/models/layout.py`
 - **修复**：`if v is not None` → `if v is not None and v != ""`
 - **影响**：修复 sample 02 (×11) + sample 03 (×4) 共 15 个 error
 
 ### 2. Lowering pass 缺失 transform 字段解析
+
 - **文件**：`adl/src/adl/compiler/passes/lowering.py`
 - **修复**：提取 `fields["transform"]` 解析为 `Transform` 对象传入 `LayoutEntryHIR`，新增 `_unwrap_hir()` 辅助函数
 - **影响**：修复相对坐标链完全失效（sample 02 中 4 台 GPU 虚假碰撞）
 
 ### 3. DC-COLLISION-001：方舱 cooler 位置导致虚假碰撞
+
 - **文件**：`samples/02-modular-datacenter/layouts/layout.yaml`
 - **修复**：cooler Y→1000（坐地），X→10000（独立区域）
 - **影响**：sample 02 最后一个碰撞消除
@@ -39,6 +42,7 @@
 在 `samples/v--violation-injection`（sample 01 副本）注入 15 个违规，覆盖 4 个类别。
 
 **检出结果**：`piki check` → 11 错误 + 5 警告 = 16 违规信号
+
 - **ESA 检出率**：15/15（100%）
 - **假阳性**：0
 - **检查延迟**：<100ms（热缓存）

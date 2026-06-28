@@ -10,14 +10,14 @@
 
 SD-HWE-Bench evaluates AI agents on **declarative engineering design tasks**. Given a natural language engineering requirement, an agent must produce structured design declarations (YAML) that pass automated rule checks and generate valid engineering deliverables.
 
-It is to hardware engineering what [SWE-Bench](https://www.swebench.com/) is to software engineering — a standardized, open, and automatically scored benchmark that drives AI capability forward.
+It is to hardware engineering what [SWE-Bench](https:/www.swebench.com/) is to software engineering — a standardized, open, and automatically scored benchmark that drives AI capability forward.
 
 ### The Task
 
-```
-Input:  Natural language engineering requirement
+```text
+Input: Natural language engineering requirement
 Output: Structured design declarations (piki YAML)
-Score:  Pass@1 rate across L0-L4 rule checks + deliverable generation
+Score: Pass@1 rate across L0-L4 rule checks + deliverable generation
 ```
 
 ### Why HWE needs its own SWE-Bench
@@ -37,32 +37,32 @@ SD-HWE-Bench provides that infrastructure:
 
 ## How It Works
 
-```
+```text
 ┌─────────────────┐
-│ Natural Language │  "Design a 42U rack deployment with 8 servers..."
-│   Requirement    │
+│ Natural Language │ "Design a 42U rack deployment with 8 servers..."
+│ Requirement │
 └────────┬────────┘
-         │
-         ▼
+ │
+ ▼
 ┌─────────────────┐
-│   AI Agent       │  Generates piki YAML declarations:
-│                  │  instances/, layouts/, mates/, connections/
+│ AI Agent │ Generates piki YAML declarations:
+│ │ instances/, layouts/, mates/, connections/
 └────────┬────────┘
-         │
-         ▼
+ │
+ ▼
 ┌─────────────────┐
-│  piki check      │  L0: File format validity
-│  (Rule Engine)   │  L1: Schema validation
-│                  │  L2: Reference integrity
-│                  │  L3: Business rules (power budget, U-slot conflicts)
-│                  │  L4: Geometry checks (collision detection)
+│ piki check │ L0: File format validity
+│ (Rule Engine) │ L1: Schema validation
+│ │ L2: Reference integrity
+│ │ L3: Business rules (power budget, U-slot conflicts)
+│ │ L4: Geometry checks (collision detection)
 └────────┬────────┘
-         │
-         ▼
+ │
+ ▼
 ┌─────────────────┐
-│  Scoring         │  Pass@1: all rules pass?
-│                  │  Partial credit: which rule layers passed?
-│                  │  Deliverable quality: BOM, port-map, rack panels?
+│ Scoring │ Pass@1: all rules pass?
+│ │ Partial credit: which rule layers passed?
+│ │ Deliverable quality: BOM, port-map, rack panels?
 └─────────────────┘
 ```
 
@@ -83,18 +83,21 @@ SD-HWE-Bench provides that infrastructure:
 
 ## Scoring
 
-SD-HWE-Bench uses a layered scoring system aligned with piki's L0-L6 check hierarchy:
+SD-HWE-Bench uses a unified L0–L5 QA layer model. All numbered layers are deterministic pass/fail checks; performance improvement scores and rubrics are reported as diagnostics but do not affect pass/fail.
 
 | Layer | What it checks | Weight |
 |---|---|---|
-| L0 | File format validity | Required gate |
+| L0 | Syntax, expected files & deliverables exist | Required gate |
 | L1 | Schema validation | 10% |
-| L2 | Reference integrity | 15% |
-| L3 | Business rules | 40% |
-| L4 | Geometry checks | 20% |
-| Deliverables | Generator output validity | 15% |
+| L2 | Reference integrity (IDs, FKs, ports, mates, catalog) | 15% |
+| L3 | Static engineering constraints (power budget, U-slot, etc.) | 40% |
+| L4 | Reduced-order dynamic model checks (AIDC thermal/electrical simulation) | 15% |
+| L5 | Geometry interference & error analysis | 20% |
+| L6 | FEM/CFD high-fidelity simulation | reserved |
 
-**Pass@k**: Fraction of tasks where the agent's best-of-k attempts passes all L0-L4 checks.
+**Deliverables** are checked as part of L0 (they must be generated), not as a separate weighted layer.
+
+**Pass@k**: Fraction of tasks where the agent's best-of-k attempts passes all critical layers and produces expected deliverables.
 
 ---
 
@@ -103,12 +106,12 @@ SD-HWE-Bench uses a layered scoring system aligned with piki's L0-L6 check hiera
 ### Prerequisites
 
 - Python >= 3.11
-- [piki](https://github.com/indenscale/piki) >= 0.1.0 (for the rule engine)
+- [piki](https:/github.com/indenscale/piki) >= 0.1.0 (for the rule engine)
 
 ### Installation
 
 ```bash
-git clone https://github.com/indenscale/sd-hwe-bench.git
+git clone https:/github.com/indenscale/sd-hwe-bench.git
 cd sd-hwe-bench
 pip install -e ".[dev]"
 ```
@@ -126,24 +129,24 @@ sd-hwe-bench run tasks/telecom/rack-deploy-001
 sd-hwe-bench run telecom/ --actor kimi:kimi-code/k2.7 --passes 5
 
 # Explicit sandbox backend
-sd-hwe-bench run telecom/ --actor gemini:gemini-3.1-pro --sandbox docker
+sd-hwe-bench run telecom/ --actor :-3.1-pro --sandbox docker
 ```
 
 ### Task Structure
 
-```
+```text
 tasks/telecom/rack-deploy-001/
-├── task.yaml          # Task metadata and requirement
-├── scaffold/          # Pre-existing project files (models, existing instances)
-│   ├── piki.toml
-│   ├── models/
-│   └── instances/
-├── solution/          # Reference solution (hidden from agent)
-│   ├── instances/
-│   ├── layouts/
-│   └── mates/
-└── expected/          # Expected deliverables for scoring
-    └── bom.csv
+├── task.yaml # Task metadata and requirement
+├── scaffold/ # Pre-existing project files (models, existing instances)
+│ ├── piki.toml
+│ ├── models/
+│ └── instances/
+├── solution/ # Reference solution (hidden from agent)
+│ ├── instances/
+│ ├── layouts/
+│ └── mates/
+└── expected/ # Expected deliverables for scoring
+ └── bom.csv
 ```
 
 ---
@@ -161,7 +164,7 @@ tasks/telecom/rack-deploy-001/
 
 ## Relationship to piki
 
-SD-HWE-Bench is an independent community initiative. It uses [piki](https://github.com/indenscale/piki) as the default declarative modeling language and rule engine, but the benchmark's task definitions, scoring methodology, and governance are separate.
+SD-HWE-Bench is an independent community initiative. It uses [piki](https:/github.com/indenscale/piki) as the default declarative modeling language and rule engine, but the benchmark's task definitions, scoring methodology, and governance are separate.
 
 - piki provides: YAML DSL, rule engine (L0-L4 checks), generator pipeline
 - SD-HWE-Bench provides: Task datasets, scoring harness, leaderboard, community governance
@@ -195,10 +198,10 @@ MIT — see [LICENSE](LICENSE) for details.
 
 ```bibtex
 @misc{sd-hwe-bench,
-  title = {SD-HWE-Bench: A Benchmark for Software-Defined Hardware Engineering},
-  author = {SD-HWE-Bench Contributors},
-  year = {2026},
-  publisher = {GitHub},
-  url = {https://github.com/indenscale/sd-hwe-bench}
+ title = {SD-HWE-Bench: A Benchmark for Software-Defined Hardware Engineering},
+ author = {SD-HWE-Bench Contributors},
+ year = {2026},
+ publisher = {GitHub},
+ url = {https:/github.com/indenscale/sd-hwe-bench}
 }
 ```

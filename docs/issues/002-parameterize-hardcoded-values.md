@@ -5,6 +5,7 @@
 **已实现**，2026-06-25。提交：`480c4ce`。
 
 实现概要：
+
 - 新增 `src/sd_hwe_bench/settings.py`，集中管理所有默认值并支持 `SD_HWE_*` 环境变量覆盖。
 - 新增 `src/sd_hwe_bench/config/rule_layers.yaml` 与 `deliverables.yaml`，外部化 piki 规则→层映射与交付物类型映射。
 - `Containerfile` 增加 `PYTHON_BASE_IMAGE`、`WORKDIR_SRC`、`WORKDIR_RUN`、`PIKI_INSTALL_DIR` build args；`scripts/build-piki-image.sh` 支持 `CONTAINER_RUNTIME` 与 `--tag`。
@@ -89,14 +90,14 @@
 |------|------|------------|------|
 | `src/sd_hwe_bench/actors/kimi.py` | L31 | `kimi_bin: str = "kimi"` | `KIMI_BIN` env |
 | `src/sd_hwe_bench/actors/kimi.py` | L33 | `model=model or "kimi-code/kimi-for-coding"` | `DEFAULT_KIMI_MODEL` env / settings |
-| `src/sd_hwe_bench/actors/gemini.py` | L30 | `gemini_bin: str = "gemini"` | `GEMINI_BIN` env |
-| `src/sd_hwe_bench/actors/gemini.py` | L32 | `model=model or "gemini-2.5-flash"` | `DEFAULT_GEMINI_MODEL` env / settings |
-| `src/sd_hwe_bench/actors/gemini.py` | L52–L58 | git init/add/commit timeout = `10` | `GEMINI_GIT_INIT_TIMEOUT` env |
+| `src/sd_hwe_bench/actors/.py` | L30 | `gemini_bin: str = ""` | `GEMINI_BIN` env |
+| `src/sd_hwe_bench/actors/.py` | L32 | `model=model or "-2.5-flash"` | `DEFAULT_GEMINI_MODEL` env / settings |
+| `src/sd_hwe_bench/actors/.py` | L52–L58 | git init/add/commit timeout = `10` | `GEMINI_GIT_INIT_TIMEOUT` env |
 | `src/sd_hwe_bench/actors/codex.py` | L30 | `codex_bin: str = "codex"` | `CODEX_BIN` env |
 | `src/sd_hwe_bench/actors/codex.py` | L32 | `model=model or "deepseek-chat"` | `DEFAULT_CODEX_MODEL` env / settings |
 | `src/sd_hwe_bench/actors/codex.py` | L48–L54 | `--skip-git-repo-check`、`--dangerously-bypass-approvals-and-sandbox` 等 flags | `CODEX_EXTRA_ARGS` env 或 settings；补充安全说明 |
 | `src/sd_hwe_bench/actors/openai_actor.py` | L36 | `model=model or "deepseek-chat"` | `DEFAULT_OPENAI_MODEL` env / settings |
-| `src/sd_hwe_bench/actors/openai_actor.py` | L37 | `base_url or os.environ.get("OPENAI_BASE_URL", "https://api.deepseek.com/v1")` | 默认 endpoint 放入 settings，env 优先 |
+| `src/sd_hwe_bench/actors/openai_actor.py` | L37 | `base_url or os.environ.get("OPENAI_BASE_URL", "https:/api.deepseek.com/v1")` | 默认 endpoint 放入 settings，env 优先 |
 | `src/sd_hwe_bench/actors/openai_actor.py` | L67–L68 | `temperature=0.0`、`max_tokens=8192` | CLI `--temperature`、`--max-tokens` 或 settings |
 | `src/sd_hwe_bench/llm_judge.py` | L17 | `_DEFAULT_MODEL = "deepseek-chat" if ... else "gpt-4.1-mini"` | `LLM_JUDGE_MODEL` env / `--rubrics-model` 统一 |
 
@@ -193,7 +194,7 @@
 - `Containerfile`
 - `scripts/build-piki-image.sh`
 - `src/sd_hwe_bench/settings.py`（待创建）
-- `src/sd_hwe_bench/actors/{base,factory,kimi,gemini,codex,openai_actor}.py`
+- `src/sd_hwe_bench/actors/{base,factory,kimi,codex,openai_actor}.py`
 - `src/sd_hwe_bench/sandbox/{runner,workspace,parser}.py`
 - `src/sd_hwe_bench/commands/{run,run_repair,score,archive,leaderboard}.py`
 - `src/sd_hwe_bench/critics/{piki,deliverable,syntax,rubric}.py`
