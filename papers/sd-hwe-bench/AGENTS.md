@@ -60,6 +60,7 @@
 - `assets/references/`：参考文献（SWE-Bench、SWE-Bench Multimodal 等结构分析）。
 
 **与代码库的关系**：
+
 - benchmark 实现和任务集真相源在 `/Users/indenscale/workspace/sd-hwe-bench/`。
 - 论文写作真相源在本目录。
 - 不要在论文目录里重复维护任务定义。

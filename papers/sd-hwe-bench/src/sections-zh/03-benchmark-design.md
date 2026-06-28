@@ -20,14 +20,17 @@ SD-HWE-Bench 建立在 **Engineering as Code（EaC）** 范式之上 [@song2025e
 
 **DTS（Design Test Suite）** 是 EaC 的质量门引擎——它将设计规则检查前移到设计生成阶段，为 Agent 提供分层确定性反馈。与传统的 Automated Compliance Checking（ACC）不同，DTS 检查的是设计声明（ADL 文本）而非几何实例化产物，因而天然避免了假碰撞和命名依赖等问题。
 
-DTS 的分层对应 §5 评测协议中详述的 L0–L5 层。这里先给出概念性概述：
+DTS 的分层对应 §5 评测协议中详述的 L0–L6 层。这里先给出概念性概述：
 
-- **L0（语法层）**：YAML 合法性、必需字段存在性、expected files 存在性。
+- **L0（语法层）**：YAML 合法性、项目非空、必需文件与交付物存在性。缺少 `expected_files` 或 `expected_deliverables` 属于语法/生成失败。
 - **L1（语义层）**：Schema 校验、类型系统一致、属性合法范围。
-- **L2（引用完整性）**：Part 引用可解析、端口匹配、层级无循环。
+- **L2（引用完整性）**：Part 引用可解析、端口匹配、配合/目录引用、层级无循环。
 - **L3 / ASA（装配体静态分析）**：基于声明对物理装配体做静态断言——功率预算、U 位冲突、端口兼容性、散热间距等。不施加激励，看声明即可判断对错。
-- **L4 / ADA（装配体动态分析）**：施加虚拟激励 → 观察系统响应 → 阈值判断——防火（热荷载）、承重（重力/地震荷载）、硬碰撞/软碰撞、电压降等。其形式等价于 setup → exercise → assert 的标准 test case。
-- **L5（交付物检查）**：piki generate 成功且产出全部期望交付物。
+- **L4 / ADA（装配体动态分析）**：施加虚拟激励 → 观察系统响应 → 阈值判断。AIDC 任务中体现为 8760h/48h 热/电仿真合规检查；未来可扩展防火、承重、电压降等。其形式等价于 setup → exercise → assert 的标准 test case。
+- **L5（几何干涉与误差分析）**：几何碰撞、rack 空间、装配误差等。
+- **L6（高精度物理仿真，预留）**：FEM/CFD 等高保真仿真，本次未启用。
+
+**Performance Score** 与 **Rubric** 是诊断性指标，不占用层号、不计入 overall_score。交付物缺失归并到 L0 失败。
 
 DTS 在 SD-HWE-Bench 中扮演双重角色：(1) 作为评分器（Critic），为 Agent 输出提供确定性评分；(2) 作为 repair 反馈信号，Agent 可根据 DTS 错误报告迭代修复设计。
 
@@ -59,8 +62,9 @@ SD-HWE-Bench 的整体架构分为三层（图 1）：
                    │ 输出 (ADL patch)
 ┌──────────────────▼──────────────────────────────┐
 │              Review (Critic) Layer               │
-│  SyntaxCritic(L0) → PikiCritic(L1-L4)            │
-│  → DeliverableCritic(L5/L6) → RubricCritic(LLM)  │
+│  SyntaxCritic(L0) → PikiCritic(L1-L5)            │
+│  → AIDC Simulation Compliance(L4) → Deliverable   │
+│  → PerformanceScore(diagnostic) → RubricCritic(LLM) │
 │  统一入口: score_task(workspace, task) → ScoreResult │
 └─────────────────────────────────────────────────┘
 ```
@@ -83,21 +87,21 @@ Agent Layer 封装不同的 LLM Agent 后端。当前支持四种 Actor：
 |-----------|------|---------|------|
 | `kimi[:model]` | Kimi Code | `kimi -p <prompt>` | CLI Agent，直接修改工作目录 |
 | `codex[:model]` | DeepSeek 等 | `codex exec ...` | Codex CLI Agent |
-| `gemini[:model]` | Gemini 3.1 Pro | `gemini --prompt ... --yolo` | CLI Agent，需要 git repo |
-| `openai:MODEL` / `deepseek:MODEL` | OpenAI/DeepSeek API | OpenAI-compatible API | API Agent，解析 yaml 代码块写入文件 |
 
 所有 Actor 实现统一接口 `run(prompt, workspace_root) → ActorResult`，产出物为标准 ADL YAML 文件。
 
 ### 3.2.3 Critic Layer
 
-Critic Layer 对 Agent 输出进行分层确定性评分。四类 Critic 按顺序执行：
+Critic Layer 对 Agent 输出进行分层确定性评分与诊断。执行顺序为：
 
-1. **SyntaxCritic (L0)**：YAML 合法性、项目非空、expected files 存在性。
-2. **PikiCritic (L1–L4)**：调用 `piki check --format json`，将规则失败映射到 DTS 各层（详见 §5）。
-3. **DeliverableCritic (L5)**：调用 `piki generate` 检查 `dist/` 下是否生成期望交付物（BOM 表、3D 预览、布线图等）。
-4. **RubricCritic (LLM-as-Judge)**：按 task.yaml 中定义的 rubrics 维度进行定性评估（诊断性，不计入 overall_score）。
+1. **SyntaxCritic (L0)**：YAML 合法性、项目非空、`expected_files` 与 `expected_deliverables` 存在性。
+2. **PikiCritic (L1–L5)**：调用 `piki check --format json`，将规则失败映射到 DTS 各层（详见 §5）。AIDC 任务的仿真硬约束也映射到 L4。
+3. **NumericCritic (L3)**：对 `numeric_asserts` 进行数值校验，失败会翻转对应 L3 规则。
+4. **DeliverableCritic**：调用 `piki generate` 检查 `dist/` 下是否生成期望交付物。交付物生成失败会导致任务 unresolved，但不单独设评分层。
+5. **PerformanceCritic (Diagnostic)**：对 AIDC 任务计算 `performance_score`（相对 baseline/reference 的 PUE/TCO 改善），仅作诊断，不计入 overall_score。
+6. **RubricCritic (LLM-as-Judge)**：按 task.yaml 中定义的 rubrics 维度进行定性评估（诊断性，不计入 overall_score）。
 
-统一评分入口 `score_task()` 聚合上述所有 Critic 结果。
+统一评分入口 `score_task()` 聚合上述结果。
 
 ## 3.3 任务定义与质量保证
 
@@ -153,7 +157,7 @@ class Actor(ABC):
 2. **Scaffold**：将 `scaffold/` 复制到 workspace。
 3. **Prompt**：构建包含任务需求、ADL 使用指南、DTS 层次说明、输出格式要求、可用工具列表的完整 prompt。
 4. **Run**：Actor 执行 `run(prompt, workspace)`，输出修改后的 ADL 文件。
-5. **Score**：依次运行 `SyntaxCritic` → `PikiCritic` → `DeliverableCritic` → `RubricCritic`。
+5. **Score**：依次运行 `SyntaxCritic` → `PikiCritic` → `NumericCritic` → `DeliverableCritic` → `PerformanceCritic` → `RubricCritic`。
 6. **Archive**：将滚动结果写入 `runs/<timestamp>_<task-id>_<actor>_<model>/`，包含 `manifest.json`、`prompt.md`、`trajectory.jsonl` 和 `workspace/`。
 
 对于 `--passes N`，上述流程独立重复 N 次（每次使用新的 workspace），用于估算 pass@k。
@@ -162,6 +166,6 @@ class Actor(ABC):
 
 为确保评分结果的可复现性，所有 `piki check` 和 `piki generate` 调用默认在容器中执行（`--sandbox auto` 自动探测 docker/podman，回退到 `none` 仅作调试用）。容器 image `sd-hwe-bench-piki:latest` 包含固定版本的 piki 运行时、Python 环境和依赖，消除了本地环境差异对评分的影响。
 
-Agent 生成阶段不强制容器化——不同类型的 Actor（CLI Agent / API Agent）有不同的运行需求。但评分阶段始终统一在容器内执行，确保不同 Actor 的评分标准完全一致。
+Agent 生成阶段不强制容器化——不同类型的 Actor 有不同的运行需求。但评分阶段始终统一在容器内执行，确保不同 Actor 的评分标准完全一致。
 
 SD-HWE-Bench 进一步采用 **thin sandbox** 模式隔离评分环境：Agent 不直接获得沙盒的控制权，而是通过 `sd-hwe-bench` CLI 的固定接口请求 `piki check` 和 `piki generate`。沙盒内的规则引擎、测试用例和评分逻辑对 Agent 完全不可写。这一设计有两个目的：(1) 防止 Agent 通过篡改 DTS 规则或测试文件进行 reward hacking；(2) 确保所有 Actor 在同一套不可变评分标准下接受评测，而非各自在可修改的本地环境中运行。

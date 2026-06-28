@@ -1,8 +1,9 @@
 # SWE-bench Multimodal: Do AI Systems Generalize to Visual Software Domains?
 
-**Authors**: John Yang* 1 Carlos E. Jimenez* 2 Alex L. Zhang2 Kilian Lieret2 Joyce Yang3 Xindi Wu2 Ori Press4 Niklas Muennighoff1 Gabriel Synnaeve5 Karthik R. Narasimhan2 Diyi Yang1 Sida I. Wang5 Ofir Press2 1Stanford University 2Princeton Language & Intelligence, Princeton University 3Cornell University 4Tübingen AI Center, University of Tübingen 5Meta AI
+**Authors**: John Yang*1 Carlos E. Jimenez* 2 Alex L. Zhang2 Kilian Lieret2 Joyce Yang3 Xindi Wu2 Ori Press4 Niklas Muennighoff1 Gabriel Synnaeve5 Karthik R. Narasimhan2 Diyi Yang1 Sida I. Wang5 Ofir Press2 1Stanford University 2Princeton Language & Intelligence, Princeton University 3Cornell University 4Tübingen AI Center, University of Tübingen 5Meta AI
 
 ## Abstract
+
 Abstract Autonomous systems for software engineering are now capable of fixing bugs and developing features. These systems are commonly evaluated on SWE-bench (Jimenez et al., 2024a), which assesses their ability to solve software issues from GitHub repositories. However, SWE-bench uses only Python repositories, with problem statements presented predominantly as text and lacking visual elements such as images. This limited coverage motivates our inquiry into how existing systems might perform on unrepresented software engineering domains (e.g., front-end, game development, DevOps), which use different programming languages and paradigms. Therefore, we propose SWE-bench Multimodal (SWE-bench M), to evaluate systems on their ability to fix bugs in visual, user-facing JavaScript software. SWE-bench M features 617617617 task instances collected from 171717 JavaScript libraries used for web interface design, diagramming, data visualization, syntax highlighting, and interactive mapping. Each SWE-bench M task instance contains at least one image in its problem statement or unit tests. Our analysis finds that top-performing SWE-bench systems struggle with SWE-bench M, revealing limitations in visual problem-solving and cross-language generalization. Lastly, we show that SWE-agent’s flexible language-agnostic features enable it to substantially outperform alternatives on SWE-bench M, resolving 121212% of task instances compared to 666% for the next best system.
 
 ## 1 Introduction
@@ -41,12 +42,12 @@ Limitations. Within the SWE-bench task formulation, several facets of software d
 
 _Figure_: Table 1: Comparison of repository-level coding benchmarks. We characterize benchmarks by their number of repositories (# Repos), programming languages (Lang.), whether they employ execution-based evaluation (Exec.), and include tasks with image content (Images). Programming languages for front-end apps and visual assets are novel attributes introduced by SWE-bench M.
 
-_Table_: 
+_Table_:
 Dataset | # Repos | Lang. | Exec. | Images
-RepoEval (Zhang et al., 2023b) | 141414 | Python |  | 
-RepoBench (Liu et al., 2023b) | >> 100001000010000 | Python, Java |  | 
-SWE-bench (Jimenez et al., 2024a) | 171717 | Python |  | 
-SWE-bench Multimodal | 171717 | JavaScript |  | 
+RepoEval (Zhang et al., 2023b) | 141414 | Python |  |
+RepoBench (Liu et al., 2023b) | >> 100001000010000 | Python, Java |  |
+SWE-bench (Jimenez et al., 2024a) | 171717 | Python |  |
+SWE-bench Multimodal | 171717 | JavaScript |  |
 
 ### 2.2 Collection
 
@@ -66,16 +67,23 @@ _Figure_: Figure 2: SWE-bench M Test Split Distribution of 517517517 task instan
 
 _Figure_: Table 2: Median values of different attributes of a SWE-bench M task instance.
 
-_Table_: 
+_Table_:
  |  | Median
 Issue Text | Length (Words) | 105
 Codebase | # Lines (non-test) | 549K
+
 # Files (non-test) | 1799
+
 Gold Patch | # Lines edited | 27
+
 # Files edited | 2
+
 # Funcs edited | 3
+
 Tests | # Fail to Pass | 1
+
 # Pass to Pass | 5
+
 Images | Aspect Ratio | 5:3
 File Size (KB) | 42.95
 Resolution (Pixels) | 262K
@@ -120,7 +128,7 @@ We found that most tools AutoCodeRover provides to the agent rely heavily on Pyt
 
 Moatless (Örwall, 2024) subscribes to the localize-then-repair workflow, but does not use an LM for localization. Instead, code files are first converted in abstract syntax trees (AST). These ASTs are then aggregated into a single, searchable code graph represented as a Faiss index (Johnson et al., 2019). The LM then queries this index to generate a repair.
 
-We worked off the author’s in-progress implementation for generating ASTs from JavaScript and TypeScript files111https://github.com/aorwall/moatless-tools/pull/34. Although the code graph representation is language agnostic, the input AST representation needed to generate the Faiss index is heavily based on Python’s object oriented design. As reflected by the magnitude of the pull request’s changes, writing an equivalent parser for JavaScript that (1) reflects the code and (2) subscribes to the index’s input format is non-trivial due to usage of functional and declarative programs being more commonplace. We do not benchmark Moatless.
+We worked off the author’s in-progress implementation for generating ASTs from JavaScript and TypeScript files111<https://github.com/aorwall/moatless-tools/pull/34>. Although the code graph representation is language agnostic, the input AST representation needed to generate the Faiss index is heavily based on Python’s object oriented design. As reflected by the magnitude of the pull request’s changes, writing an equivalent parser for JavaScript that (1) reflects the code and (2) subscribes to the index’s input format is non-trivial due to usage of functional and declarative programs being more commonplace. We do not benchmark Moatless.
 
 RAG. Jimenez et al. (2024a) proposed a retrieval augmented baseline using BM25 (Robertson & Zaragoza, 2009) from which we inherit the document formatting, retrieval method, and prompt structure. We adapt the prompt template used in Jimenez et al. (2024a) to use a JavaScript example for patch generation instead of Python. We also include a new section in the prompt for inserting reproduction code collected from links in the problem statement, as described in B.3.
 
@@ -142,7 +150,7 @@ An analysis of solution rates segmented by the date each task instance was origi
 
 _Figure_: Table 3: Performance comparison of various baselines on SWE-bench M. The table shows results for different software development agent frameworks, including SWE-agent (with multimodal and JavaScript-specific variations) and a retrieval augmented generation (RAG) approach. Each system’s success rate (% Resolved) and average cost ($ Avg. Cost) per task are reported.
 
-_Table_: 
+_Table_:
 System | Model | % Resolved | $ Avg. Cost
 SWE-agent M | GPT-4o | 12.2 | 2.942.942.94
  | Claude 3.5 Sonnet | 11.411.411.4 | 3.113.113.11
@@ -185,14 +193,14 @@ _Figure_: Table 5: System performance segmented by annotator response. We show p
 
 _Figure_: Figure 3: SWE-agent performance across configurations. The frequency of outcomes by success and exit status of SWE-agent under different configurations on the development set. Configurations include multimodal (M), JavaScript-specific (JS), and no images, for both GPT-4o and Claude 3.5 Sonnet models. A similar analysis by repository is shown in Figure 8.
 
-_Table_: 
+_Table_:
 System | Model | W/ Images | W/o Images
 SWE-agent JS | GPT-4o | 11.0 | 8.08.08.0
 Claude Sonnet 3.5 | 16.0 | 13.013.013.0
 RAG | GPT-4o | 10.0 | 8.08.08.0
 Claude Sonnet 3.5 | 14.1 | 11.211.211.2
 
-_Table_: 
+_Table_:
 Does the image contain more
 information than just text?
 System | With Images? | Yes | No
@@ -201,7 +209,7 @@ SWE-agent JS |  | 13.013.013.0 | 23.123.123.1
 RAG |  | 11.611.611.6 | 13.813.813.8
  | 6.16.16.1 | 16.216.216.2
 
-_Table_: 
+_Table_:
 Are the images necessary
 to solve this task?
 System | With Images? | Yes | No
@@ -228,47 +236,47 @@ We thank Open Philanthropy, Oracle and the National Science Foundation (Grant No
 
 All experiments were conducted by the authors at Stanford and Princeton on Princeton’s servers. Meta affiliated authors acted in an advisory role.
 
-- Abramovich et al. (2024) Talor Abramovich, Meet Udeshi, Minghao Shao, Kilian Lieret, Haoran Xi, Kimberly Milner, Sofija Jancheska, John Yang, Carlos E. Jimenez, Farshad Khorrami, Prashanth Krishnamurthy, Brendan Dolan-Gavitt, Muhammad Shafique, Karthik Narasimhan, Ramesh Karri, and Ofir Press. Enigma: Enhanced interactive generative model agent for ctf challenges, 2024. URL https://arxiv.org/abs/2409.16165.
+- Abramovich et al. (2024) Talor Abramovich, Meet Udeshi, Minghao Shao, Kilian Lieret, Haoran Xi, Kimberly Milner, Sofija Jancheska, John Yang, Carlos E. Jimenez, Farshad Khorrami, Prashanth Krishnamurthy, Brendan Dolan-Gavitt, Muhammad Shafique, Karthik Narasimhan, Ramesh Karri, and Ofir Press. Enigma: Enhanced interactive generative model agent for ctf challenges, 2024. URL <https://arxiv.org/abs/2409.16165>.
 
-- Anthropic (2024) Anthropic. Introducing claude 3.5 sonnet, 2024. URL https://www.anthropic.com/news/claude-3-5-sonnet.
+- Anthropic (2024) Anthropic. Introducing claude 3.5 sonnet, 2024. URL <https://www.anthropic.com/news/claude-3-5-sonnet>.
 
-- Austin et al. (2021) Jacob Austin, Augustus Odena, Maxwell Nye, Maarten Bosma, Henryk Michalewski, David Dohan, Ellen Jiang, Carrie Cai, Michael Terry, Quoc Le, and Charles Sutton. Program synthesis with large language models, 2021. URL https://arxiv.org/abs/2108.07732.
+- Austin et al. (2021) Jacob Austin, Augustus Odena, Maxwell Nye, Maarten Bosma, Henryk Michalewski, David Dohan, Ellen Jiang, Carrie Cai, Michael Terry, Quoc Le, and Charles Sutton. Program synthesis with large language models, 2021. URL <https://arxiv.org/abs/2108.07732>.
 
-- Bagalkote (2024) Kaustubh Bagalkote. Amazon ceo andy jassy says company’s ai assistant has saved $260m and 4.5k developer-years of work, 2024. URL https://finance.yahoo.com/news/amazon-ceo-andy-jassy-says-213018283.html.
+- Bagalkote (2024) Kaustubh Bagalkote. Amazon ceo andy jassy says company’s ai assistant has saved $260m and 4.5k developer-years of work, 2024. URL <https://finance.yahoo.com/news/amazon-ceo-andy-jassy-says-213018283.html>.
 
 - Beltramelli (2018) Tony Beltramelli. pix2code: Generating code from a graphical user interface screenshot. In Proceedings of the ACM SIGCHI symposium on engineering interactive computing systems, pp. 1–6, 2018.
 
-- Brown et al. (2024) Bradley Brown, Jordan Juravsky, Ryan Ehrlich, Ronald Clark, Quoc V. Le, Christopher Ré, and Azalia Mirhoseini. Large language monkeys: Scaling inference compute with repeated sampling, 2024. URL https://arxiv.org/abs/2407.21787.
+- Brown et al. (2024) Bradley Brown, Jordan Juravsky, Ryan Ehrlich, Ronald Clark, Quoc V. Le, Christopher Ré, and Azalia Mirhoseini. Large language monkeys: Scaling inference compute with repeated sampling, 2024. URL <https://arxiv.org/abs/2407.21787>.
 
-- Cao et al. (2024) Ruisheng Cao, Fangyu Lei, Haoyuan Wu, Jixuan Chen, Yeqiao Fu, Hongcheng Gao, Xinzhuang Xiong, Hanchong Zhang, Yuchen Mao, Wenjing Hu, Tianbao Xie, Hongshen Xu, Danyang Zhang, Sida Wang, Ruoxi Sun, Pengcheng Yin, Caiming Xiong, Ansong Ni, Qian Liu, Victor Zhong, Lu Chen, Kai Yu, and Tao Yu. Spider2-v: How far are multimodal agents from automating data science and engineering workflows? CoRR, abs/2407.10956, 2024. URL https://arxiv.org/abs/2407.10956.
+- Cao et al. (2024) Ruisheng Cao, Fangyu Lei, Haoyuan Wu, Jixuan Chen, Yeqiao Fu, Hongcheng Gao, Xinzhuang Xiong, Hanchong Zhang, Yuchen Mao, Wenjing Hu, Tianbao Xie, Hongshen Xu, Danyang Zhang, Sida Wang, Ruoxi Sun, Pengcheng Yin, Caiming Xiong, Ansong Ni, Qian Liu, Victor Zhong, Lu Chen, Kai Yu, and Tao Yu. Spider2-v: How far are multimodal agents from automating data science and engineering workflows? CoRR, abs/2407.10956, 2024. URL <https://arxiv.org/abs/2407.10956>.
 
-- Cassano et al. (2022) Federico Cassano, John Gouwar, Daniel Nguyen, Sydney Nguyen, Luna Phipps-Costin, Donald Pinckney, Ming-Ho Yee, Yangtian Zi, Carolyn Jane Anderson, Molly Q Feldman, Arjun Guha, Michael Greenberg, and Abhinav Jangda. Multipl-e: A scalable and extensible approach to benchmarking neural code generation, 2022. URL https://arxiv.org/abs/2208.08227.
+- Cassano et al. (2022) Federico Cassano, John Gouwar, Daniel Nguyen, Sydney Nguyen, Luna Phipps-Costin, Donald Pinckney, Ming-Ho Yee, Yangtian Zi, Carolyn Jane Anderson, Molly Q Feldman, Arjun Guha, Michael Greenberg, and Abhinav Jangda. Multipl-e: A scalable and extensible approach to benchmarking neural code generation, 2022. URL <https://arxiv.org/abs/2208.08227>.
 
-- Chen et al. (2021) Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, Henrique Ponde de Oliveira Pinto, Jared Kaplan, Harri Edwards, Yuri Burda, Nicholas Joseph, Greg Brockman, Alex Ray, Raul Puri, Gretchen Krueger, Michael Petrov, Heidy Khlaaf, Girish Sastry, Pamela Mishkin, Brooke Chan, Scott Gray, Nick Ryder, Mikhail Pavlov, Alethea Power, Lukasz Kaiser, Mohammad Bavarian, Clemens Winter, Philippe Tillet, Felipe Petroski Such, Dave Cummings, Matthias Plappert, Fotios Chantzis, Elizabeth Barnes, Ariel Herbert-Voss, William Hebgen Guss, Alex Nichol, Alex Paino, Nikolas Tezak, Jie Tang, Igor Babuschkin, Suchir Balaji, Shantanu Jain, William Saunders, Christopher Hesse, Andrew N. Carr, Jan Leike, Josh Achiam, Vedant Misra, Evan Morikawa, Alec Radford, Matthew Knight, Miles Brundage, Mira Murati, Katie Mayer, Peter Welinder, Bob McGrew, Dario Amodei, Sam McCandlish, Ilya Sutskever, and Wojciech Zaremba. Evaluating large language models trained on code, 2021. URL https://arxiv.org/abs/2107.03374.
+- Chen et al. (2021) Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, Henrique Ponde de Oliveira Pinto, Jared Kaplan, Harri Edwards, Yuri Burda, Nicholas Joseph, Greg Brockman, Alex Ray, Raul Puri, Gretchen Krueger, Michael Petrov, Heidy Khlaaf, Girish Sastry, Pamela Mishkin, Brooke Chan, Scott Gray, Nick Ryder, Mikhail Pavlov, Alethea Power, Lukasz Kaiser, Mohammad Bavarian, Clemens Winter, Philippe Tillet, Felipe Petroski Such, Dave Cummings, Matthias Plappert, Fotios Chantzis, Elizabeth Barnes, Ariel Herbert-Voss, William Hebgen Guss, Alex Nichol, Alex Paino, Nikolas Tezak, Jie Tang, Igor Babuschkin, Suchir Balaji, Shantanu Jain, William Saunders, Christopher Hesse, Andrew N. Carr, Jan Leike, Josh Achiam, Vedant Misra, Evan Morikawa, Alec Radford, Matthew Knight, Miles Brundage, Mira Murati, Katie Mayer, Peter Welinder, Bob McGrew, Dario Amodei, Sam McCandlish, Ilya Sutskever, and Wojciech Zaremba. Evaluating large language models trained on code, 2021. URL <https://arxiv.org/abs/2107.03374>.
 
 - Cherubini et al. (2007) Mauro Cherubini, Gina Venolia, Rob DeLine, and Amy J Ko. Let’s go to the whiteboard: how and why software developers use drawings. In Proceedings of the SIGCHI conference on Human factors in computing systems, pp. 557–566, 2007.
 
-- Chowdhury et al. (2024) Neil Chowdhury, James Aung, Chan Jun Shern, Oliver Jaffe, Dane Sherburn, Giulio Starace, Evan Mays, Rachel Dias, Marwan Aljubeh, Mia Glaese, Carlos E. Jimenez, John Yang, Kevin Liu, and Aleksander Madry. Introducing swe-bench verified, 2024. URL https://openai.com/index/introducing-swe-bench-verified/.
+- Chowdhury et al. (2024) Neil Chowdhury, James Aung, Chan Jun Shern, Oliver Jaffe, Dane Sherburn, Giulio Starace, Evan Mays, Rachel Dias, Marwan Aljubeh, Mia Glaese, Carlos E. Jimenez, John Yang, Kevin Liu, and Aleksander Madry. Introducing swe-bench verified, 2024. URL <https://openai.com/index/introducing-swe-bench-verified/>.
 
-- Daigle & GitHub (2023) Kyle Daigle and GitHub. Octoverse: The state of open source and rise of ai in 2023, 2023. URL https://github.blog/news-insights/research/the-state-of-open-source-and-ai/#the-most-popular-programming-languages.
+- Daigle & GitHub (2023) Kyle Daigle and GitHub. Octoverse: The state of open source and rise of ai in 2023, 2023. URL <https://github.blog/news-insights/research/the-state-of-open-source-and-ai/#the-most-popular-programming-languages>.
 
 - Foley & Van Dam (1982) James D Foley and Andries Van Dam. Fundamentals of interactive computer graphics. Addison-Wesley Longman Publishing Co., Inc., 1982.
 
-- Gauthier (2024) Paul Gauthier. Aider, 2024. URL https://github.com/paul-gauthier/aider.
+- Gauthier (2024) Paul Gauthier. Aider, 2024. URL <https://github.com/paul-gauthier/aider>.
 
-- Gu et al. (2024) Alex Gu, Baptiste Rozière, Hugh Leather, Armando Solar-Lezama, Gabriel Synnaeve, and Sida I. Wang. Cruxeval: A benchmark for code reasoning, understanding and execution, 2024. URL https://arxiv.org/abs/2401.03065.
+- Gu et al. (2024) Alex Gu, Baptiste Rozière, Hugh Leather, Armando Solar-Lezama, Gabriel Synnaeve, and Sida I. Wang. Cruxeval: A benchmark for code reasoning, understanding and execution, 2024. URL <https://arxiv.org/abs/2401.03065>.
 
-- Hendrycks et al. (2021) Dan Hendrycks, Steven Basart, Saurav Kadavath, Mantas Mazeika, Akul Arora, Ethan Guo, Collin Burns, Samir Puranik, Horace He, Dawn Song, and Jacob Steinhardt. Measuring coding challenge competence with apps, 2021. URL https://arxiv.org/abs/2105.09938.
+- Hendrycks et al. (2021) Dan Hendrycks, Steven Basart, Saurav Kadavath, Mantas Mazeika, Akul Arora, Ethan Guo, Collin Burns, Samir Puranik, Horace He, Dawn Song, and Jacob Steinhardt. Measuring coding challenge competence with apps, 2021. URL <https://arxiv.org/abs/2105.09938>.
 
-- Hong et al. (2023) Wenyi Hong, Weihan Wang, Qingsong Lv, Jiazheng Xu, Wenmeng Yu, Junhui Ji, Yan Wang, Zihan Wang, Yuxuan Zhang, Juanzi Li, Bin Xu, Yuxiao Dong, Ming Ding, and Jie Tang. Cogagent: A visual language model for gui agents, 2023. URL https://arxiv.org/abs/2312.08914.
+- Hong et al. (2023) Wenyi Hong, Weihan Wang, Qingsong Lv, Jiazheng Xu, Wenmeng Yu, Junhui Ji, Yan Wang, Zihan Wang, Yuxuan Zhang, Juanzi Li, Bin Xu, Yuxiao Dong, Ming Ding, and Jie Tang. Cogagent: A visual language model for gui agents, 2023. URL <https://arxiv.org/abs/2312.08914>.
 
-- Huang et al. (2024) Dong Huang, Yuhao Qing, Weiyi Shang, Heming Cui, and Jie M. Zhang. Effibench: Benchmarking the efficiency of automatically generated code, 2024. URL https://arxiv.org/abs/2402.02037.
+- Huang et al. (2024) Dong Huang, Yuhao Qing, Weiyi Shang, Heming Cui, and Jie M. Zhang. Effibench: Benchmarking the efficiency of automatically generated code, 2024. URL <https://arxiv.org/abs/2402.02037>.
 
-- Jain et al. (2024) Naman Jain, King Han, Alex Gu, Wen-Ding Li, Fanjia Yan, Tianjun Zhang, Sida Wang, Armando Solar-Lezama, Koushik Sen, and Ion Stoica. Livecodebench: Holistic and contamination free evaluation of large language models for code, 2024. URL https://arxiv.org/abs/2403.07974.
+- Jain et al. (2024) Naman Jain, King Han, Alex Gu, Wen-Ding Li, Fanjia Yan, Tianjun Zhang, Sida Wang, Armando Solar-Lezama, Koushik Sen, and Ion Stoica. Livecodebench: Holistic and contamination free evaluation of large language models for code, 2024. URL <https://arxiv.org/abs/2403.07974>.
 
-- Jimenez et al. (2024a) Carlos E. Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and Karthik Narasimhan. Swe-bench: Can language models resolve real-world github issues?, 2024a. URL https://arxiv.org/abs/2310.06770.
+- Jimenez et al. (2024a) Carlos E. Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and Karthik Narasimhan. Swe-bench: Can language models resolve real-world github issues?, 2024a. URL <https://arxiv.org/abs/2310.06770>.
 
-- Jimenez et al. (2024b) Carlos E. Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and Karthik R. Narasimhan. Swe-bench leaderboard, 2024b. URL https://www.swebench.com/.
+- Jimenez et al. (2024b) Carlos E. Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and Karthik R. Narasimhan. Swe-bench leaderboard, 2024b. URL <https://www.swebench.com/>.
 
 - Johnson et al. (2019) Jeff Johnson, Matthijs Douze, and Hervé Jégou. Billion-scale similarity search with GPUs. IEEE Transactions on Big Data, 7(3):535–547, 2019.
 
@@ -276,93 +284,93 @@ All experiments were conducted by the authors at Stanford and Princeton on Princ
 
 - Kotsarenko (2018) Yuriy Kotsarenko. Measuring perceived color difference using yiq ntsc transmission color space in mobile applications. Programacion Matematica y Software, 2018.
 
-- Lai et al. (2022) Yuhang Lai, Chengxi Li, Yiming Wang, Tianyi Zhang, Ruiqi Zhong, Luke Zettlemoyer, Scott Wen tau Yih, Daniel Fried, Sida Wang, and Tao Yu. Ds-1000: A natural and reliable benchmark for data science code generation, 2022. URL https://arxiv.org/abs/2211.11501.
+- Lai et al. (2022) Yuhang Lai, Chengxi Li, Yiming Wang, Tianyi Zhang, Ruiqi Zhong, Luke Zettlemoyer, Scott Wen tau Yih, Daniel Fried, Sida Wang, and Tao Yu. Ds-1000: A natural and reliable benchmark for data science code generation, 2022. URL <https://arxiv.org/abs/2211.11501>.
 
-- Li et al. (2024) Kaixin Li, Yuchen Tian, Qisheng Hu, Ziyang Luo, and Jing Ma. Mmcode: Evaluating multi-modal code large language models with visually rich programming problems, 2024. URL https://arxiv.org/abs/2404.09486.
+- Li et al. (2024) Kaixin Li, Yuchen Tian, Qisheng Hu, Ziyang Luo, and Jing Ma. Mmcode: Evaluating multi-modal code large language models with visually rich programming problems, 2024. URL <https://arxiv.org/abs/2404.09486>.
 
-- Liu et al. (2023a) Jiawei Liu, Chunqiu Steven Xia, Yuyao Wang, and Lingming Zhang. Is your code generated by chatgpt really correct? rigorous evaluation of large language models for code generation, 2023a. URL https://arxiv.org/abs/2305.01210.
+- Liu et al. (2023a) Jiawei Liu, Chunqiu Steven Xia, Yuyao Wang, and Lingming Zhang. Is your code generated by chatgpt really correct? rigorous evaluation of large language models for code generation, 2023a. URL <https://arxiv.org/abs/2305.01210>.
 
-- Liu et al. (2024) Jiawei Liu, Songrun Xie, Junhao Wang, Yuxiang Wei, Yifeng Ding, and Lingming Zhang. Evaluating language models for efficient code generation, 2024. URL https://arxiv.org/abs/2408.06450.
+- Liu et al. (2024) Jiawei Liu, Songrun Xie, Junhao Wang, Yuxiang Wei, Yifeng Ding, and Lingming Zhang. Evaluating language models for efficient code generation, 2024. URL <https://arxiv.org/abs/2408.06450>.
 
-- Liu et al. (2023b) Tianyang Liu, Canwen Xu, and Julian McAuley. Repobench: Benchmarking repository-level code auto-completion systems, 2023b. URL https://arxiv.org/abs/2306.03091.
+- Liu et al. (2023b) Tianyang Liu, Canwen Xu, and Julian McAuley. Repobench: Benchmarking repository-level code auto-completion systems, 2023b. URL <https://arxiv.org/abs/2306.03091>.
 
 - Moody (2009) Daniel Moody. The “physics” of notations: toward a scientific basis for constructing visual notations in software engineering. IEEE Transactions on software engineering, 35(6):756–779, 2009.
 
-- Muennighoff et al. (2024) Niklas Muennighoff, Qian Liu, Armel Zebaze, Qinkai Zheng, Binyuan Hui, Terry Yue Zhuo, Swayam Singh, Xiangru Tang, Leandro von Werra, and Shayne Longpre. Octopack: Instruction tuning code large language models, 2024. URL https://arxiv.org/abs/2308.07124.
+- Muennighoff et al. (2024) Niklas Muennighoff, Qian Liu, Armel Zebaze, Qinkai Zheng, Binyuan Hui, Terry Yue Zhuo, Swayam Singh, Xiangru Tang, Leandro von Werra, and Shayne Longpre. Octopack: Instruction tuning code large language models, 2024. URL <https://arxiv.org/abs/2308.07124>.
 
-- Nishina & Matsui (2024) Kunato Nishina and Yusuke Matsui. Svgeditbench: A benchmark dataset for quantitative assessment of llm’s svg editing capabilities, 2024. URL https://arxiv.org/abs/2404.13710.
+- Nishina & Matsui (2024) Kunato Nishina and Yusuke Matsui. Svgeditbench: A benchmark dataset for quantitative assessment of llm’s svg editing capabilities, 2024. URL <https://arxiv.org/abs/2404.13710>.
 
-- OpenAI (2024) OpenAI. Hello gpt-4o, 2024. URL https://openai.com/index/hello-gpt-4o/.
+- OpenAI (2024) OpenAI. Hello gpt-4o, 2024. URL <https://openai.com/index/hello-gpt-4o/>.
 
-- Örwall (2024) Albert Örwall. Moatless tools, 2024. URL https://github.com/aorwall/moatless-tools.
+- Örwall (2024) Albert Örwall. Moatless tools, 2024. URL <https://github.com/aorwall/moatless-tools>.
 
-- Press et al. (2024) Ori Press, Andreas Hochlehnert, Ameya Prabhu, Vishaal Udandarao, Ofir Press, and Matthias Bethge. Citeme: Can language models accurately cite scientific claims?, 2024. URL https://arxiv.org/abs/2407.12861.
+- Press et al. (2024) Ori Press, Andreas Hochlehnert, Ameya Prabhu, Vishaal Udandarao, Ofir Press, and Matthias Bethge. Citeme: Can language models accurately cite scientific claims?, 2024. URL <https://arxiv.org/abs/2407.12861>.
 
-- Putta et al. (2024) Pranav Putta, Edmund Mills, Naman Garg, Sumeet Motwani, Chelsea Finn, Divyansh Garg, and Rafael Rafailov. Agent q: Advanced reasoning and learning for autonomous ai agents, 2024. URL https://arxiv.org/abs/2408.07199.
+- Putta et al. (2024) Pranav Putta, Edmund Mills, Naman Garg, Sumeet Motwani, Chelsea Finn, Divyansh Garg, and Rafael Rafailov. Agent q: Advanced reasoning and learning for autonomous ai agents, 2024. URL <https://arxiv.org/abs/2408.07199>.
 
 - Rawles et al. (2024) Christopher Rawles, Sarah Clinckemaillie, Yifan Chang, Jonathan Waltz, Gabrielle Lau, Marybeth Fair, Alice Li, William Bishop, Wei Li, Folawiyo Campbell-Ajala, Daniel Toyama, Robert Berry, Divya Tyamagundlu, Timothy Lillicrap, and Oriana Riva. Androidworld: A dynamic benchmarking environment for autonomous agents, 2024.
 
-- Robertson & Zaragoza (2009) Stephen E. Robertson and Hugo Zaragoza. The probabilistic relevance framework: Bm25 and beyond. Found. Trends Inf. Retr., 3:333–389, 2009. URL https://api.semanticscholar.org/CorpusID:207178704.
+- Robertson & Zaragoza (2009) Stephen E. Robertson and Hugo Zaragoza. The probabilistic relevance framework: Bm25 and beyond. Found. Trends Inf. Retr., 3:333–389, 2009. URL <https://api.semanticscholar.org/CorpusID:207178704>.
 
-- Robinson (2019) Alex Robinson. Sketch2code: Generating a website from a paper mockup, 2019. URL https://arxiv.org/abs/1905.13750.
+- Robinson (2019) Alex Robinson. Sketch2code: Generating a website from a paper mockup, 2019. URL <https://arxiv.org/abs/1905.13750>.
 
-- Shao et al. (2024) Minghao Shao, Sofija Jancheska, Meet Udeshi, Brendan Dolan-Gavitt, Haoran Xi, Kimberly Milner, Boyuan Chen, Max Yin, Siddharth Garg, Prashanth Krishnamurthy, Farshad Khorrami, Ramesh Karri, and Muhammad Shafique. Nyu ctf dataset: A scalable open-source benchmark dataset for evaluating llms in offensive security, 2024. URL https://arxiv.org/abs/2406.05590.
+- Shao et al. (2024) Minghao Shao, Sofija Jancheska, Meet Udeshi, Brendan Dolan-Gavitt, Haoran Xi, Kimberly Milner, Boyuan Chen, Max Yin, Siddharth Garg, Prashanth Krishnamurthy, Farshad Khorrami, Ramesh Karri, and Muhammad Shafique. Nyu ctf dataset: A scalable open-source benchmark dataset for evaluating llms in offensive security, 2024. URL <https://arxiv.org/abs/2406.05590>.
 
-- Shneiderman (1998) Ben Shneiderman. Designing the User Interface: Strategies for Effective Human-Computer Interaction. Pearson, 1998. URL https://api.semanticscholar.org/CorpusID:54156244.
+- Shneiderman (1998) Ben Shneiderman. Designing the User Interface: Strategies for Effective Human-Computer Interaction. Pearson, 1998. URL <https://api.semanticscholar.org/CorpusID:54156244>.
 
-- Si et al. (2024) Chenglei Si, Yanzhe Zhang, Zhengyuan Yang, Ruibo Liu, and Diyi Yang. Design2code: How far are we from automating front-end engineering?, 2024. URL https://arxiv.org/abs/2403.03163.
+- Si et al. (2024) Chenglei Si, Yanzhe Zhang, Zhengyuan Yang, Ruibo Liu, and Diyi Yang. Design2code: How far are we from automating front-end engineering?, 2024. URL <https://arxiv.org/abs/2403.03163>.
 
-- Soselia et al. (2023) Davit Soselia, Khalid Saifullah, and Tianyi Zhou. Learning ui-to-code reverse generator using visual critic without rendering, 2023. URL https://arxiv.org/abs/2305.14637.
+- Soselia et al. (2023) Davit Soselia, Khalid Saifullah, and Tianyi Zhou. Learning ui-to-code reverse generator using visual critic without rendering, 2023. URL <https://arxiv.org/abs/2305.14637>.
 
-- Sumers et al. (2024) Theodore R. Sumers, Shunyu Yao, Karthik Narasimhan, and Thomas L. Griffiths. Cognitive architectures for language agents, 2024. URL https://arxiv.org/abs/2309.02427.
+- Sumers et al. (2024) Theodore R. Sumers, Shunyu Yao, Karthik Narasimhan, and Thomas L. Griffiths. Cognitive architectures for language agents, 2024. URL <https://arxiv.org/abs/2309.02427>.
 
-- Waghjale et al. (2024) Siddhant Waghjale, Vishruth Veerendranath, Zora Zhiruo Wang, and Daniel Fried. Ecco: Can we improve model-generated code efficiency without sacrificing functional correctness?, 2024. URL https://arxiv.org/abs/2407.14044.
+- Waghjale et al. (2024) Siddhant Waghjale, Vishruth Veerendranath, Zora Zhiruo Wang, and Daniel Fried. Ecco: Can we improve model-generated code efficiency without sacrificing functional correctness?, 2024. URL <https://arxiv.org/abs/2407.14044>.
 
-- Wang et al. (2024a) Lei Wang, Chen Ma, Xueyang Feng, Zeyu Zhang, Hao Yang, Jingsen Zhang, Zhiyuan Chen, Jiakai Tang, Xu Chen, Yankai Lin, Wayne Xin Zhao, Zhewei Wei, and Jirong Wen. A survey on large language model based autonomous agents. Frontiers of Computer Science, 18(6), March 2024a. ISSN 2095-2236. doi: 10.1007/s11704-024-40231-1. URL http://dx.doi.org/10.1007/s11704-024-40231-1.
+- Wang et al. (2024a) Lei Wang, Chen Ma, Xueyang Feng, Zeyu Zhang, Hao Yang, Jingsen Zhang, Zhiyuan Chen, Jiakai Tang, Xu Chen, Yankai Lin, Wayne Xin Zhao, Zhewei Wei, and Jirong Wen. A survey on large language model based autonomous agents. Frontiers of Computer Science, 18(6), March 2024a. ISSN 2095-2236. doi: 10.1007/s11704-024-40231-1. URL <http://dx.doi.org/10.1007/s11704-024-40231-1>.
 
-- Wang et al. (2024b) Xingyao Wang, Boxuan Li, Yufan Song, Frank F. Xu, Xiangru Tang, Mingchen Zhuge, Jiayi Pan, Yueqi Song, Bowen Li, Jaskirat Singh, Hoang H. Tran, Fuqiang Li, Ren Ma, Mingzhang Zheng, Bill Qian, Yanjun Shao, Niklas Muennighoff, Yizhe Zhang, Binyuan Hui, Junyang Lin, Robert Brennan, Hao Peng, Heng Ji, and Graham Neubig. Opendevin: An open platform for ai software developers as generalist agents, 2024b. URL https://arxiv.org/abs/2407.16741.
+- Wang et al. (2024b) Xingyao Wang, Boxuan Li, Yufan Song, Frank F. Xu, Xiangru Tang, Mingchen Zhuge, Jiayi Pan, Yueqi Song, Bowen Li, Jaskirat Singh, Hoang H. Tran, Fuqiang Li, Ren Ma, Mingzhang Zheng, Bill Qian, Yanjun Shao, Niklas Muennighoff, Yizhe Zhang, Binyuan Hui, Junyang Lin, Robert Brennan, Hao Peng, Heng Ji, and Graham Neubig. Opendevin: An open platform for ai software developers as generalist agents, 2024b. URL <https://arxiv.org/abs/2407.16741>.
 
-- Wang et al. (2023a) Zhiruo Wang, Grace Cuenca, Shuyan Zhou, Frank F. Xu, and Graham Neubig. Mconala: A benchmark for code generation from multiple natural languages, 2023a. URL https://arxiv.org/abs/2203.08388.
+- Wang et al. (2023a) Zhiruo Wang, Grace Cuenca, Shuyan Zhou, Frank F. Xu, and Graham Neubig. Mconala: A benchmark for code generation from multiple natural languages, 2023a. URL <https://arxiv.org/abs/2203.08388>.
 
-- Wang et al. (2023b) Zhiruo Wang, Shuyan Zhou, Daniel Fried, and Graham Neubig. Execution-based evaluation for open-domain code generation, 2023b. URL https://arxiv.org/abs/2212.10481.
+- Wang et al. (2023b) Zhiruo Wang, Shuyan Zhou, Daniel Fried, and Graham Neubig. Execution-based evaluation for open-domain code generation, 2023b. URL <https://arxiv.org/abs/2212.10481>.
 
-- Wittern et al. (2016) Erik Wittern, Philippe Suter, and Shriram Rajagopalan. A look at the dynamics of the javascript package ecosystem. In Proceedings of the 13th International Conference on Mining Software Repositories, MSR ’16, pp. 351–361, New York, NY, USA, 2016. Association for Computing Machinery. ISBN 9781450341868. doi: 10.1145/2901739.2901743. URL https://doi.org/10.1145/2901739.2901743.
+- Wittern et al. (2016) Erik Wittern, Philippe Suter, and Shriram Rajagopalan. A look at the dynamics of the javascript package ecosystem. In Proceedings of the 13th International Conference on Mining Software Repositories, MSR ’16, pp. 351–361, New York, NY, USA, 2016. Association for Computing Machinery. ISBN 9781450341868. doi: 10.1145/2901739.2901743. URL <https://doi.org/10.1145/2901739.2901743>.
 
-- Wu et al. (2024) Chengyue Wu, Yixiao Ge, Qiushan Guo, Jiahao Wang, Zhixuan Liang, Zeyu Lu, Ying Shan, and Ping Luo. Plot2code: A comprehensive benchmark for evaluating multi-modal large language models in code generation from scientific plots, 2024. URL https://arxiv.org/abs/2405.07990.
+- Wu et al. (2024) Chengyue Wu, Yixiao Ge, Qiushan Guo, Jiahao Wang, Zhixuan Liang, Zeyu Lu, Ying Shan, and Ping Luo. Plot2code: A comprehensive benchmark for evaluating multi-modal large language models in code generation from scientific plots, 2024. URL <https://arxiv.org/abs/2405.07990>.
 
-- Xia et al. (2024) Chunqiu Steven Xia, Yinlin Deng, Soren Dunn, and Lingming Zhang. Agentless: Demystifying llm-based software engineering agents, 2024. URL https://arxiv.org/abs/2407.01489.
+- Xia et al. (2024) Chunqiu Steven Xia, Yinlin Deng, Soren Dunn, and Lingming Zhang. Agentless: Demystifying llm-based software engineering agents, 2024. URL <https://arxiv.org/abs/2407.01489>.
 
-- Xie et al. (2024) Tianbao Xie, Danyang Zhang, Jixuan Chen, Xiaochuan Li, Siheng Zhao, Ruisheng Cao, Toh Jing Hua, Zhoujun Cheng, Dongchan Shin, Fangyu Lei, Yitao Liu, Yiheng Xu, Shuyan Zhou, Silvio Savarese, Caiming Xiong, Victor Zhong, and Tao Yu. Osworld: Benchmarking multimodal agents for open-ended tasks in real computer environments, 2024. URL https://arxiv.org/abs/2404.07972.
+- Xie et al. (2024) Tianbao Xie, Danyang Zhang, Jixuan Chen, Xiaochuan Li, Siheng Zhao, Ruisheng Cao, Toh Jing Hua, Zhoujun Cheng, Dongchan Shin, Fangyu Lei, Yitao Liu, Yiheng Xu, Shuyan Zhou, Silvio Savarese, Caiming Xiong, Victor Zhong, and Tao Yu. Osworld: Benchmarking multimodal agents for open-ended tasks in real computer environments, 2024. URL <https://arxiv.org/abs/2404.07972>.
 
-- Yan et al. (2023) An Yan, Zhengyuan Yang, Wanrong Zhu, Kevin Lin, Linjie Li, Jianfeng Wang, Jianwei Yang, Yiwu Zhong, Julian McAuley, Jianfeng Gao, Zicheng Liu, and Lijuan Wang. Gpt-4v in wonderland: Large multimodal models for zero-shot smartphone gui navigation, 2023. URL https://arxiv.org/abs/2311.07562.
+- Yan et al. (2023) An Yan, Zhengyuan Yang, Wanrong Zhu, Kevin Lin, Linjie Li, Jianfeng Wang, Jianwei Yang, Yiwu Zhong, Julian McAuley, Jianfeng Gao, Zicheng Liu, and Lijuan Wang. Gpt-4v in wonderland: Large multimodal models for zero-shot smartphone gui navigation, 2023. URL <https://arxiv.org/abs/2311.07562>.
 
-- Yang et al. (2023a) John Yang, Akshara Prabhakar, Karthik Narasimhan, and Shunyu Yao. Intercode: Standardizing and benchmarking interactive coding with execution feedback, 2023a. URL https://arxiv.org/abs/2306.14898.
+- Yang et al. (2023a) John Yang, Akshara Prabhakar, Karthik Narasimhan, and Shunyu Yao. Intercode: Standardizing and benchmarking interactive coding with execution feedback, 2023a. URL <https://arxiv.org/abs/2306.14898>.
 
 - Yang et al. (2023b) John Yang, Akshara Prabhakar, Shunyu Yao, Kexin Pei, and Karthik R Narasimhan. Language agents as hackers: Evaluating cybersecurity skills with capture the flag. In Multi-Agent Security Workshop@ NeurIPS’23, 2023b.
 
-- Yang et al. (2024) John Yang, Carlos E. Jimenez, Alexander Wettig, Kilian Lieret, Shunyu Yao, Karthik Narasimhan, and Ofir Press. Swe-agent: Agent-computer interfaces enable automated software engineering, 2024. URL https://arxiv.org/abs/2405.15793.
+- Yang et al. (2024) John Yang, Carlos E. Jimenez, Alexander Wettig, Kilian Lieret, Shunyu Yao, Karthik Narasimhan, and Ofir Press. Swe-agent: Agent-computer interfaces enable automated software engineering, 2024. URL <https://arxiv.org/abs/2405.15793>.
 
-- Yao et al. (2023a) Shunyu Yao, Howard Chen, John Yang, and Karthik Narasimhan. Webshop: Towards scalable real-world web interaction with grounded language agents, 2023a. URL https://arxiv.org/abs/2207.01206.
+- Yao et al. (2023a) Shunyu Yao, Howard Chen, John Yang, and Karthik Narasimhan. Webshop: Towards scalable real-world web interaction with grounded language agents, 2023a. URL <https://arxiv.org/abs/2207.01206>.
 
-- Yao et al. (2023b) Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. React: Synergizing reasoning and acting in language models, 2023b. URL https://arxiv.org/abs/2210.03629.
+- Yao et al. (2023b) Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. React: Synergizing reasoning and acting in language models, 2023b. URL <https://arxiv.org/abs/2210.03629>.
 
-- Yepis & StackOverflow (2024) Erin Yepis and StackOverflow. Developers get by with a little help from ai: Stack overflow knows code assistant pulse survey results, 2024. URL https://stackoverflow.blog/2024/05/29/developers-get-by-with-a-little-help-from-ai-stack-overflow-knows-code-assistant-pulse-survey-results/.
+- Yepis & StackOverflow (2024) Erin Yepis and StackOverflow. Developers get by with a little help from ai: Stack overflow knows code assistant pulse survey results, 2024. URL <https://stackoverflow.blog/2024/05/29/developers-get-by-with-a-little-help-from-ai-stack-overflow-knows-code-assistant-pulse-survey-results/>.
 
-- Yin et al. (2022) Pengcheng Yin, Wen-Ding Li, Kefan Xiao, Abhishek Rao, Yeming Wen, Kensen Shi, Joshua Howland, Paige Bailey, Michele Catasta, Henryk Michalewski, Alex Polozov, and Charles Sutton. Natural language to code generation in interactive data science notebooks, 2022. URL https://arxiv.org/abs/2212.09248.
+- Yin et al. (2022) Pengcheng Yin, Wen-Ding Li, Kefan Xiao, Abhishek Rao, Yeming Wen, Kensen Shi, Joshua Howland, Paige Bailey, Michele Catasta, Henryk Michalewski, Alex Polozov, and Charles Sutton. Natural language to code generation in interactive data science notebooks, 2022. URL <https://arxiv.org/abs/2212.09248>.
 
-- Yoran et al. (2024) Ori Yoran, Samuel Joseph Amouyal, Chaitanya Malaviya, Ben Bogin, Ofir Press, and Jonathan Berant. Assistantbench: Can web agents solve realistic and time-consuming tasks?, 2024. URL https://arxiv.org/abs/2407.15711.
+- Yoran et al. (2024) Ori Yoran, Samuel Joseph Amouyal, Chaitanya Malaviya, Ben Bogin, Ofir Press, and Jonathan Berant. Assistantbench: Can web agents solve realistic and time-consuming tasks?, 2024. URL <https://arxiv.org/abs/2407.15711>.
 
-- Zhang et al. (2024a) Andy K. Zhang, Neil Perry, Riya Dulepet, Eliot Jones, Justin W. Lin, Joey Ji, Celeste Menders, Gashon Hussein, Samantha Liu, Donovan Jasper, Pura Peetathawatchai, Ari Glenn, Vikram Sivashankar, Daniel Zamoshchin, Leo Glikbarg, Derek Askaryar, Mike Yang, Teddy Zhang, Rishi Alluri, Nathan Tran, Rinnara Sangpisit, Polycarpos Yiorkadjis, Kenny Osele, Gautham Raghupathi, Dan Boneh, Daniel E. Ho, and Percy Liang. Cybench: A framework for evaluating cybersecurity capabilities and risk of language models, 2024a. URL https://arxiv.org/abs/2408.08926.
+- Zhang et al. (2024a) Andy K. Zhang, Neil Perry, Riya Dulepet, Eliot Jones, Justin W. Lin, Joey Ji, Celeste Menders, Gashon Hussein, Samantha Liu, Donovan Jasper, Pura Peetathawatchai, Ari Glenn, Vikram Sivashankar, Daniel Zamoshchin, Leo Glikbarg, Derek Askaryar, Mike Yang, Teddy Zhang, Rishi Alluri, Nathan Tran, Rinnara Sangpisit, Polycarpos Yiorkadjis, Kenny Osele, Gautham Raghupathi, Dan Boneh, Daniel E. Ho, and Percy Liang. Cybench: A framework for evaluating cybersecurity capabilities and risk of language models, 2024a. URL <https://arxiv.org/abs/2408.08926>.
 
-- Zhang et al. (2023a) Chi Zhang, Zhao Yang, Jiaxuan Liu, Yucheng Han, Xin Chen, Zebiao Huang, Bin Fu, and Gang Yu. Appagent: Multimodal agents as smartphone users, 2023a. URL https://arxiv.org/abs/2312.13771.
+- Zhang et al. (2023a) Chi Zhang, Zhao Yang, Jiaxuan Liu, Yucheng Han, Xin Chen, Zebiao Huang, Bin Fu, and Gang Yu. Appagent: Multimodal agents as smartphone users, 2023a. URL <https://arxiv.org/abs/2312.13771>.
 
-- Zhang et al. (2023b) Fengji Zhang, Bei Chen, Yue Zhang, Jacky Keung, Jin Liu, Daoguang Zan, Yi Mao, Jian-Guang Lou, and Weizhu Chen. Repocoder: Repository-level code completion through iterative retrieval and generation, 2023b. URL https://arxiv.org/abs/2303.12570.
+- Zhang et al. (2023b) Fengji Zhang, Bei Chen, Yue Zhang, Jacky Keung, Jin Liu, Daoguang Zan, Yi Mao, Jian-Guang Lou, and Weizhu Chen. Repocoder: Repository-level code completion through iterative retrieval and generation, 2023b. URL <https://arxiv.org/abs/2303.12570>.
 
-- Zhang et al. (2024b) Yuntong Zhang, Haifeng Ruan, Zhiyu Fan, and Abhik Roychoudhury. Autocoderover: Autonomous program improvement, 2024b. URL https://arxiv.org/abs/2404.05427.
+- Zhang et al. (2024b) Yuntong Zhang, Haifeng Ruan, Zhiyu Fan, and Abhik Roychoudhury. Autocoderover: Autonomous program improvement, 2024b. URL <https://arxiv.org/abs/2404.05427>.
 
-- Zheng et al. (2024) Qinkai Zheng, Xiao Xia, Xu Zou, Yuxiao Dong, Shan Wang, Yufei Xue, Zihan Wang, Lei Shen, Andi Wang, Yang Li, Teng Su, Zhilin Yang, and Jie Tang. Codegeex: A pre-trained model for code generation with multilingual benchmarking on humaneval-x, 2024. URL https://arxiv.org/abs/2303.17568.
+- Zheng et al. (2024) Qinkai Zheng, Xiao Xia, Xu Zou, Yuxiao Dong, Shan Wang, Yufei Xue, Zihan Wang, Lei Shen, Andi Wang, Yang Li, Teng Su, Zhilin Yang, and Jie Tang. Codegeex: A pre-trained model for code generation with multilingual benchmarking on humaneval-x, 2024. URL <https://arxiv.org/abs/2303.17568>.
 
-- Zhuo et al. (2024) Terry Yue Zhuo, Minh Chien Vu, Jenny Chim, Han Hu, Wenhao Yu, Ratnadira Widyasari, Imam Nur Bani Yusuf, Haolan Zhan, Junda He, Indraneil Paul, Simon Brunner, Chen Gong, Thong Hoang, Armel Randy Zebaze, Xiaoheng Hong, Wen-Ding Li, Jean Kaddour, Ming Xu, Zhihan Zhang, Prateek Yadav, Naman Jain, Alex Gu, Zhoujun Cheng, Jiawei Liu, Qian Liu, Zijian Wang, David Lo, Binyuan Hui, Niklas Muennighoff, Daniel Fried, Xiaoning Du, Harm de Vries, and Leandro Von Werra. Bigcodebench: Benchmarking code generation with diverse function calls and complex instructions, 2024. URL https://arxiv.org/abs/2406.15877.
+- Zhuo et al. (2024) Terry Yue Zhuo, Minh Chien Vu, Jenny Chim, Han Hu, Wenhao Yu, Ratnadira Widyasari, Imam Nur Bani Yusuf, Haolan Zhan, Junda He, Indraneil Paul, Simon Brunner, Chen Gong, Thong Hoang, Armel Randy Zebaze, Xiaoheng Hong, Wen-Ding Li, Jean Kaddour, Ming Xu, Zhihan Zhang, Prateek Yadav, Naman Jain, Alex Gu, Zhoujun Cheng, Jiawei Liu, Qian Liu, Zijian Wang, David Lo, Binyuan Hui, Niklas Muennighoff, Daniel Fried, Xiaoning Du, Harm de Vries, and Leandro Von Werra. Bigcodebench: Benchmarking code generation with diverse function calls and complex instructions, 2024. URL <https://arxiv.org/abs/2406.15877>.
 
 In the appendix, we provide additional details about the collection process for curating SWE-bench M, more characterizations of the SWE-bench M dataset, supplementary experiments and ablations of LM agent performance on SWE-bench M, limitations and more.
 
@@ -378,15 +386,21 @@ _Figure_: Figure 4: Distribution of SWE-bench M development set tasks (in parent
 
 _Figure_: Table 6: Median values of different attributes of a SWE-bench M task instance.
 
-_Table_: 
+_Table_:
  |  | Median
 Issue Text | Length (Words) | 145
 Codebase | # Lines (non-test) | 228K
+
 # Files (non-test) | 1324
+
 Gold Patch | # Lines edited | 35
+
 # Files edited | 2
+
 # Funcs edited | 3
+
 Tests | # Fail to Pass | 2
+
 # Pass to Pass | 7
 
 ### A.2 Additional Characterizations
@@ -395,7 +409,7 @@ We provide further characterizations about the SWE-bench M dataset. In this sect
 
 Visual Testing. A total of 696969 task instances from Chart.js, a data visualization framework, and openlayers, an interactive mapping library, verify functional correctness with pixel-level visual testing. Across this subset of instances, there are 273273273 reference screenshots for visual testing.
 
-Within the JavaScript development ecosystem, visual testing like this is commonplace, with Puppeteer 222https://github.com/puppeteer/puppeteer and Pixelmatch 333https://github.com/mapbox/pixelmatch being two popular libraries. Such libraries are necessary because they provide several sensible advantages over a simple binary comparison of two images to check if they’re identical. Generally, the overarching reason is that a direct diff is too strict and doesn’t account for the discrepancies of how different browser render user interfaces and webpages.
+Within the JavaScript development ecosystem, visual testing like this is commonplace, with Puppeteer 222<https://github.com/puppeteer/puppeteer> and Pixelmatch 333<https://github.com/mapbox/pixelmatch> being two popular libraries. Such libraries are necessary because they provide several sensible advantages over a simple binary comparison of two images to check if they’re identical. Generally, the overarching reason is that a direct diff is too strict and doesn’t account for the discrepancies of how different browser render user interfaces and webpages.
 
 There are several additional benefits. First, such libraries provide the ability to specify tolerances for minor pixel level differences that might arise from anti-aliasing or sub-pixel rendering (Kotsarenko, 2018). Second, visual testing libraries allow for targeting certain components of a webpage. Specifically, Puppeteer has tools for taking screenshots of specified sub-parts of a page, and Pixelmatch allows for region-specific comparisons of images. This use case is particularly important for selectively ignoring dynamic website content, such as timestamps or ads, that is irrelevant to the code.
 
@@ -411,7 +425,7 @@ _Figure_: Table 7: Number of task instances per year for each repository represe
 
 _Figure_: Table 8: Counts for the number of task instances with reference solutions that edit a specific set of file types. 282828% of SWE-bench M task instances modify two or more files types.
 
-_Table_: 
+_Table_:
 Repository | ≤2018absent2018\leq 2018 | 201920192019 | 202020202020 | 202120212021 | 202220222022 | 202320232023 | 202420242024
 bpmn-js | 00 | 222222 | 666 | 444 | 181818 | 444 | 00
 carbon | 00 | 363636 | 303030 | 303030 | 242424 | 121212 | 222
@@ -432,7 +446,7 @@ react-pdf | 111 | 111 | 00 | 888 | 00 | 111 | 00
 wp-calypso | 262626 | 111111 | 00 | 00 | 00 | 00 | 00
 Total | 838383 | 114114114 | 100100100 | 130130130 | 112112112 | 676767 | 131313
 
-_Table_: 
+_Table_:
 File Types Edited | Count
 js | 400400400
 js, scss | 525252
@@ -442,7 +456,7 @@ js, jsx | 161616
 html, js | 141414
 ts | 101010
 
-_Table_: 
+_Table_:
 File Types Edited | Count
 js, scss, jsx | 888
 lua | 888
@@ -480,7 +494,7 @@ _Figure_: Table 10: Categories of 101810181018 tags associated with 535535535 is
 
 _Figure_: Table 11: Categories of 186186186 tags associated with 109109109 issues associated with one of the 100100100 task instances from the development split of SWE-bench M (919191 task instances have 111 issue, 999 have 222).
 
-_Table_: 
+_Table_:
  | Issue Text | Codebase | Gold Patch | Tests
 Repository | Length | Lines | Files | Lines | Files | Funcs | F2P | P2P
 GoogleChrome/lighthouse | 949494 | 1076K | 834834834 | 292929 | 222 | 333 | 111 | 111
@@ -501,7 +515,7 @@ diegomura/react-pdf | 888888 | 188K | 806806806 | 393939 | 222 | 222 | 111 | 210
 markedjs/marked | 898989 | 38K | 283283283 | 111111 | 111 | 111 | 111 | 00
 processing/p5.js | 254254254 | 436K | 100910091009 | 303030 | 222 | 444 | 121212 | 237323732373
 
-_Table_: 
+_Table_:
 Category | Count | Examples
 Bug | 267 | “bug” (207); “type: bug” (56)
 Feature | 79 | “type: enhancement” (44); “enhancement” (19); “feature request” (10);
@@ -510,7 +524,7 @@ Other | 672 | “a11y” (40); “language” (37); “help welcome” (35);
  |  | “language-definitions” (32); “role: dev” (32); “good first issue” (28);
  |  | “package: react” (21); “package: @carbon/react” (14); modeling (13);
 
-_Table_: 
+_Table_:
 Category | Count | Examples
 Bug | 52 | “type: bug” (21); “[Type] Bug” (17); “bug” (14);
 Feature | 45 | “[Type] Enhancement” (9); “[Feature] Signup & Account Creation” (6);
@@ -526,18 +540,18 @@ Additional information about new dataset curation processes introduced for SWE-b
 
 _Figure_: Table 12: Summary and licenses for all GitHub repositories represented in SWE-bench M. Test split repositories are listed above the delimiter, while development split repositories are listed below.
 
-_Table_: 
+_Table_:
 Repository | Summary | License
 carbon-design-system/carbon | A design system built by IBM | Apache-2.0
 GoogleChrome/lighthouse | Automated auditing, perf. metrics for web | Apache-2.0
 grommet/grommet | React-based framework for web app dev. | Apache-2.0
 openlayers/openlayers | High-performance, feature-packed library | BSD-2-Clause
- | for all your mapping needs | 
+ | for all your mapping needs |
 highlightjs/highlight.js | JS syntax highlighter with lang. auto-detection | BSD-3-Clause
 scratchfoundation/scratch-gui | GUI to create + run Scratch 3.0 projects | BSD-3-Clause
 bpmn-io/bpmn-js | BPMN 2.0 rendering toolkit + web modeler | Custom
 quarto-dev/quarto-cli | Open-source scientific and technical | Custom
- | publishing system built on Pandoc. | 
+ | publishing system built on Pandoc. |
 alibaba-fusion/next | Configurable component library for web | MIT
 eslint/eslint | Find and fix problems in JS code. | MIT
 PrismJS/prism | Lightweight, robust syntax highlighter | MIT
@@ -554,7 +568,7 @@ In Table 13, we provide a summary of the number of pull requests that were event
 
 _Figure_: Table 13: Per repository, the number of pull requests eventually converted into viable SWE-bench M task instances and task instances kept per stage of the filtering process. The red subscript denotes the number of task instances that were filtered out at this stage with respect to the total from the previous stage.
 
-_Table_: 
+_Table_:
  |  |  |  | Inconsistent | Manual
  | PRs Crawled | Conversion | Validation | Test | Filter
 GoogleChrome/lighthouse | 602260226022 | 116116116↓↓\downarrow5906 | 555555↓↓\downarrow61 | 555555-0 | 545454↓↓\downarrow1
@@ -588,7 +602,7 @@ Besides text, issue descriptions can contain
 
 Images, often in the form of web browser screenshots detailing bugs or specifications of new features. For issues describing unexpected user interface behaviors that involve complex mouse actions (dragging, etc.) or a longer sequence of reproduction steps, animated images (GIFs) are often used.
 
-- 2. Links to online integrated development environments (IDEs) for testing and showcasing HTML, CSS, and JavaScript code snippets. Around 17% of the instances contain at least one such link, and 15% contain more than one.
+- 1. Links to online integrated development environments (IDEs) for testing and showcasing HTML, CSS, and JavaScript code snippets. Around 17% of the instances contain at least one such link, and 15% contain more than one.
 
 Links to online integrated development environments (IDEs) for testing and showcasing HTML, CSS, and JavaScript code snippets. Around 17% of the instances contain at least one such link, and 15% contain more than one.
 
@@ -636,7 +650,7 @@ _Figure_: Figure 7: Action space of SWE-agent with different configurations for 
 
 _Figure_: Figure 8: Frequency of outcomes by success and exit status of SWE-agent under different configurations on the development set.
 
-_Table_: 
+_Table_:
 Command | Documentation
 open_webpage <website_dir> | Opens the webpage in a new display window using Google Chrome. website_dir is the directory where an index.html file exists and will be served.
 restart_webpage <website_dir> | Restarts the webpage with the given directory. website_dir is the directory where an index.html file exists and will be served.
@@ -654,7 +668,7 @@ _Figure_: Table 15: Hyperparameter search for SWE-agent system for non-collapsed
 
 _Figure_: Table 16: Hyperparameter search for RAG models with differing lengths of context and image input.
 
-_Table_: 
+_Table_:
 Model | System | History Length | % Resolved
 Claude 3.5 Sonnet | SWE-agent Base | 5 | 18%
 9 | 14%
@@ -669,7 +683,7 @@ SWE-agent JS | 5 | 24%
 SWE-agent M | 5 | 26%
 9 | 16%
 
-_Table_: 
+_Table_:
 Model | Retrieval Context | With Images | % Resolved
 Claude 3.5 Sonnet | 32K |  | 9.4±1.1
  | 7.8±2.6
@@ -704,7 +718,7 @@ _Figure_: Table 18: % Resolved performance for SWE-bench M test split task insta
 
 _Figure_: Table 19: % Resolved Rates with GPT-4o before and after training cutoff. This table shows the performance for the SWE-bench M test split task instances before and after the GPT-4o training cutoff date (October 2023). Pre-cutoff (reweighted) is the pre-cutoff performance reweighted to the post-cutoff repository distribution (see text).
 
-_Table_: 
+_Table_:
 Repository | Count | SWE-agent M | Agentless JS | RAG
 GoogleChrome/lighthouse | 54 | 5.65.65.6 | 7.47.47.4 | 1.91.91.9
 PrismJS/prism | 38 | 0.00.00.0 | 0.00.00.0 | 0.00.00.0
@@ -724,7 +738,7 @@ diegomura/react-pdf | 11 | 0.00.00.0 | 0.00.00.0 | 0.00.00.0
 markedjs/marked | 14 | 7.17.17.1 | 0.00.00.0 | 20.020.020.0
 processing/p5.js | 16 | 25.025.025.0 | 6.26.26.2 | 23.823.823.8
 
-_Table_: 
+_Table_:
  |  | SWE-agent M | SWE-agent M | Agentless JS | RAG
 Year | Count | (Claude) | (GPT-4o) | (GPT-4o) | (GPT-4o)
 2017 | 222222 | 4.54.54.5 | 4.54.54.5 | 9.19.19.1 | 4.54.54.5
@@ -736,7 +750,7 @@ Year | Count | (Claude) | (GPT-4o) | (GPT-4o) | (GPT-4o)
 2023 | 606060 | 13.313.313.3 | 20.020.020.0 | 0.00.00.0 | 6.76.76.7
 2024 | 131313 | 46.246.246.2 | 53.853.853.8 | 7.77.77.7 | 46.246.246.2
 
-_Table_: 
+_Table_:
  | SWE-agent M | Agentless JS | RAG
 Pre-cutoff | 11.0 | 3.0 | 5.0
 Pre-cutoff (reweighted) | 27.6 | 3.1 | 13.6
@@ -756,31 +770,31 @@ The images are from the following task instances:
 
 Code: PrismJS__prism-1500
 
-- 2. Webpage: carbon-design-system__carbon-6964
+- 1. Webpage: carbon-design-system__carbon-6964
 
 Webpage: carbon-design-system__carbon-6964
 
-- 3. Geospatial: openlayers__openlayers-10545
+- 1. Geospatial: openlayers__openlayers-10545
 
 Geospatial: openlayers__openlayers-10545
 
-- 4. Diagram: bpmn-io__bpmn-js-1542
+- 1. Diagram: bpmn-io__bpmn-js-1542
 
 Diagram: bpmn-io__bpmn-js-1542
 
-- 5. Data Viz.: chartjs__Chart.js-9101
+- 1. Data Viz.: chartjs__Chart.js-9101
 
 Data Viz.: chartjs__Chart.js-9101
 
-- 6. Art: quarto-dev__quarto-cli-5547
+- 1. Art: quarto-dev__quarto-cli-5547
 
 Art: quarto-dev__quarto-cli-5547
 
-- 7. Error Trace: diegomura__react-pdf-1285
+- 1. Error Trace: diegomura__react-pdf-1285
 
 Error Trace: diegomura__react-pdf-1285
 
-- 8. Other: openlayers__openlayers-12393
+- 1. Other: openlayers__openlayers-12393
 
 Other: openlayers__openlayers-12393
 
@@ -808,7 +822,7 @@ _Figure_: (h) Miscellaneous
 
 _Figure_: Table 20: Response to Image Categorization indicates the majority of images are code and website screenshots. Other categories tend to be more repository-specific.
 
-_Table_: 
+_Table_:
  | Code | Website | Geospatial | Diagram | Data Viz. | Art | Errors | Other | Total
 bpmn-js | 111 | 131313 | 111 | 545454 | 111 | 111 | 111 | 111 | 696969
 carbon | 212121 | 136136136 | 00 | 363636 | 00 | 00 | 303030 | 111 | 224224224
@@ -889,7 +903,7 @@ _Figure_: Figure 11: Responses to whether an image can be represented with text 
 
 _Figure_: Figure 12: Responses to whether an image can be represented with text per image category.
 
-### D.3 Image Necessity.
+### D.3 Image Necessity
 
 We elicit human feedback on how necessary images are to solving the task at hand. This question attempts to directly determine how the visual asset(s) provided with a problem statement are actually necessary to solving a GitHub issue when provided. We label the 557557557 SWE-bench M task instances that have one or more images in its problem statement.
 
@@ -901,11 +915,11 @@ Prompt: For each task instance, please determine whether its associated images a
 
 Read the problem statement. If you’d like, check the codebase, gold patch, and test patch as needed. Make a mental note of whether the task instance can be solved.
 
-- 2. Then, look at the image(s) associated with the task instance. Now, re-answer whether the task instance can be solved.
+- 1. Then, look at the image(s) associated with the task instance. Now, re-answer whether the task instance can be solved.
 
 Then, look at the image(s) associated with the task instance. Now, re-answer whether the task instance can be solved.
 
-- 3. Provide answer according to the following logic: • “Yes”: If the answer changed from “No” to “Yes”, then the image is necessary. • “No”: If the answer remained “Yes”, the image is not necessary to solve the task. • Remove: If the answer before and after seeing the image was both “No”, please note this and we will remove the task instance.
+- 1. Provide answer according to the following logic: • “Yes”: If the answer changed from “No” to “Yes”, then the image is necessary. • “No”: If the answer remained “Yes”, the image is not necessary to solve the task. • Remove: If the answer before and after seeing the image was both “No”, please note this and we will remove the task instance.
 
 Provide answer according to the following logic:
 
@@ -997,7 +1011,7 @@ While we primarily focus on developing the benchmark and evaluating current mode
 
 _Figure_: Table 21: Estimated level of difficulty for different splits of SWE-bench in addition to SWE-bench M. Each number is the percentage of sampled task instances classified at that level of difficulty.
 
-_Table_: 
+_Table_:
 Dataset | # Samples | <<15 min | 15 min-1 hour | 1-4 hours | >>4 hours
 SWE-bench | 169916991699 | 24.524.524.5 | 53.353.353.3 | 19.419.419.4 | 2.82.82.8
 Lite | 231231231 | 37.737.737.7 | 56.356.356.3 | 6.16.16.1 | 0.00.00.0

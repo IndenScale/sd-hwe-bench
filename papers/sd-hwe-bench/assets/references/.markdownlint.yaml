@@ -1,0 +1,14 @@
+# Reference files are machine-extracted/imported dumps from external papers.
+# They are not hand-edited project prose, so strict Markdown lint rules are
+# intentionally disabled for this directory.
+default: true
+MD001: false
+MD013: false
+MD024: false
+MD025: false
+MD033: false
+MD037: false
+MD041: false
+MD049: false
+MD052: false
+MD060: false

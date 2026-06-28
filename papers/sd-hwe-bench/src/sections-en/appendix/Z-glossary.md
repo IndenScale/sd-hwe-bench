@@ -8,10 +8,9 @@
 | **PML** | Part Mating Language | ADL 子语言：定义部件间关系——电气连接、物理配合、层级包含 | §3.1.1 |
 | **PLL** | Part Layout Language | ADL 子语言：定义部件空间布局——位置、方向、布局约束 | §3.1.1 |
 | **Part** | — | EaC/ADL 的设计原子，对应物理工程中的一个可实例化部件（交换机、PDU、机架等） | §3.1.1 |
-| **DTS** | Design Test Suite | EaC 的分层确定性评分引擎，从 L0 到 L5 逐层检查设计正确性，L6 预留为高精度物理仿真；等价于工程领域的 QA 套件 | §3.1.2, §5.1 |
+| **DTS** | Design Test Suite | EaC 的分层确定性评分引擎，从 L0 到 L5 逐层检查设计正确性，等价于工程领域的 QA 套件 | §3.1.2, §5.1 |
 | **ASA** | Assembly Static Analysis | DTS 的 L3 层：对物理装配体做不施加激励的静态断言——功率预算、U 位冲突、端口兼容性、散热间距等 | §5.1.4 |
-| **ADA** | Assembly Dynamic Analysis | DTS 的 L4 层：施加虚拟激励 → 观察系统响应 → 阈值判断——AIDC 仿真合规、防火、承重、碰撞、电压降等 | §5.1.5 |
-| **Performance Score** | — | AIDC 任务的诊断性优化指标：相对 baseline/reference 归一化的 PUE/TCO/NPV/LCOE 改善分数，不计入 overall_score | §5.1.8 |
+| **ADA** | Assembly Dynamic Analysis | DTS 的 L4 层：施加虚拟激励 → 观察系统响应 → 阈值判断——防火、承重、碰撞、软碰撞、电压降等 | §5.1.5 |
 | **piki** | — | EaC 范式的开源参考实现，提供 ADL 解析、DTS 检查与交付物生成 | §3.1.3 |
 | **Canonical 工程** | — | 由领域专家精心构建的完整 ADL 工程，其 commit 历史模拟真实设计迭代，作为任务提取的源 | §3.3.2, §4.2 |
 | **ACC** | Automated Compliance Checking | 现有事后合规检查路径：从已完成的几何模型中逆向推断合规性，假阳性高、依赖命名约定 | §1.3, §3.1.2 |

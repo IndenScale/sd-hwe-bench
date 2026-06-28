@@ -13,6 +13,7 @@
 → *SWE-bench Multimodal: Do AI Systems Generalize to Visual Software Domains?*
 
 **SD-HWE-Bench 候选标题**：
+
 - *SD-HWE-Bench: Can Language Model Agents Resolve Real-World Hardware Engineering Design Issues?*
 - *SD-HWE-Bench: Do AI Systems Generalize to Executable Hardware Engineering Domains?*
 - *SD-HWE-Bench: Evaluating LLM Agents on Multiphysics Hardware Design with Executable Digital Models*
@@ -36,10 +37,12 @@
 ## 3. 引言三段式
 
 ### 3.1 第一段：大势所趋
+
 - 大模型正在从代码补全走向仓库级/工程级自主系统。
 - 引用 2–3 个近期工作（SWE-agent、Devin、Aider 等）。
 
 ### 3.2 第二段：现有 benchmark 不够
+
 - 列表形式点出 3–4 个缺陷：
   1. 太简单/过饱和（HumanEval、MBPP）。
   2. 非执行评测（部分代码生成 benchmark）。
@@ -47,6 +50,7 @@
   4. 缺乏真实工程约束（功耗、热、结构、信号完整性、可制造性）。
 
 ### 3.3 第三段：提出工作与卖点
+
 - 一句话定义 SD-HWE-Bench。
 - 列出 3–4 个优势（与 SWE-bench 对齐）：
   1. **真实场景**：canonical ADL 工程模拟真实硬件设计流程。
@@ -117,6 +121,7 @@
 3. **Collapsed context**：只保留被修改行 ±N 行（定位能力上限）。
 
 **衍生实验**：
+
 - 有/无仿真反馈（ESA）对比；
 - 有/无几何/约束图对比（验证多模态信号必要性）；
 - patch 生成 vs. 整模块重写；
@@ -127,13 +132,16 @@
 ## 9. 相关工作三层结构
 
 ### 9.1 第一层：LM 评测
+
 - 指出通用 benchmark（MMLU、BIG-bench、HELM）“拼盘式”缺点：每个任务太窄，无法体现工程级综合能力。
 
 ### 9.2 第二层：代码/硬件生成 benchmark
+
 - HumanEval、MBPP、MultiPL-E、ClassEval、RTL/EDA benchmark。
 - 共同局限：短、自包含、单领域、缺乏真实工程反馈。
 
 ### 9.3 第三层：ML for SE / EDA
+
 - 程序修复、commit 生成、PR review、bug 定位、自动化测试。
 - 与 SD-HWE-Bench 关系：我们提供一个更大规模、更真实、可执行的平台，兼容这些方法。
 

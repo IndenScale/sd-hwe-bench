@@ -1,9 +1,10 @@
 # SWE-bench: Can Language Models Resolve Real-World GitHub Issues?
 
-**Authors**: Carlos E. Jimenez* 1,2 John Yang* 1,2 Alexander Wettig1,2 Shunyu Yao1,2 Kexin Pei3 Ofir Press1,2 Karthik Narasimhan1,2 1Princeton University 2Princeton Language and Intelligence 3University of Chicago
+**Authors**: Carlos E. Jimenez*1,2 John Yang* 1,2 Alexander Wettig1,2 Shunyu Yao1,2 Kexin Pei3 Ofir Press1,2 Karthik Narasimhan1,2 1Princeton University 2Princeton Language and Intelligence 3University of Chicago
 
 ## Abstract
-Abstract Language models have outpaced our ability to evaluate them effectively, but for their future development it is essential to study the frontier of their capabilities. We consider real-world software engineering to be a rich, sustainable, and challenging testbed for evaluating the next generation of language models. We therefore introduce SWE-bench, an evaluation framework including 229422942294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 121212 popular Python repositories. Given a codebase along with a description of an issue to be resolved, a language model is tasked with editing the codebase to address the issue. Resolving issues in SWE-bench frequently requires understanding and coordinating changes across multiple functions, classes, and even files simultaneously, calling for models to interact with execution environments, process extremely long contexts and perform complex reasoning that goes far beyond traditional code generation. Our evaluations show that both state-of-the-art proprietary models and our fine-tuned model SWE-Llama can resolve only the simplest issues. Claude 2 and GPT-4 solve a mere 4.84.84.8% and 1.71.71.7% of instances respectively, even when provided with an oracle retriever. Advances on SWE-bench represent steps towards LMs that are more practical, intelligent, and autonomous.††Data, code, and leaderboard are available at https://www.swebench.com.
+
+Abstract Language models have outpaced our ability to evaluate them effectively, but for their future development it is essential to study the frontier of their capabilities. We consider real-world software engineering to be a rich, sustainable, and challenging testbed for evaluating the next generation of language models. We therefore introduce SWE-bench, an evaluation framework including 229422942294 software engineering problems drawn from real GitHub issues and corresponding pull requests across 121212 popular Python repositories. Given a codebase along with a description of an issue to be resolved, a language model is tasked with editing the codebase to address the issue. Resolving issues in SWE-bench frequently requires understanding and coordinating changes across multiple functions, classes, and even files simultaneously, calling for models to interact with execution environments, process extremely long contexts and perform complex reasoning that goes far beyond traditional code generation. Our evaluations show that both state-of-the-art proprietary models and our fine-tuned model SWE-Llama can resolve only the simplest issues. Claude 2 and GPT-4 solve a mere 4.84.84.8% and 1.71.71.7% of instances respectively, even when provided with an oracle retriever. Advances on SWE-bench represent steps towards LMs that are more practical, intelligent, and autonomous.††Data, code, and leaderboard are available at <https://www.swebench.com>.
 
 ## 1 Introduction
 
@@ -65,15 +66,21 @@ _Figure_: Figure 3: Distribution of SWE-bench tasks (in parenthesis) across 12 o
 
 _Figure_: Table 1: Average and maximum numbers characterizing different attributes of a SWE-bench task instance. Statistics are micro-averages calculated without grouping by repository.
 
-_Table_: 
+_Table_:
  |  | Mean | Max
 Issue Text | Length (Words) | 195.1 | 4477
 Codebase | # Files (non-test) | 3,010 | 5,890
+
 # Lines (non-test) | 438K | 886K
+
 Gold Patch | # Lines edited | 32.8 | 5888
+
 # Files edited | 1.7 | 31
+
 # Func. edited | 3 | 36
+
 Tests | # Fail to Pass | 9.1 | 1633
+
 # Total | 120.8 | 9459
 
 ## 3 SWE-Llama: Fine-tuning CodeLlama for SWE-bench
@@ -114,19 +121,19 @@ _Figure_: Table 3: BM25 recall with respect to oracle files for different maximu
 
 _Figure_: Table 4: Model resolve rates with BM25 retrieval, with different maximum context lengths.
 
-_Table_: 
+_Table_:
  | ChatGPT-3.5 | GPT-4 | Claude 2 | SWE-Llama
 Max. Tokens | 163851638516385 | 327683276832768 | 100000100000100000 | ≥\geq100000100000100000
 % of Instances | 58.1% | 84.1% | 96.4% | ≥\geq94.8%
 
-_Table_: 
+_Table_:
  | BM25 Recall
  | 131313k | 272727k | 505050k
 Avg. | 29.58 | 44.41 | 51.06
 All | 26.09 | 39.83 | 45.90
 Any | 34.77 | 51.27 | 58.38
 
-_Table_: 
+_Table_:
  | Max. Content
 Model | 131313k | 272727k | 505050k
 Claude 2 | 1.96 | 1.87 | 1.22
@@ -165,7 +172,7 @@ _Figure_: Table 7: We compare model performance on task instances from before or
 
 _Figure_: Table 8: Average edits of model generated patches in the oracle retrieval setting across successfully applied patches. For the task instances specific to each model, we calculate the same statistics across the gold patches. Avg Gold shows statistics macro-averaged over each models’ respective gold patches. All Gold shows statistics for all gold patches unconditioned on model performance.
 
-_Table_: 
+_Table_:
  | BM25 Retrieval | “Oracle” Retrieval
 Model | % Resolved | % Apply | % Resolved | % Apply
 ChatGPT-3.5 | 0.20 | 10.50 | 0.52 | 12.38
@@ -174,19 +181,19 @@ GPT-4∗ | 0.00 | 4.50 | 1.74 | 13.20
 SWE-Llama 7b | 0.70 | 37.84 | 3.00 | 54.80
 SWE-Llama 13b | 0.70 | 39.41 | 4.00 | 52.10
 
-_Table_: 
+_Table_:
 Model | “Oracle”-collapsed
 Resolved | Applied
 ChatGPT-3.5 | 1.0 | 23.2
 Claude 2 | 5.9 | 47.6
 GPT-4 | 3.4 | 18.8
 
-_Table_: 
+_Table_:
  | Claude 2 | ChatGPT-3.5 | GPT-4∗ | SWE-Llama 7b | SWE-Llama 13b
 Before 2023 | 4.87 | 0.49 | 1.63 | 3.98 | 2.95
 From 2023 | 4.23 | 0.77 | 0.0 | 3.85 | 3.46
 
-_Table_: 
+_Table_:
 Model | Total Lines | Added | Removed | Functions | Files
 Claude 2 | 19.6 | 4.2 | 1.9 | 1.1 | 1.0
 Gold | 44.1 | 12.0 | 5.8 | 2.1 | 1.2
@@ -207,7 +214,7 @@ We select 111111 generations from SWE-Llama and Claude 2 collectively to better 
 
 We’ll consider the task instance sphinx-doc__sphinx-8713 from the Sphinx documentation generator, shown in Figure 6. The issue states that the napoleon extension of Sphinx is not properly formatting the documentation keyword “Other Parameters” when the config setting napoleon.use_param is set to True. The issue text further provides a detailed code snippet of where the problematic source code is suspected to be, as well as some code examples for reproducing the error and additional information related to package versions. For this particular instance, the model did not resolve the task, failing to pass some of the tests resolved by the gold solution.
 
-In the “oracle” retrieval setting, the model input provides this issue text along with some instructions, the full contents of files edited by the gold patch, and an example of the diff format we expect the answer to be in. The total model input consists of 155815581558 lines of context or 208822088220882 tokens. When comparing the gold patch and the model’s patch, we find an obvious mistake. While the model edits the correct function, _parse_other_parameters_section at line 684684684 in sphinx/ext/napoleon/docstring.py , it changes the function to behave as if napoleon. use_param were always True instead of checking the config setting first and copying what the _parse_parameters_section does, like the gold patch. In the tests, test_parameters _with_class_reference directly compares the documentation produced using a config where napoleon_use_param is set to False, which catches the model’s error immediately.
+In the “oracle” retrieval setting, the model input provides this issue text along with some instructions, the full contents of files edited by the gold patch, and an example of the diff format we expect the answer to be in. The total model input consists of 155815581558 lines of context or 208822088220882 tokens. When comparing the gold patch and the model’s patch, we find an obvious mistake. While the model edits the correct function, _parse_other_parameters_section at line 684684684 in sphinx/ext/napoleon/docstring.py , it changes the function to behave as if napoleon. use_param were always True instead of checking the config setting first and copying what the_parse_parameters_section does, like the gold patch. In the tests, test_parameters_with_class_reference directly compares the documentation produced using a config where napoleon_use_param is set to False, which catches the model’s error immediately.
 
 Comparing results across all the examples we consider, we notice a few prominent trends in behavior. Models tend to write primitive Python code and do not leverage existing third-party libraries or the rest of the codebase for their solutions. Models’ generations also reflect a “greedy” approach of solving the problem exactly, with little regard for code style or logical constraints that might be reflected by the codebase (i.e. using relative instead of absolute imports). In contrast, we observe that many gold patches will make structural improvements that cover a much larger scope of the codebase; these edits not only resolve the issue, but also anticipate and solve obvious potential future issues. We present additional case studies and identify more nuanced discrepancies in Appendix F.
 
@@ -283,7 +290,7 @@ We thank Danqi Chen, Tri Dao, Zexuan Zhong, Tianyu Gao, Will Merrill, Mengzhou X
 
 - Hou et al. (2023) Xinyi Hou, Yanjie Zhao, Yue Liu, Zhou Yang, Kailong Wang, Li Li, Xiapu Luo, David Lo, John Grundy, and Haoyu Wang. Large language models for software engineering: A systematic literature review, 2023.
 
-- Hu et al. (2022) Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen. LoRA: Low-rank adaptation of large language models. In International Conference on Learning Representations, 2022. URL https://openreview.net/forum?id=nZeVKeeFYf9.
+- Hu et al. (2022) Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen. LoRA: Low-rank adaptation of large language models. In International Conference on Learning Representations, 2022. URL <https://openreview.net/forum?id=nZeVKeeFYf9>.
 
 - Jacobs et al. (2023) Sam Ade Jacobs, Masahiro Tanaka, Chengming Zhang, Minjia Zhang, Leon Song, Samyam Rajbhandari, and Yuxiong He. Deepspeed ulysses: System optimizations for enabling training of extreme long sequence transformer models, 2023.
 
@@ -293,7 +300,7 @@ We thank Danqi Chen, Tri Dao, Zexuan Zhong, Tianyu Gao, Will Merrill, Mengzhou X
 
 - Kang et al. (2023) Sungmin Kang, Juyeon Yoon, and Shin Yoo. Large language models are few-shot testers: Exploring llm-based general bug reproduction, 2023.
 
-- Karampatsis & Sutton (2019) Rafael-Michael Karampatsis and Charles Sutton. How often do single-statement bugs occur? the manysstubs4j dataset. 2020 IEEE/ACM 17th International Conference on Mining Software Repositories (MSR), pp. 573–577, 2019. URL https://api.semanticscholar.org/CorpusID:173188438.
+- Karampatsis & Sutton (2019) Rafael-Michael Karampatsis and Charles Sutton. How often do single-statement bugs occur? the manysstubs4j dataset. 2020 IEEE/ACM 17th International Conference on Mining Software Repositories (MSR), pp. 573–577, 2019. URL <https://api.semanticscholar.org/CorpusID:173188438>.
 
 - Kiela et al. (2021) Douwe Kiela, Max Bartolo, Yixin Nie, Divyansh Kaushik, Atticus Geiger, and Zhengxuan Wu et. al. Dynabench: Rethinking benchmarking in nlp, 2021.
 
@@ -301,7 +308,7 @@ We thank Danqi Chen, Tri Dao, Zexuan Zhong, Tianyu Gao, Will Merrill, Mengzhou X
 
 - Lai et al. (2022) Yuhang Lai, Chengxi Li, Yiming Wang, Tianyi Zhang, Ruiqi Zhong, Luke Zettlemoyer, Scott Wen tau Yih, Daniel Fried, Sida Wang, and Tao Yu. Ds-1000: A natural and reliable benchmark for data science code generation, 2022.
 
-- Li et al. (2022a) Yujia Li, David Choi, Junyoung Chung, Nate Kushman, Julian Schrittwieser, and Ré mi Leblond et. al. Competition-level code generation with AlphaCode. Science, 378(6624):1092–1097, dec 2022a. doi: 10.1126/science.abq1158. URL https://doi.org/10.1126%2Fscience.abq1158.
+- Li et al. (2022a) Yujia Li, David Choi, Junyoung Chung, Nate Kushman, Julian Schrittwieser, and Ré mi Leblond et. al. Competition-level code generation with AlphaCode. Science, 378(6624):1092–1097, dec 2022a. doi: 10.1126/science.abq1158. URL <https://doi.org/10.1126%2Fscience.abq1158>.
 
 - Li et al. (2022b) Zhiyu Li, Shuai Lu, Daya Guo, Nan Duan, Shailesh Jannu, Grant Jenks, Deep Majumder, Jared Green, Alexey Svyatkovskiy, Shengyu Fu, and Neel Sundaresan. Automating code review activities by large-scale pre-training, 2022b.
 
@@ -317,11 +324,11 @@ We thank Danqi Chen, Tri Dao, Zexuan Zhong, Tianyu Gao, Will Merrill, Mengzhou X
 
 - Lu et al. (2021) Shuai Lu, Daya Guo, Shuo Ren, Junjie Huang, Alexey Svyatkovskiy, and Ambrosio Blanco et. al. Codexglue: A machine learning benchmark dataset for code understanding and generation. CoRR, abs/2102.04664, 2021.
 
-- Maniatis et al. (2023) Petros Maniatis, Daniel Tarlow, and Google DeepMind. Large sequence models for software development activities, 2023. URL https://blog.research.google/2023/05/large-sequence-models-for-software.html.
+- Maniatis et al. (2023) Petros Maniatis, Daniel Tarlow, and Google DeepMind. Large sequence models for software development activities, 2023. URL <https://blog.research.google/2023/05/large-sequence-models-for-software.html>.
 
-- Martínez-Plumed et al. (2021) Fernando Martínez-Plumed, Pablo Barredo, Seán Ó hÉigeartaigh, and José Hernández-Orallo. Research community dynamics behind popular ai benchmarks. Nature Machine Intelligence, 3:581 – 589, 2021. URL https://api.semanticscholar.org/CorpusID:236610014.
+- Martínez-Plumed et al. (2021) Fernando Martínez-Plumed, Pablo Barredo, Seán Ó hÉigeartaigh, and José Hernández-Orallo. Research community dynamics behind popular ai benchmarks. Nature Machine Intelligence, 3:581 – 589, 2021. URL <https://api.semanticscholar.org/CorpusID:236610014>.
 
-- Monperrus (2018) Martin Monperrus. Automatic software repair. ACM Computing Surveys, 51(1):1–24, jan 2018. doi: 10.1145/3105906. URL https://doi.org/10.1145%2F3105906.
+- Monperrus (2018) Martin Monperrus. Automatic software repair. ACM Computing Surveys, 51(1):1–24, jan 2018. doi: 10.1145/3105906. URL <https://doi.org/10.1145%2F3105906>.
 
 - Motwani & Brun (2023) Manish Motwani and Yuriy Brun. Better automatic program repair by using bug reports and tests together, 2023.
 
@@ -329,7 +336,7 @@ We thank Danqi Chen, Tri Dao, Zexuan Zhong, Tianyu Gao, Will Merrill, Mengzhou X
 
 - Orlanski et al. (2023) Gabriel Orlanski, Kefan Xiao, Xavier Garcia, Jeffrey Hui, Joshua Howland, Jonathan Malmaud, Jacob Austin, Rishabh Singh, and Michele Catasta. Measuring the impact of programming language distribution, 2023.
 
-- Ott et al. (2022) Simon Ott, Adriano Barbosa-Silva, Kathrin Blagec, Janina Brauner, and Matthias Samwald. Mapping global dynamics of benchmark creation and saturation in artificial intelligence. Nature Communications, 13, 2022. URL https://api.semanticscholar.org/CorpusID:247318891.
+- Ott et al. (2022) Simon Ott, Adriano Barbosa-Silva, Kathrin Blagec, Janina Brauner, and Matthias Samwald. Mapping global dynamics of benchmark creation and saturation in artificial intelligence. Nature Communications, 13, 2022. URL <https://api.semanticscholar.org/CorpusID:247318891>.
 
 - Robertson et al. (2009) Stephen Robertson, Hugo Zaragoza, et al. The probabilistic relevance framework: Bm25 and beyond. Foundations and Trends® in Information Retrieval, 3(4):333–389, 2009.
 
@@ -359,7 +366,7 @@ We thank Danqi Chen, Tri Dao, Zexuan Zhong, Tianyu Gao, Will Merrill, Mengzhou X
 
 - Yu et al. (2023) Hao Yu, Bo Shen, Dezhi Ran, Jiaxin Zhang, Qi Zhang, Yuchi Ma, Guangtai Liang, Ying Li, Tao Xie, and Qianxiang Wang. Codereval: A benchmark of pragmatic code generation with generative pre-trained models, 2023.
 
-- Yu et al. (2018) Tao Yu, Rui Zhang, Kai Yang, Michihiro Yasunaga, Dongxu Wang, Zifan Li, James Ma, Irene Li, Qingning Yao, Shanelle Roman, Zilin Zhang, and Dragomir Radev. Spider: A large-scale human-labeled dataset for complex and cross-domain semantic parsing and text-to-SQL task. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pp. 3911–3921, Brussels, Belgium, October-November 2018. Association for Computational Linguistics. doi: 10.18653/v1/D18-1425. URL https://aclanthology.org/D18-1425.
+- Yu et al. (2018) Tao Yu, Rui Zhang, Kai Yang, Michihiro Yasunaga, Dongxu Wang, Zifan Li, James Ma, Irene Li, Qingning Yao, Shanelle Roman, Zilin Zhang, and Dragomir Radev. Spider: A large-scale human-labeled dataset for complex and cross-domain semantic parsing and text-to-SQL task. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pp. 3911–3921, Brussels, Belgium, October-November 2018. Association for Computational Linguistics. doi: 10.18653/v1/D18-1425. URL <https://aclanthology.org/D18-1425>.
 
 - Zan et al. (2022) Daoguang Zan, Bei Chen, Dejian Yang, Zeqi Lin, Minsu Kim, Bei Guan, Yongji Wang, Weizhu Chen, and Jian-Guang Lou. Cert: Continual pre-training on sketches for library-oriented code generation, 2022.
 
@@ -377,7 +384,7 @@ This section complements Section 2 with a more technical and fine-grained summar
 
 ### A.1 High Level Overview
 
-Pull request scraping. From a list of the top 500050005000 most downloaded PyPI libraries during August 2023††https://hugovk.github.io/top-pypi-packages/, we select the top 100100100 packages, identify each library’s corresponding open-source GitHub repository, verify which packages have licenses allowing for free software use, and collect all PRs for these repositories via the GitHub developer API. We elect to source problems from well-trafficked repositories because widespread use usually suggests that the repository has extensive documentation, structured open-source development guidelines, and working, well-formatted code.
+Pull request scraping. From a list of the top 500050005000 most downloaded PyPI libraries during August 2023††<https://hugovk.github.io/top-pypi-packages/>, we select the top 100100100 packages, identify each library’s corresponding open-source GitHub repository, verify which packages have licenses allowing for free software use, and collect all PRs for these repositories via the GitHub developer API. We elect to source problems from well-trafficked repositories because widespread use usually suggests that the repository has extensive documentation, structured open-source development guidelines, and working, well-formatted code.
 
 Task instance construction. We construct candidate task instances from PRs that satisfy three conditions. First, the PR’s status must be Merged. A Merged status indicates that the PR’s associated code changes were accepted and incorporated into its parent repository. Second, the PR resolves one or more issues in its repository. An issue is defined according to its canonical usage in GitHub as a digital ticket for tracking bugs, enhancements, or any general development goals for a software project. We scan a PR’s title, body, and commit messages for linked issues (i.e. “fixes #242424”). Third, the PR must introduce one or more new tests. A new test is counted when a PR’s code changes edits a file path containing a testing-related keyword (e.g. “test”, “testing”).
 
@@ -405,7 +412,7 @@ Remaining Fields. The created_at field is a timestamp that specifies when the ba
 
 _Figure_: Table 9: Description of each field of a SWE-bench task instance object. See § A.2 for details regarding how each field is collected.
 
-_Table_: 
+_Table_:
 Field | Description
 base_commit | (str) The commit ID that the original PR is applied on top of
 created_at | (date) Datetime object of when PR was first created (not merged)
@@ -438,11 +445,11 @@ Validation Engine. The purpose of the validation engine is to verify candidate t
 
 Create executable contexts as conda envs. based on latest task instance per version.
 
-- 2. Group task instances by version.
+- 1. Group task instances by version.
 
 Group task instances by version.
 
-- 3. Iterate across each task instances group, where for each task instance, we perform the following within the corresponding conda env. (a) Remove any file changes and checkout the task instance’s base_commit. This sets the repository to codebase C𝐶C. (b) Run the installation command to instantiate codebase C𝐶C. (c) Apply the test patch T𝑇T to codebase C𝐶C. (d) Run the testing script, determined from test patch T𝑇T, to generate test result logs l​o​gp​r​e𝑙𝑜subscript𝑔𝑝𝑟𝑒log_{pre}. (e) Apply the solution δ𝛿\delta patch to the codebase C𝐶C with tests T𝑇T. (f) Run the testing script from part (d) again to generate test result logs l​o​gp​o​s​t𝑙𝑜subscript𝑔𝑝𝑜𝑠𝑡log_{post}.
+- 1. Iterate across each task instances group, where for each task instance, we perform the following within the corresponding conda env. (a) Remove any file changes and checkout the task instance’s base_commit. This sets the repository to codebase C𝐶C. (b) Run the installation command to instantiate codebase C𝐶C. (c) Apply the test patch T𝑇T to codebase C𝐶C. (d) Run the testing script, determined from test patch T𝑇T, to generate test result logs l​o​gp​r​e𝑙𝑜subscript𝑔𝑝𝑟𝑒log_{pre}. (e) Apply the solution δ𝛿\delta patch to the codebase C𝐶C with tests T𝑇T. (f) Run the testing script from part (d) again to generate test result logs l​o​gp​o​s​t𝑙𝑜subscript𝑔𝑝𝑜𝑠𝑡log_{post}.
 
 Iterate across each task instances group, where for each task instance, we perform the following within the corresponding conda env.
 
@@ -480,7 +487,7 @@ Alongside the task instances, we also create a corresponding folder containing t
 
 _Figure_: Table 10: Statistics for how many candidate task instances were kept after the completion of a stage across the construction and validation procedures.
 
-_Table_: 
+_Table_:
 Repo | Total PRs Crawled | Post-Conversion | Post-Validation (Final)
 astropy | 946994699469 | 101610161016 | 959595
 django | 169141691416914 | 288028802880 | 850850850
@@ -504,27 +511,27 @@ We provide a visualization of the evaluation procedure in Figure 8. The evaluati
 
 Remove any file changes and checkout the task instance’s base commit. This sets the repository to codebase C𝐶C.
 
-- 2. Activate the executable context corresponding to the task instance’s version.
+- 1. Activate the executable context corresponding to the task instance’s version.
 
 Activate the executable context corresponding to the task instance’s version.
 
-- 3. Run installation command to instantiate codebase C𝐶C.
+- 1. Run installation command to instantiate codebase C𝐶C.
 
 Run installation command to instantiate codebase C𝐶C.
 
-- 4. Apply test patch T𝑇T to codebase C𝐶C.
+- 1. Apply test patch T𝑇T to codebase C𝐶C.
 
 Apply test patch T𝑇T to codebase C𝐶C.
 
-- 5. Apply prediction patch δ^^𝛿 to codebase C𝐶C with tests T𝑇T.
+- 1. Apply prediction patch δ^^𝛿 to codebase C𝐶C with tests T𝑇T.
 
 Apply prediction patch δ^^𝛿 to codebase C𝐶C with tests T𝑇T.
 
-- 6. If the previous step fails, we attempt to fix prediction patch δ^^𝛿 automatically and reapply it.
+- 1. If the previous step fails, we attempt to fix prediction patch δ^^𝛿 automatically and reapply it.
 
 If the previous step fails, we attempt to fix prediction patch δ^^𝛿 automatically and reapply it.
 
-- 7. Run the testing script, determined from test patch T𝑇T, to generate test result logs l​o​gδ^𝑙𝑜subscript𝑔^𝛿log_{}.
+- 1. Run the testing script, determined from test patch T𝑇T, to generate test result logs l​o​gδ^𝑙𝑜subscript𝑔^𝛿log_{}.
 
 Run the testing script, determined from test patch T𝑇T, to generate test result logs l​o​gδ^𝑙𝑜subscript𝑔^𝛿log_{}.
 
@@ -554,7 +561,7 @@ _Figure_: Figure 9: Cumulative Distribution Functions for different attributes o
 
 _Figure_: Table 14: Statistics for how many patches for 229422942294 task instances were generated, applied successfully, and required a post-generation fix to apply successfully for each [model, retrieval setting] combination during evaluation.
 
-_Table_: 
+_Table_:
  | astropy | django | flask | matplotlib | pylint | pytest
 P𝑃P Length (Characters) | 274227422742 | 130713071307 | 118511851185 | 238123812381 | 201120112011 | 294829482948
 C𝐶C # Files | 181118111811 | 635663566356 | 225225225 | 439543954395 | 242624262426 | 497497497
@@ -580,7 +587,7 @@ C𝐶C # Lines | 303030k | 361361361k | 105105105k | 423423423k | 678678678k | 1
 |T|𝑇|T| (Pass to Pass) | 87.187.187.1 | 150.7150.7150.7 | 86.886.886.8 | 45.145.145.1 | 74.574.574.5 | 297.5297.5297.5
 |T|𝑇|T| (All) | 94.794.794.7 | 158.2158.2158.2 | 99.799.799.7 | 47.447.447.4 | 76.876.876.8 | 356.1356.1356.1
 
-_Table_: 
+_Table_:
 Repository | Summary | License
 astropy/astropy | Astronomy and astrophysics core library | BSD 3-Clause
 django/django | Web framework for building web applications | BSD 3-Clause
@@ -595,7 +602,7 @@ sphinx-doc/sphinx | Library for creating documentation | Custom
 sympy/sympy | Computer algebra system written in Python | Custom
 pydata/xarray | N-D labeled arrays and datasets | Apache-2.0
 
-_Table_: 
+_Table_:
 Category | Count | Examples
 Bug | 442 | “Bug” (179); “type:bug” (114); “bug” (57); “type: bug” (48);
  |  | “Bug :beetle:” (23); “status: confirmed bug” (20);;
@@ -608,7 +615,7 @@ Other | 1641 | “help wanted” (71); “good first issue” (66); “printing�
  |  | “domains:py” (27); “core” (26); “sets” (23); “Wrong Result” (23);
  |  | “units” (22); “Good first issue” (21);
 
-_Table_: 
+_Table_:
 Model | Retrieval Setting | Generations | Applies | Fixed | Patch Fix %
 ChatGPT-3.5 | BM25 131313k | 229322932293 | 609609609 | 367367367 | 60.360.360.3%
 ChatGPT-3.5 | “Oracle” | 131513151315 | 513513513 | 229229229 | 44.644.644.6%
@@ -631,7 +638,7 @@ We include a repository-by-repository breakdown of model performance in Table 15
 
 _Figure_: Table 15: % Resolved for models per repository represented in SWE-bench.
 
-_Table_: 
+_Table_:
 Repo | Claude 2 | ChatGPT-3.5 | GPT-4 | SWE-Llama 131313b | SWE-Llama 777b
 astropy/astropy | 3.233.233.23 | 0.000.000.00 | 0.000.000.00 | 1.061.061.06 | 3.163.163.16
 django/django | 6.156.156.15 | 1.321.321.32 | 2.502.502.50 | 5.195.195.19 | 4.004.004.00
@@ -694,21 +701,27 @@ _Figure_: Table 24: This is an example where SWE-Llama13b writes an incorrect so
 
 _Figure_: Table 25: In this final example, SWE-Llama 13b not only does not solve the task, but also corrupts existing behavior in the model. This example demonstrates the need for models to understand the codebase beyond the scope of the required edits.
 
-_Table_: 
+_Table_:
 Setting
-• Model: Claude 2 with Oracle retrieval • Task Instance: scikit-learn__scikit-learn-13328 – Link to Issue: https://github.com/scikit-learn/scikit-learn/pull/13314 – Link to PR: https://github.com/scikit-learn/scikit-learn/issues/13328
+• Model: Claude 2 with Oracle retrieval • Task Instance: scikit-learn__scikit-learn-13328 – Link to Issue: <https://github.com/scikit-learn/scikit-learn/pull/13314> – Link to PR: <https://github.com/scikit-learn/scikit-learn/issues/13328>
 Issue
 TypeError when supplying a boolean X to HuberRegressor fit
+
 #### Description
+
 ‘TypeError’ when fitting ‘HuberRegressor’ with boolean predictors.
+
 #### Steps/Code to Reproduce ⬇ import numpy as np from sklearn.datasets import make_regression from sklearn.linear_model import HuberRegressor # Random data X, y, coef = make_regression(n_samples=200, n_features=2, noise=4.0, coef=True, random_state=0) X_bool = X > 0 X_bool_as_float = np.asarray(X_bool, dtype=float) ⬇ # Works huber = HuberRegressor().fit(X, y) # Fails (!) huber = HuberRegressor().fit(X_bool, y) # Also works huber = HuberRegressor().fit(X_bool_as_float, y) #### Expected Results
+
 No error is thrown when ‘dtype’ of ‘X’ is ‘bool’ (second line of code in the snipped above, .fit(X_bool, y) ). Boolean array is expected to be converted to ‘float’ by ‘HuberRegressor.fit’ as it is done by, say ‘LinearRegression’.
+
 #### Actual Results
+
 ‘TypeError‘ is thrown:
 (Remaining lines omitted)
 Gold Patch ⬇ diff --git a/sklearn/linear_model/huber.py b/sklearn/linear_model/huber.py --- a/sklearn/linear_model/huber.py +++ b/sklearn/linear_model/huber.py @@ -251,7 +251,8 @@ def fit(self, X, y, sample_weight=None): self : object """ ␣␣␣␣␣␣␣␣␣X,␣y␣=␣check_X_y( -␣␣␣␣␣␣␣␣␣␣␣␣X,␣y,␣copy=False,␣accept_sparse=[’csr’],␣y_numeric=True) +␣␣␣␣␣␣␣␣␣␣␣␣X,␣y,␣copy=False,␣accept_sparse=[’csr’],␣y_numeric=True, +␣␣␣␣␣␣␣␣␣␣␣␣dtype=[np.float64,␣np.float32]) ␣␣␣␣␣␣␣␣␣if␣sample_weight␣is␣not␣None: ␣␣␣␣␣␣␣␣␣␣␣␣␣sample_weight␣=␣np.array(sample_weight) ␣␣␣␣␣␣␣␣␣␣␣␣␣check_consistent_length(y,␣sample_weight)"
 
-_Table_: 
+_Table_:
 Model Generated Patch ⬇ --- a/sklearn/linear_model/huber.py +++ b/sklearn/linear_model/huber.py @@ -231,6 +231,9 @@ class HuberRegressor(LinearModel, RegressorMixin, BaseEstimator): self.tol = tol + def _validate_data(self, X, y=None): + return X.astype(np.float64) if X.dtype == np.bool else X + def fit(self, X, y, sample_weight=None): """Fit␣the␣model␣according␣to␣the␣given␣training␣data. @@␣-250,7␣+253,7␣@@␣class␣HuberRegressor(LinearModel,␣RegressorMixin,␣BaseEstimator): ␣␣␣␣␣␣␣␣␣------- ␣␣␣␣␣␣␣␣␣self␣:␣object ␣␣␣␣␣␣␣␣␣""" - X, y = check_X_y( + X, y = check_X_y( X, y, copy=False, accept_sparse=[’csr’], y_numeric=True) if sample_weight is not None: sample_weight = np.array(sample_weight) @@ -262,6 +265,9 @@ class HuberRegressor(LinearModel, RegressorMixin, BaseEstimator): raise ValueError( "epsilon␣should␣be␣greater␣than␣or␣equal␣to␣1.0,␣got␣%f" % self.epsilon) + + X = self._validate_data(X)
 Tests
 Fail to Pass (1)
@@ -722,20 +735,24 @@ sklearn/linear_model/tests/test_huber.py::test_huber_scaling_invariant
 Additional Pass to Pass Tests omitted…
 Discussion. In this task instance, the issue is describing an issue regarding how types are cast. Specifically, when When fitting the HuberRegressor model with boolean predictors, like X_bool , a TypeError occurs. This issue arises because the HuberRegressor does not automatically convert boolean arrays to floats as some other models do, such as LinearRegression , causing a type mismatch error. For its fix, the model defines its own _validate_data function, which encapsulates the type casting logic, and applies it to X . While it passes the tests, this fix could be more efficient and potentially introduces stylistic and organizational inconsistencies. As demonstrated in the reference solution, there is a much simpler solution of passing in dtype arguments that leverage the existing flags of the check_X_y function call to resolve this more cleanly. Other files’ content was not included in the oracle retrieval setting due to the context window limitation.
 
-_Table_: 
+_Table_:
 Setting
-• Model: Claude 2 with Oracle retrieval • Task Instance: matplotlib__matplotlib-24362 – Link to Issue: https://github.com/matplotlib/matplotlib/issues/24349 – Link to PR: https://github.com/matplotlib/matplotlib/pull/24362
+• Model: Claude 2 with Oracle retrieval • Task Instance: matplotlib__matplotlib-24362 – Link to Issue: <https://github.com/matplotlib/matplotlib/issues/24349> – Link to PR: <https://github.com/matplotlib/matplotlib/pull/24362>
 Issue
 [Bug]: sharex and sharey don’t accept 0 and 1 as bool values
+
 ### Bug summary
+
 When using ‘0‘ or ‘1‘ in place of ‘False‘ or ‘True‘ in ‘sharex‘ or ‘sharex‘ arguments of ‘pyplot.subplots‘ an error is raised.
+
 ### Code for reproduction ⬇ import matplotlib.pyplot as plt fig, ax = plt.subplots(ncols=2,sharey=1) ### Actual outcome
-We get the following error : ⬇ Traceback (most recent call last): (Earlier lines omitted) File "/***/matplotlib/lib/matplotlib/gridspec.py", line 293, in subplots _api.check_in_list(["all", "row", "col", "none"], File "/***/matplotlib/lib/matplotlib/_api/__init__.py", line 131, in check_in_list raise ValueError(msg) ValueError: 1 is not a valid value for sharey; supported values are ’all’, ’row’, ’col’, ’none’ Using ‘sharex‘ instead of ‘sharey‘ produces the same error (albeit with the following warning: ⬇ UserWarning: sharex argument to subplots() was an integer. Did you intend to use subplot() (without ’s’)? but this is expected and not part of the present issue) ### Expected outcome
+
+We get the following error : ⬇ Traceback (most recent call last): (Earlier lines omitted) File "/***/matplotlib/lib/matplotlib/gridspec.py", line 293, in subplots _api.check_in_list(["all", "row", "col", "none"], File "/***/matplotlib/lib/matplotlib/_api/**init**.py", line 131, in check_in_list raise ValueError(msg) ValueError: 1 is not a valid value for sharey; supported values are ’all’, ’row’, ’col’, ’none’ Using ‘sharex‘ instead of ‘sharey‘ produces the same error (albeit with the following warning: ⬇ UserWarning: sharex argument to subplots() was an integer. Did you intend to use subplot() (without ’s’)? but this is expected and not part of the present issue) ### Expected outcome
 I expected values 1 and 0 to be understood as bool.
 Model Generated Patch ⬇ diff --git a/lib/matplotlib/gridspec.py b/lib/matplotlib/gridspec.py index 06dd3f19f6..32ee7c306e 100644 --- a/lib/matplotlib/gridspec.py +++ b/lib/matplotlib/gridspec.py @@ -276,9 +276,9 @@ class GridSpecBase: raise ValueError("GridSpec.subplots()␣only␣works␣for␣GridSpecs␣" "created␣with␣a␣parent␣figure") - if isinstance(sharex, bool): + if isinstance(sharex, bool) or sharex == 1 or sharex == 0: sharex = "all" if sharex else "none" - if isinstance(sharey, bool): + if isinstance(sharey, bool) or sharey == 1 or sharey == 0: sharey = "all" if sharey else "none" # This check was added because it is very easy to type # ‘subplots(1, 2, 1)‘ when ‘subplot(1, 2, 1)‘ was intended.
 
-_Table_: 
-Gold Patch ⬇ diff --git a/lib/matplotlib/gridspec.py b/lib/matplotlib/gridspec.py --- a/lib/matplotlib/gridspec.py +++ b/lib/matplotlib/gridspec.py @@ -276,21 +276,12 @@ def subplots(self, *, sharex=False, sharey=False, squeeze=True, - if isinstance(sharex, bool): + if not isinstance(sharex, str): sharex = "all" if sharex else "none" - if isinstance(sharey, bool): + if not isinstance(sharey, str): sharey = "all" if sharey else "none" - # This check was added because it is very easy to type - # ‘subplots(1, 2, 1)‘ when ‘subplot(1, 2, 1)‘ was intended. - # In most cases, no error will ever occur, but mysterious behavior - # will result because what was intended to be the subplot index is - # instead treated as a bool for sharex. This check should go away - # once sharex becomes kwonly. - if isinstance(sharex, Integral): - _api.warn_external( - "sharex␣argument␣to␣subplots()␣was␣an␣integer.␣␣Did␣you␣" - "intend␣to␣use␣subplot()␣(without␣’s’)?") - _api.check_in_list(["all", "row", "col", "none"], + + _api.check_in_list(["all", "row", "col", "none", False, True], sharex=sharex, sharey=sharey)
+_Table_:
+Gold Patch ⬇ diff --git a/lib/matplotlib/gridspec.py b/lib/matplotlib/gridspec.py --- a/lib/matplotlib/gridspec.py +++ b/lib/matplotlib/gridspec.py @@ -276,21 +276,12 @@ def subplots(self, *, sharex=False, sharey=False, squeeze=True, - if isinstance(sharex, bool): + if not isinstance(sharex, str): sharex = "all" if sharex else "none" - if isinstance(sharey, bool): + if not isinstance(sharey, str): sharey = "all" if sharey else "none" - # This check was added because it is very easy to type - # ‘subplots(1, 2, 1)‘ when ‘subplot(1, 2, 1)‘ was intended. - # In most cases, no error will ever occur, but mysterious behavior - # will result because what was intended to be the subplot index is - # instead treated as a bool for sharex. This check should go away - # once sharex becomes kwonly. - if isinstance(sharex, Integral): - _api.warn_external( - "sharex␣argument␣to␣subplots()␣was␣an␣integer.␣␣Did␣you␣" - "intend␣to␣use␣subplot()␣(without␣’s’)?") - _api.check_in_list(["all", "row", "col", "none"], + +_api.check_in_list(["all", "row", "col", "none", False, True], sharex=sharex, sharey=sharey)
 Tests
 Fail to Pass (1)
 lib/matplotlib/tests/test_subplots.py::test_shared
@@ -748,19 +765,23 @@ lib/matplotlib/tests/test_subplots.py::test_subplots_offsettext[png]
 Additional Pass to Pass Tests omitted…
 Discussion. This example asks for 111 and 00 to be treated as boolean values for the sharex and sharey arguments of the pyplot.subplots function. The current code raises an error. In the generated patch, the model adds 111 and 00 as acceptable values. However, the gold patch adds the acceptable values into a list ["all", "row", "col", "none", False, True] . It also removes the Integral related warning tied to this issue. This clean up along with the clarity of the check_in_list argument makes the code more concise and readable.
 
-_Table_: 
+_Table_:
 Setting
-• Model: Claude 2 with Oracle retrieval • Task Instance: astropy__astropy-14365 – Link to Issue: https://github.com/astropy/astropy/issues/14363 – Link to PR: https://github.com/astropy/astropy/pull/14365
+• Model: Claude 2 with Oracle retrieval • Task Instance: astropy__astropy-14365 – Link to Issue: <https://github.com/astropy/astropy/issues/14363> – Link to PR: <https://github.com/astropy/astropy/pull/14365>
 Issue
 ascii.qdp Table format assumes QDP commands are upper case
+
 ### Description
+
 ascii.qdp assumes that commands in a QDP file are upper case, for example, for errors they must be “READ SERR 1 2” whereas QDP itself is not case sensitive and case use “read serr 1 2”. As many QDP files are created by hand, the expectation that all commands be all-caps should be removed.
+
 ### Expected behavior
+
 The following qdp file should read into a ‘Table‘ with errors, rather than crashing. ⬇ read serr 1 2 1 0.5 1 0.5 ### How to Reproduce Create a QDP file: ⬇ > cat > test.qdp read serr 1 2 1 0.5 1 0.5 <EOF> > python Python 3.10.9 (main, Dec 7 2022, 02:03:23) [Clang 13.0.0 (clang-1300.0.29.30)] on darwin Type "help", "copyright", "credits" or "license" for more information. >>> from astropy.table import Table >>> Table.read(’test.qdp’,format=’ascii.qdp’) WARNING: table_id not specified. Reading the first available table [astropy.io.ascii.qdp] Traceback (most recent call last): ... raise ValueError(f’Unrecognized␣QDP␣line:␣{line}’) ValueError: Unrecognized QDP line: read serr 1 2 Running “qdp test.qdp” works just fine.
 Model Generated Patch ⬇ --- a/astropy/io/ascii/qdp.py +++ b/astropy/io/ascii/qdp.py @@ -60,7 +60,7 @@ ValueError: Unrecognized QDP line... """ ␣␣␣␣␣_decimal_re␣=␣r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?" -␣␣␣␣_command_re␣=␣r"READ [TS]ERR(\s+[0-9]+)+" +␣␣␣␣_command_re␣=␣r"read [ts]err(\s+[0-9]+)+" ␣␣␣␣␣sep␣=␣delimiter ␣␣␣␣␣if␣delimiter␣is␣None:"
 
-_Table_: 
-Gold Patch ⬇ diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py --- a/astropy/io/ascii/qdp.py +++ b/astropy/io/ascii/qdp.py @@ -68,7 +68,7 @@ def _line_type(line, delimiter=None): _new_re = rf"NO({sep}NO)+" _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_decimal_re}|NO|[-+]?nan))*)" _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$" - _line_type_re = re.compile(_type_re) + _line_type_re = re.compile(_type_re, re.IGNORECASE) line = line.strip() if not line: return "comment" @@ -306,7 +306,7 @@ def _get_tables_from_qdp_file(qdp_file, input_colnames=None, delimiter=None): values = [] for v in line.split(delimiter): - if v == "NO": + if v.upper() == "NO": values.append(np.ma.masked) else: # Understand if number is int or float
+_Table_:
+Gold Patch ⬇ diff --git a/astropy/io/ascii/qdp.py b/astropy/io/ascii/qdp.py --- a/astropy/io/ascii/qdp.py +++ b/astropy/io/ascii/qdp.py @@ -68,7 +68,7 @@ def _line_type(line, delimiter=None): _new_re = rf"NO({sep}NO)+" _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_decimal_re}|NO|[-+]?nan))*)" _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$" - _line_type_re = re.compile(_type_re) +_line_type_re = re.compile(_type_re, re.IGNORECASE) line = line.strip() if not line: return "comment" @@ -306,7 +306,7 @@ def _get_tables_from_qdp_file(qdp_file, input_colnames=None, delimiter=None): values = [] for v in line.split(delimiter): - if v == "NO": + if v.upper() == "NO": values.append(np.ma.masked) else: # Understand if number is int or float
 Tests
 Fail to Pass (1)
 {rgb}{0,0,0}\pgfsys@color@rgb@stroke{0}{0}{0}\pgfsys@invoke{ }\pgfsys@color@rgb@fill{0}{0}{0}\pgfsys@invoke{ }\pgfsys@setlinewidth{0.4pt}\pgfsys@invoke{ }\nullfont\hbox to0.0pt{\pgfsys@beginscope\pgfsys@invoke{ }{}{}\pgfsys@setlinewidth{0.86111pt}\pgfsys@invoke{ }\color[rgb]{1,0,0}\definecolor[named]{pgfstrokecolor}{rgb}{1,0,0}\pgfsys@color@rgb@stroke{1}{0}{0}\pgfsys@invoke{ }\pgfsys@color@rgb@fill{1}{0}{0}\pgfsys@invoke{ }\definecolor[named]{pgffillcolor}{rgb}{1,0,0}{}{{}}{} {}{}{}{{}}{} {}{}{}\pgfsys@moveto{0.0pt}{0.0pt}\pgfsys@lineto{6.02776pt}{6.02776pt}\pgfsys@moveto{0.0pt}{6.02776pt}\pgfsys@lineto{6.02776pt}{0.0pt}\pgfsys@stroke\pgfsys@invoke{ } \pgfsys@invoke{\lxSVG@closescope }\pgfsys@endscope{}{}{}\hss}\pgfsys@discardpath\pgfsys@invoke{\lxSVG@closescope }\pgfsys@endscope\hss}}\lxSVG@closescope\endpgfpicture}}} astropy/io/ascii/tests/test_qdp.py::test_roundtrip[True]
@@ -774,14 +795,14 @@ astropy/io/ascii/tests/test_qdp.py::test_read_write_simple
 astropy/io/ascii/tests/test_qdp.py::test_read_write_simple_specify_name
 astropy/io/ascii/tests/test_qdp.py::test_get_lines_from_qdp
 
-_Table_: 
+_Table_:
 Setting
-• Model: Claude 2 with Oracle retrieval • Task Instance: mwaskom__seaborn-3217 – Link to Issue: https://github.com/mwaskom/seaborn/issues/2907 – Link to PR: https://github.com/mwaskom/seaborn/pull/3217
+• Model: Claude 2 with Oracle retrieval • Task Instance: mwaskom__seaborn-3217 – Link to Issue: <https://github.com/mwaskom/seaborn/issues/2907> – Link to PR: <https://github.com/mwaskom/seaborn/pull/3217>
 Issue
 Width computation after histogram slightly wrong with log scale Note the slight overlap here: ⬇ ( so.Plot(tips, "total_bill") .add(so.Bars(alpha=.3, edgewidth=0), so.Hist(bins=4)) .scale(x="log") ) ![image](https://user-images.githubusercontent.com/315810/178975852-d8fd830e-ae69-487d-be22-36531fca3f8f.png) It becomes nearly imperceptible with more bins: ⬇ ( so.Plot(tips, "total_bill") .add(so.Bars(alpha=.3, edgewidth=0), so.Hist(bins=8)) .scale(x="log") ) ![image](https://user-images.githubusercontent.com/315810/178976113-7026b3ae-0b87-48df-adc0-00e90d5aea94.png) This is not about ‘Bars‘; ‘Bar‘ has it too: ⬇ ( so.Plot(tips, "total_bill") .add(so.Bar(alpha=.3, edgewidth=0, width=1), so.Hist(bins=4)) .scale(x="log") ) ![image](https://user-images.githubusercontent.com/315810/178975910-484df65f-4ce6-482e-9992-5d02faf6b9ea.png)
 Model Generated Patch ⬇ --- a/seaborn/_core/plot.py +++ b/seaborn/_core/plot.py @@ -1327,9 +1327,7 @@ elif "width" in df: view_width = view_df["width"] else: - view_width = 0.8 # TODO what default? - spacing = scales[orient]._spacing(view_df.loc[view_idx, orient]) - width.loc[view_idx] = view_width * spacing + width.loc[view_idx] = view_width df["width"] = width if "baseline" in mark._mappable_props:
 
-_Table_: 
+_Table_:
 Gold Patch ⬇ diff --git a/seaborn/_core/plot.py b/seaborn/_core/plot.py --- a/seaborn/_core/plot.py +++ b/seaborn/_core/plot.py @@ -1377,10 +1377,9 @@ def _unscale_coords( - drop_cols = [*coord_cols, "width"] if "width" in df else coord_cols out_df = ( df - .drop(drop_cols, axis=1) + .drop(coord_cols, axis=1) .reindex(df.columns, axis=1) # So unscaled columns retain their place @@ -1396,12 +1395,6 @@ def _unscale_coords( - if var == orient and "width" in view_df: - width = view_df["width"] - out_df.loc[values.index, "width"] = ( - transform(values + width / 2) - transform(values - width / 2) - ) - return out_df diff --git a/seaborn/_marks/bar.py b/seaborn/_marks/bar.py --- a/seaborn/_marks/bar.py +++ b/seaborn/_marks/bar.py @@ -29,17 +29,23 @@ class BarBase(Mark): + transform = scales[orient]._matplotlib_scale.get_transform() + forward = transform.transform + reverse = transform.inverted().transform + + other = {"x": "y", "y": "x"}[orient] + + pos = reverse(forward(data[orient]) - data["width"] / 2) + width = reverse(forward(data[orient]) + data["width"] / 2) - pos + + val = (data[other] - data["baseline"]).to_numpy() + base = data["baseline"].to_numpy() + (Remaining lines omitted...)
 Tests
 Fail to Pass (1)
@@ -795,16 +816,16 @@ Pass to Pass (8)
 Additional Pass to Pass Tests omitted…
 Discussion. The baseline model’s inability to solve this issue can be directly attributed to a lack of an image input. We include this example to demonstrate that debugging real software issues may involve digesting images; this presents a whole separate body of understanding and reasoning-related challenges. Beyond the SWE-bench task, additional problems in software engineering, such as interpreting system design diagram, user interface specifications, and user feedback presents interesting vision-language challenges.
 
-_Table_: 
+_Table_:
 Setting
-• Model: Claude 2 with Oracle retrieval • Task Instance: sympy__sympy-18211 – Link to Issue: https://github.com/pylint-dev/pylint/issues/3525 – Link to PR: https://github.com/pylint-dev/pylint/pull/4703
+• Model: Claude 2 with Oracle retrieval • Task Instance: sympy__sympy-18211 – Link to Issue: <https://github.com/pylint-dev/pylint/issues/3525> – Link to PR: <https://github.com/pylint-dev/pylint/pull/4703>
 Issue
 Imports within TYPE_CHECKING can induce “cyclic-import”
 Suppose you have two modules: a.py and b.py. ‘a‘ imports ‘b‘, but ‘b‘ needs ‘a‘ in order to do type annotations, then this is usually done by importing ‘a‘ within a ‘TYPE_CHECKING‘ block. Unfortunately, this causes pylint to report ‘cyclic-import‘.
-Possibly related to https://github.com/PyCQA/pylint/issues/3285
-Gold Patch ⬇ diff --git a/pylint/checkers/imports.py b/pylint/checkers/imports.py --- a/pylint/checkers/imports.py +++ b/pylint/checkers/imports.py @@ -813,7 +813,9 @@ def _get_imported_module(self, importnode, modname): - def _add_imported_module(self, node, importedmodname): + def _add_imported_module( + self, node: Union[astroid.Import, astroid.ImportFrom], importedmodname: str + ) -> None: """notify␣an␣imported␣module,␣used␣to␣analyze␣dependencies""" module_file = node.root().file context_name = node.root().name @@ -826,6 +828,10 @@ def _add_imported_module(self, node, importedmodname): except ImportError: pass + in_type_checking_block = ( + isinstance(node.parent, astroid.If) and node.parent.is_typing_guard() + ) + if context_name == importedmodname: self.add_message("import-self", node=node) @@ -845,7 +851,10 @@ def _add_imported_module(self, node, importedmodname): # update import graph self.import_graph[context_name].add(importedmodname) - if not self.linter.is_message_enabled("cyclic-import", line=node.lineno): + if ( + not self.linter.is_message_enabled("cyclic-import", line=node.lineno) + or in_type_checking_block + ): self._excluded_edges[context_name].add(importedmodname)
+Possibly related to <https://github.com/PyCQA/pylint/issues/3285>
+Gold Patch ⬇ diff --git a/pylint/checkers/imports.py b/pylint/checkers/imports.py --- a/pylint/checkers/imports.py +++ b/pylint/checkers/imports.py @@ -813,7 +813,9 @@ def _get_imported_module(self, importnode, modname): - def_add_imported_module(self, node, importedmodname): + def _add_imported_module( + self, node: Union[astroid.Import, astroid.ImportFrom], importedmodname: str + ) -> None: """notify␣an␣imported␣module,␣used␣to␣analyze␣dependencies""" module_file = node.root().file context_name = node.root().name @@ -826,6 +828,10 @@ def_add_imported_module(self, node, importedmodname): except ImportError: pass + in_type_checking_block = ( + isinstance(node.parent, astroid.If) and node.parent.is_typing_guard() + ) + if context_name == importedmodname: self.add_message("import-self", node=node) @@ -845,7 +851,10 @@ def_add_imported_module(self, node, importedmodname): # update import graph self.import_graph[context_name].add(importedmodname) - if not self.linter.is_message_enabled("cyclic-import", line=node.lineno): + if ( + not self.linter.is_message_enabled("cyclic-import", line=node.lineno) + or in_type_checking_block + ): self._excluded_edges[context_name].add(importedmodname)
 
-_Table_: 
+_Table_:
 Model Generated Patch ⬇ diff --git a/pylint/checkers/imports.py b/pylint/checkers/imports.py index 4f3eed2..2b74a8d 100644 --- a/pylint/checkers/imports.py +++ b/pylint/checkers/imports.py @@ -49,6 +49,7 @@ import copy import os import sys from distutils import sysconfig +from typing import TYPE_CHECKING from typing import Dict, List, Union import astroid @@ -61,6 +62,9 @@ from pylint.checkers.utils import ( node_ignores_exception, ) from pylint.exceptions import EmptyReportError +if TYPE_CHECKING: + from pylint.lint import PyLinter + from pylint.graph import DotBackend, get_cycles from pylint.interfaces import IAstroidChecker from pylint.reporters.ureports.nodes import Paragraph, VerbatimText, VNode
 Tests
 Fail to Pass (1)
@@ -818,15 +839,15 @@ tests/test_func.py::test_functionality[func_w0401_package]
 Additional Pass to Pass Tests omitted…
 Discussion. In this problem, the model is being asked to provide TYPE_CHECKING based handling for resolving cyclic imports, which pylint currently throws an error for. The gold patch has a detailed solution that involves conditional handling within the TYPE_CHECKING block, excludes the cyclic import messages, and has generally more specific handling. The model generated patch employs a “Stack Overlow” like solution; while creating a TYPE_CHECKING block is a popular solution for resolving imports, solving this issue for the codebase in particular requires a more nuanced solution than a general answer that may be available online.
 
-_Table_: 
+_Table_:
 Setting
-• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: pydata__xarray-5131 – Link to Issue: https://github.com/pydata/xarray/pull/5130 – Link to PR: https://github.com/pydata/xarray/pull/5131
+• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: pydata__xarray-5131 – Link to Issue: <https://github.com/pydata/xarray/pull/5130> – Link to PR: <https://github.com/pydata/xarray/pull/5131>
 Issue
 When displaying a DatasetGroupBy in an interactive Python session, the first line of output contains a trailing whitespace. The first example in the documentation demonstrate this: ⬇ >>> import xarray as xr, numpy as np >>> ds = xr.Dataset( ... {"foo": (("x", "y"), np.random.rand(4, 3))}, ... coords={"x": [10, 20, 30, 40], "letters": ("x", list("abba"))}, ... ) >>> ds.groupby("letters") DatasetGroupBy, grouped over ’letters’ 2 groups with labels ’a’, ’b’. There is a trailing whitespace in the first line of output which is ”DatasetGroupBy, grouped over ‘letters’ ”. This can be seen more clearly by converting the object to a string (note the whitespace before n ): ⬇ >>> str(ds.groupby("letters")) "DatasetGroupBy,␣grouped␣over␣’letters’␣\n2␣groups␣with␣labels␣’a’,␣’b’." While this isn’t a problem in itself, it causes an issue for us because we use flake8 in continuous integration to verify that our code is correctly formatted… [20 more lines]
-Gold Patch ⬇ diff --git a/xarray/core/groupby.py b/xarray/core/groupby.py --- a/xarray/core/groupby.py +++ b/xarray/core/groupby.py @@ -436,7 +436,7 @@ def __iter__(self): return zip(self._unique_coord.values, self._iter_grouped()) def __repr__(self): - return "{},␣grouped␣over␣{!r}␣␣groups␣with␣labels␣{}.".format( + return "{},␣grouped␣over␣{!r}␣groups␣with␣labels␣{}.".format( self.__class__.__name__,
-Model Generated Patch ⬇ diff --git a/xarray/core/groupby.py b/xarray/core/groupby.py --- a/xarray/core/groupby.py +++ b/xarray/core/groupby.py @@ -436,7 +436,7 @@ def __iter__(self): return zip(self._unique_coord.values, self._iter_grouped()) def __repr__(self): - return "{},␣grouped␣over␣{!r}␣␣groups␣with␣labels␣{}.".format( + return "{},␣grouped␣over␣{!r}␣groups␣with␣labels␣{}.".format( self.__class__.__name__,
+Gold Patch ⬇ diff --git a/xarray/core/groupby.py b/xarray/core/groupby.py --- a/xarray/core/groupby.py +++ b/xarray/core/groupby.py @@ -436,7 +436,7 @@ def **iter**(self): return zip(self._unique_coord.values, self._iter_grouped()) def **repr**(self): - return "{},␣grouped␣over␣{!r}␣␣groups␣with␣labels␣{}.".format( + return "{},␣grouped␣over␣{!r}␣groups␣with␣labels␣{}.".format( self.**class**.**name**,
+Model Generated Patch ⬇ diff --git a/xarray/core/groupby.py b/xarray/core/groupby.py --- a/xarray/core/groupby.py +++ b/xarray/core/groupby.py @@ -436,7 +436,7 @@ def **iter**(self): return zip(self._unique_coord.values, self._iter_grouped()) def **repr**(self): - return "{},␣grouped␣over␣{!r}␣␣groups␣with␣labels␣{}.".format( + return "{},␣grouped␣over␣{!r}␣groups␣with␣labels␣{}.".format( self.**class**.**name**,
 
-_Table_: 
+_Table_:
 Tests
 Fail to Pass (10)
 xarray/tests/test_groupby.py::test_groupby_repr[obj0-x]
@@ -846,16 +867,16 @@ xarray/tests/test_groupby.py::test_groupby_duplicate_coordinate_labels
 xarray/tests/test_groupby.py::test_groupby_input_mutation
 xarray/tests/test_groupby.py::test_groupby_map_shrink_groups[obj0]
 Additional Pass to Pass Tests omitted…
-Discussion. In this problem, the model is asked to correct a trailing whitespace issue, and the issue shows a demonstration of the error that arises during usage, but does not explicitly point out the function to fix in the model. In the oracle retrieval setting, the model is given the xarray/core/groupby.py file to edit directly, but most locate the line to edit. In this situation, the model successfully reasons that in the interactive Python setting, the underlying function that is being invoked is actually the __repr__ function. After locating the function, it must figure out where in the return statement the whitespace is located. At this point, the fix is quite evident, as there is an explicit space that the model removes. In this case, the model successfully passes all tests for verifying the correctness of this fix explicitly (10 fail to pass tests) while also maintaining the existing behavior of the file (16 pass to pass tests).
+Discussion. In this problem, the model is asked to correct a trailing whitespace issue, and the issue shows a demonstration of the error that arises during usage, but does not explicitly point out the function to fix in the model. In the oracle retrieval setting, the model is given the xarray/core/groupby.py file to edit directly, but most locate the line to edit. In this situation, the model successfully reasons that in the interactive Python setting, the underlying function that is being invoked is actually the **repr** function. After locating the function, it must figure out where in the return statement the whitespace is located. At this point, the fix is quite evident, as there is an explicit space that the model removes. In this case, the model successfully passes all tests for verifying the correctness of this fix explicitly (10 fail to pass tests) while also maintaining the existing behavior of the file (16 pass to pass tests).
 
-_Table_: 
+_Table_:
 Setting
-• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: psf__requests-1724 – Link to Issue: https://github.com/psf/requests/issues/1723 – Link to PR: https://github.com/psf/requests/pull/1724
+• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: psf__requests-1724 – Link to Issue: <https://github.com/psf/requests/issues/1723> – Link to PR: <https://github.com/psf/requests/pull/1724>
 Issue
-Unicode method names cause UnicodeDecodeError for some requests in Python 2.7.2 The following example works fine: ⬇ files = {u’file’: open(u’/usr/bin/diff’, u’rb’)} response = requests.request(method=’POST’, url=u’http://httpbin.org/post’, files=files) But the following example (using ‘method=u’POST’‘ instead of ‘method=’POST’‘) produces a UnicodeDecodeError: ⬇ files = {u’file’: open(u’/usr/bin/diff’, u’rb’)} response = requests.request(method=u’POST’, url=u’http://httpbin.org/post’, files=files) ⬇ Traceback (most recent call last): [Full stack trace hidden] File "/System/Library/Frameworks/Python.framework/Versions/2.7/... ␣␣␣␣msg␣+=␣message_body UnicodeDecodeError:␣’ascii’␣codec␣can’t␣decode␣byte␣0xcf␣in␣position␣140: ␣␣␣␣ordinal␣not␣in␣range(128)" My guess is that ‘u’POST’‘ is infecting the header with unicode when it should be a string. This is because ‘sessions.py:313‘ is simply: ⬇ req.method = method.upper() [Additional lines hidden…]
+Unicode method names cause UnicodeDecodeError for some requests in Python 2.7.2 The following example works fine: ⬇ files = {u’file’: open(u’/usr/bin/diff’, u’rb’)} response = requests.request(method=’POST’, url=u’<http://httpbin.org/post’>, files=files) But the following example (using ‘method=u’POST’‘ instead of ‘method=’POST’‘) produces a UnicodeDecodeError: ⬇ files = {u’file’: open(u’/usr/bin/diff’, u’rb’)} response = requests.request(method=u’POST’, url=u’<http://httpbin.org/post’>, files=files) ⬇ Traceback (most recent call last): [Full stack trace hidden] File "/System/Library/Frameworks/Python.framework/Versions/2.7/... ␣␣␣␣msg␣+=␣message_body UnicodeDecodeError:␣’ascii’␣codec␣can’t␣decode␣byte␣0xcf␣in␣position␣140: ␣␣␣␣ordinal␣not␣in␣range(128)" My guess is that ‘u’POST’‘ is infecting the header with unicode when it should be a string. This is because ‘sessions.py:313‘ is simply: ⬇ req.method = method.upper() [Additional lines hidden…]
 Gold Patch ⬇ diff --git a/requests/sessions.py b/requests/sessions.py --- a/requests/sessions.py +++ b/requests/sessions.py @@ -12,7 +12,7 @@ from collections import Mapping from datetime import datetime -from .compat import cookielib, OrderedDict, [3 more omitted] +from .compat import cookielib, OrderedDict, [3 omitted, + builtin_str from .cookies import cookiejar_from_dict, extract_cookies_to_jar, RequestsCookieJar from .models import Request, PreparedRequest from .hooks import default_hooks, dispatch_hook @@ -309,6 +309,9 @@ def request(self, method, url, :param cert: (optional) if String, path to ssl client cert file (.pem). If Tuple, (’cert’, ’key’) pair. """ + +␣␣␣␣␣␣␣␣method␣=␣builtin_str(method)"
 
-_Table_: 
+_Table_:
 Model Generated Patch ⬇ diff --git a/requests/sessions.py b/requests/sessions.py --- a/requests/sessions.py +++ b/requests/sessions.py @@ -254,7 +254,7 @@ def prepare_request(self, request): p = PreparedRequest() p.prepare( - method=request.method.upper(), + method=str(request.method).upper(), url=request.url, files=request.files, data=request.data,
 Tests
 Fail to Pass (6)
@@ -873,23 +894,26 @@ test_requests.py::RequestsTestCase::test_HTTP_200_OK_HEAD
 Additional Pass to Pass Tests omitted…
 Discussion. Unlike the problem presented in Table 21, instead of an interactive python input, the model is given an error trace from a function invocation, where the steps to recreate the problem from a user’s standpoint is offered. In addition, the issue also provides a suggestion during the last line on a potential fix for the problem. Once again in the oracle setting, the model takes advantage of the natural language suggestion and localizes the change to a line that is semantically quite similar to the suggestion ( req.method = method.upper() compared to method=str(request.method).upper() . The model correctly addresses the issue, as reflected by all the passing tests. However, in this situation, we can see that the model is actually quite “lucky” in its success. First, while the gold patch leverages built in functions that are used for uniformity in handling string formatting, the model’s decision to use more primitive Python to tackle this issue would likely not be well-received by a human reviewer due to its inconsistency with the rest of the codebase. Further inspection of the builtin_str function, not shown in this figure, also reveals that it handles additional string formatting cases beyond what was portrayed in the issue. While the model solves the task this time, it is questionable whether this solution is robust to future issues.
 
-_Table_: 
+_Table_:
 Setting
-• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: django__django-11727 – Link to Issue: https://code.djangoproject.com/ticket/29376 – Link to PR: https://github.com/django/django/pull/11727
+• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: django__django-11727 – Link to Issue: <https://code.djangoproject.com/ticket/29376> – Link to PR: <https://github.com/django/django/pull/11727>
 Issue
 Allow hiding the ”Save and Add Another” button with a show_save_and_add_another context variable
 To provide better adjustability, to introduce new context var - show_save_and_add_another .
 E.g. if I want to hide button ”Save and add another”, I can just modify extra_context - write False to the variable. For other buttons - ”Save” and ”Save and continue editing”, this already works exactly in this manner.
 Gold Patch ⬇ diff --git a/django/contrib/admin/templatetags/admin_modify.py b/django/... --- a/django/contrib/admin/templatetags/admin_modify.py +++ b/django/contrib/admin/templatetags/admin_modify.py @@ -54,12 +54,20 @@ def submit_row(context): is_popup = context[’is_popup’] save_as = context[’save_as’] show_save = context.get(’show_save’, True) + show_save_and_add_another = context.get(’show_save_and_add_another’, True) (7 lines omitted...) or (has_add_permission and add) or has_editable_inline_admin_formsets + can_save_and_add_another = ( + has_add_permission and + not is_popup and + (not save_as or add) and + can_save and + show_save_and_add_another + ) can_save_and_continue = not is_popup and can_save and has_view_permission and show_save_and_continue can_change = has_change_permission or has_editable_inline_admin_formsets ctx = Context(context) @@ -70,10 +78,7 @@ def submit_row(context): change and context.get(’show_delete’, True) ), ’show_save_as_new’: not is_popup and has_change_permission and change and save_as, - ’show_save_and_add_another’: ( - has_add_permission and not is_popup and - (not save_as or add) and can_save - ), + ’show_save_and_add_another’: can_save_and_add_another, ’show_save_and_continue’: can_save_and_continue, ’show_save’: show_save and can_save,
 
-_Table_: 
+_Table_:
 Setting
-• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: sphinx-doc__sphinx-11445 – Link to Issue: https://github.com/sphinx-doc/sphinx/issues/11437 – Link to PR: https://github.com/sphinx-doc/sphinx/pull/11445
+• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: sphinx-doc__sphinx-11445 – Link to Issue: <https://github.com/sphinx-doc/sphinx/issues/11437> – Link to PR: <https://github.com/sphinx-doc/sphinx/pull/11445>
 Issue
 Using rst_prolog removes top level headings containing a domain directive
+
 ### Describe the bug If rst_prolog is set, then any documents that contain a domain directive as the first heading (eg :mod: ) do not render the heading correctly or include the heading in the toctree. In the example below, if the heading of docs/mypackage.rst were mypackage2 instead of :mod:mypackage2 then the heading displays correctly. Similarly, if you do not set rst_prolog then the heading will display correctly. This appears to have been broken for some time because I can reproduce it in v4.0.0 of Sphinx
+
 ### How to Reproduce ⬇ $ sphinx-quickstart --no-sep --project mypackage --author me -v 0.1.0 --release 0.1.0 --language en docs $ echo -e ’Welcome\n=======\n\n..␣toctree::\n\n␣␣␣mypackage\n’ > docs/index.rst $ echo -e ’:mod:‘mypackage2‘\n=================\n\nContent\n\n ␣␣␣␣␣␣␣␣Subheading\n----------\n’ > docs/mypackage.rst $ echo -e ’rst_prolog␣=␣"""\n..␣|psf|␣replace::␣Python␣Software ␣␣␣␣␣␣␣␣Foundation\n"""\n’ >> docs/conf.py $ sphinx-build -b html . _build $ grep ’mypackage2’ docs/_build/index.html
-Model Generated Patch ⬇ diff --git a/sphinx/util/rst.py b/sphinx/util/rst.py --- a/sphinx/util/rst.py +++ b/sphinx/util/rst.py @@ -25,7 +25,7 @@ logger = logging.getLogger(__name__) -docinfo_re = re.compile(’:\\w+:.*?’) +docinfo_re = re.compile(’:\\w+:.*?\n’) symbols_re = re.compile(r’([!-\-/:-@\[-‘{-~])’) SECTIONING_CHARS = [’=’, ’-’, ’~’]
+
+Model Generated Patch ⬇ diff --git a/sphinx/util/rst.py b/sphinx/util/rst.py --- a/sphinx/util/rst.py +++ b/sphinx/util/rst.py @@ -25,7 +25,7 @@ logger = logging.getLogger(**name**) -docinfo_re = re.compile(’:\\w+:.*?’) +docinfo_re = re.compile(’:\\w+:.*?\n’) symbols_re = re.compile(r’([!-\-/:-@\[-‘{-~])’) SECTIONING_CHARS = [’=’, ’-’, ’~’]
 Tests
 Fail to Pass (2)
 {rgb}{0,0,0}\pgfsys@color@rgb@stroke{0}{0}{0}\pgfsys@invoke{ }\pgfsys@color@rgb@fill{0}{0}{0}\pgfsys@invoke{ }\pgfsys@setlinewidth{0.4pt}\pgfsys@invoke{ }\nullfont\hbox to0.0pt{\pgfsys@beginscope\pgfsys@invoke{ }{}{}\pgfsys@setlinewidth{0.86111pt}\pgfsys@invoke{ }\color[rgb]{1,0,0}\definecolor[named]{pgfstrokecolor}{rgb}{1,0,0}\pgfsys@color@rgb@stroke{1}{0}{0}\pgfsys@invoke{ }\pgfsys@color@rgb@fill{1}{0}{0}\pgfsys@invoke{ }\definecolor[named]{pgffillcolor}{rgb}{1,0,0}{}{{}}{} {}{}{}{{}}{} {}{}{}\pgfsys@moveto{0.0pt}{0.0pt}\pgfsys@lineto{6.02776pt}{6.02776pt}\pgfsys@moveto{0.0pt}{6.02776pt}\pgfsys@lineto{6.02776pt}{0.0pt}\pgfsys@stroke\pgfsys@invoke{ } \pgfsys@invoke{\lxSVG@closescope }\pgfsys@endscope{}{}{}\hss}\pgfsys@discardpath\pgfsys@invoke{\lxSVG@closescope }\pgfsys@endscope\hss}}\lxSVG@closescope\endpgfpicture}}} tests/test_util_rst.py::test_prepend_prolog_with_roles_with_newline
@@ -900,32 +924,40 @@ tests/test_util_rst.py::test_prepend_prolog_with_CR
 tests/test_util_rst.py::test_prepend_prolog_without_CR
 Additional Pass to Pass Tests omitted…
 
-_Table_: 
-Gold Patch ⬇ diff --git a/sphinx/util/rst.py b/sphinx/util/rst.py --- a/sphinx/util/rst.py +++ b/sphinx/util/rst.py @@ -10,22 +10,17 @@ from docutils.parsers.rst import roles from docutils.parsers.rst.languages import en as english +from docutils.parsers.rst.states import Body from docutils.statemachine import StringList from docutils.utils import Reporter -from jinja2 import Environment +from jinja2 import Environment, pass_environment from sphinx.locale import __ from sphinx.util import docutils, logging -try: - from jinja2.utils import pass_environment -except ImportError: - from jinja2 import environmentfilter as pass_environment - - logger = logging.getLogger(__name__) -docinfo_re = re.compile(’:\\w+:.*?’) +FIELD_NAME_RE = re.compile(Body.patterns[’field_marker’]) symbols_re = re.compile(r’([!-\-/:-@\[-‘{-~])’) # symbols without dot(0x2e) SECTIONING_CHARS = [’=’, ’-’, ’~’] @@ -80,7 +75,7 @@ def prepend_prolog(content: StringList, prolog: str) -> None: if prolog: pos = 0 for line in content: - if docinfo_re.match(line): + if FIELD_NAME_RE.match(line): pos += 1 else: break @@ -91,6 +86,7 @@ def prepend_prolog(content: StringList, prolog: str) -> None: pos += 1 # insert prolog (after docinfo if exists) + lineno = 0 for lineno, line in enumerate(prolog.splitlines()): content.insert(pos + lineno, line, ’<rst_prolog>’, lineno)
+_Table_:
+Gold Patch ⬇ diff --git a/sphinx/util/rst.py b/sphinx/util/rst.py --- a/sphinx/util/rst.py +++ b/sphinx/util/rst.py @@ -10,22 +10,17 @@ from docutils.parsers.rst import roles from docutils.parsers.rst.languages import en as english +from docutils.parsers.rst.states import Body from docutils.statemachine import StringList from docutils.utils import Reporter -from jinja2 import Environment +from jinja2 import Environment, pass_environment from sphinx.locale import __ from sphinx.util import docutils, logging -try: - from jinja2.utils import pass_environment -except ImportError: - from jinja2 import environmentfilter as pass_environment - - logger = logging.getLogger(**name**) -docinfo_re = re.compile(’:\\w+:.*?’) +FIELD_NAME_RE = re.compile(Body.patterns[’field_marker’]) symbols_re = re.compile(r’([!-\-/:-@\[-‘{-~])’) # symbols without dot(0x2e) SECTIONING_CHARS = [’=’, ’-’, ’~’] @@ -80,7 +75,7 @@ def prepend_prolog(content: StringList, prolog: str) -> None: if prolog: pos = 0 for line in content: - if docinfo_re.match(line): + if FIELD_NAME_RE.match(line): pos += 1 else: break @@ -91,6 +86,7 @@ def prepend_prolog(content: StringList, prolog: str) -> None: pos += 1 # insert prolog (after docinfo if exists) + lineno = 0 for lineno, line in enumerate(prolog.splitlines()): content.insert(pos + lineno, line, ’<rst_prolog>’, lineno)
 Discussion. For this task instance from the sphinx-doc/sphinx repository, a model is asked to write logic to fix a case where the title is incorrectly being rendered. Simply understanding the jargon being used and mapping such words to logic within the codebase is a significant challenge faced by the model. The model is given a command line call that can help with this, but grounding the terminology presented in the issues within the codebase is essential. From comparing the gold patch and model generated patch, it is clear that the model does not come close to solving the task. The model does generally identify that fixing the regex pattern is the correct action, as this is what the gold patch does, too. However, where the model and oracle retrieval setting collectively fall short is mainly due to the significant use of additional modules from both the codebase itself and third party libraries. This example highlights the importance and potential for training language models and designing inference procedures that allow for the automated discovery of such information.
 
-_Table_: 
+_Table_:
 Setting
-• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: scikit-learn__scikit-learn-13241 – Link to Issue: https://github.com/scikit-learn/scikit-learn/issues/8798 – Link to PR: https://github.com/scikit-learn/scikit-learn/pull/13241
+• Model: SWE-Llama 13B with Oracle retrieval • Task Instance: scikit-learn__scikit-learn-13241 – Link to Issue: <https://github.com/scikit-learn/scikit-learn/issues/8798> – Link to PR: <https://github.com/scikit-learn/scikit-learn/pull/13241>
 Issue
 Differences among the results of KernelPCA with rbf kernel
+
 #### Description
+
 When I run KernelPCA for dimension reduction for the same datasets, the results are different in signs.
+
 #### Steps/Code to Reproduce
+
 Just to reduce the dimension to 7 with rbf kernel:
 pca = KernelPCA(n_components=7, kernel=’rbf’, copy_X=False, n_jobs=-1)
 pca.fit_transform(X)
+
 #### Expected Results
+
 The same result.
+
 #### Actual Results
+
 The results are the same except for their signs:
 [[-0.44457 -0.18155 -0.10873 0.13548 -0.14371 -0.05746 0.18124]]
 [[ 0.44457 0.18155 0.10873 -0.13548 -0.14371 -0.05746 -0.18124]]
 [[-0.44457 -0.18155 0.10873 0.13548 0.14371 0.057469 0.18124]]
-Gold Patch ⬇ diff --git a/sklearn/decomposition/kernel_pca.py b/sklearn/decompos... --- a/sklearn/decomposition/kernel_pca.py +++ b/sklearn/decomposition/kernel_pca.py @@ -8,6 +8,7 @@ from scipy.sparse.linalg import eigsh from ..utils import check_random_state +from ..utils.extmath import svd_flip from ..utils.validation import check_is_fitted, check_array from ..exceptions import NotFittedError from ..base import BaseEstimator, TransformerMixin, _UnstableOn32BitMixin @@ -210,6 +211,10 @@ def _fit_transform(self, K): maxiter=self.max_iter, v0=v0) + # flip eigenvectors’ sign to enforce deterministic output + self.alphas_, _ = svd_flip(self.alphas_, + np.empty_like(self.alphas_).T) + # sort eigenvectors in descending order indices = self.lambdas_.argsort()[::-1] self.lambdas_ = self.lambdas_[indices]
+Gold Patch ⬇ diff --git a/sklearn/decomposition/kernel_pca.py b/sklearn/decompos... --- a/sklearn/decomposition/kernel_pca.py +++ b/sklearn/decomposition/kernel_pca.py @@ -8,6 +8,7 @@ from scipy.sparse.linalg import eigsh from ..utils import check_random_state +from ..utils.extmath import svd_flip from ..utils.validation import check_is_fitted, check_array from ..exceptions import NotFittedError from ..base import BaseEstimator, TransformerMixin, _UnstableOn32BitMixin @@ -210,6 +211,10 @@ def _fit_transform(self, K): maxiter=self.max_iter, v0=v0) + # flip eigenvectors’ sign to enforce deterministic output + self.alphas_, _ = svd_flip(self.alphas_, + np.empty_like(self.alphas_).T) + # sort eigenvectors in descending order indices = self.lambdas_.argsort()[::-1] self.lambdas_= self.lambdas_[indices]
 
-_Table_: 
-Model Generated Patch ⬇ diff --git a/sklearn/decomposition/kernel_pca.py b/sklearn/decompos... --- a/sklearn/decomposition/kernel_pca.py +++ b/sklearn/decomposition/kernel_pca.py @@ -220,7 +220,7 @@ def _fit_transform(self, K): self.alphas_ = self.alphas_[:, self.lambdas_ > 0] self.lambdas_ = self.lambdas_[self.lambdas_ > 0] - return K + return K / self.lambdas_ def _fit_inverse_transform(self, X_transformed, X): if hasattr(X, "tocsr"):
+_Table_:
+Model Generated Patch ⬇ diff --git a/sklearn/decomposition/kernel_pca.py b/sklearn/decompos... --- a/sklearn/decomposition/kernel_pca.py +++ b/sklearn/decomposition/kernel_pca.py @@ -220,7 +220,7 @@ def _fit_transform(self, K): self.alphas_ = self.alphas_[:, self.lambdas_> 0] self.lambdas_ = self.lambdas_[self.lambdas_ > 0] - return K + return K / self.lambdas_def_fit_inverse_transform(self, X_transformed, X): if hasattr(X, "tocsr"):
 Tests
 Fail to Pass (1)
 {rgb}{0,0,0}\pgfsys@color@rgb@stroke{0}{0}{0}\pgfsys@invoke{ }\pgfsys@color@rgb@fill{0}{0}{0}\pgfsys@invoke{ }\pgfsys@setlinewidth{0.4pt}\pgfsys@invoke{ }\nullfont\hbox to0.0pt{\pgfsys@beginscope\pgfsys@invoke{ }{}{}\pgfsys@setlinewidth{0.86111pt}\pgfsys@invoke{ }\color[rgb]{1,0,0}\definecolor[named]{pgfstrokecolor}{rgb}{1,0,0}\pgfsys@color@rgb@stroke{1}{0}{0}\pgfsys@invoke{ }\pgfsys@color@rgb@fill{1}{0}{0}\pgfsys@invoke{ }\definecolor[named]{pgffillcolor}{rgb}{1,0,0}{}{{}}{} {}{}{}{{}}{} {}{}{}\pgfsys@moveto{0.0pt}{0.0pt}\pgfsys@lineto{6.02776pt}{6.02776pt}\pgfsys@moveto{0.0pt}{6.02776pt}\pgfsys@lineto{6.02776pt}{0.0pt}\pgfsys@stroke\pgfsys@invoke{ } \pgfsys@invoke{\lxSVG@closescope }\pgfsys@endscope{}{}{}\hss}\pgfsys@discardpath\pgfsys@invoke{\lxSVG@closescope }\pgfsys@endscope\hss}}\lxSVG@closescope\endpgfpicture}}} sklearn/tests/test_kernel_pca.py::test_kernel_pca_deterministic_output
@@ -944,4 +976,4 @@ sklearn/tests/test_pca.py::test_pca_dtype_preservation[randomized]
 sklearn/tests/test_pca.py::test_pca_dtype_preservation[auto]
 sklearn/tests/test_pca.py::test_pca_deterministic_output
 Additional Pass to Pass Tests omitted…
-Discussion. In this example from the scikit-learn/scikit-learn library, a model is given an observation that the parities of the output from a call to the fit_transform function are flipped. The model is also given lines of Python code and its standard output that recreates the issue. The gold patch imports and uses the svd_flip function to solve this issue within a different line of the _fit_transform function. What’s different about the model’s failure for this task beyond the points discussed for the Table 24 example is that, in addition to understanding third party dependencies that its edits rely on, it is also important for a model to understand what other parts of the codebase in turn depend on the function it is changing. This example presents a different facet as to why processing long contexts extend beyond the local edit scope is a difficult but worthwhile challenge.
+Discussion. In this example from the scikit-learn/scikit-learn library, a model is given an observation that the parities of the output from a call to the fit_transform function are flipped. The model is also given lines of Python code and its standard output that recreates the issue. The gold patch imports and uses the svd_flip function to solve this issue within a different line of the_fit_transform function. What’s different about the model’s failure for this task beyond the points discussed for the Table 24 example is that, in addition to understanding third party dependencies that its edits rely on, it is also important for a model to understand what other parts of the codebase in turn depend on the function it is changing. This example presents a different facet as to why processing long contexts extend beyond the local edit scope is a difficult but worthwhile challenge.

@@ -96,6 +96,7 @@
 | `uv run pytest` 中 `test_reference_solution_passes` 失败 | `uv run` 会根据 `uv.lock` 把手动 `uv pip install -e` 的本地 piki/adl 回退到 git 版 | 在 `pyproject.toml` 增加 `[tool.uv.sources]`，将 `adl`/`piki` 指向 `../piki/adl` 和 `../piki` 的 editable 路径，并重新 `uv lock` |
 
 验证结果：
+
 - `tasks/telecom/*/solution` 全部 `piki check` 通过（0 错误，30 规则全绿）。
 - `uv run pytest tests/ -q`：49/49 通过。
 - `uv run piki check ...` 与 `.venv/bin/piki check ...` 行为一致。
@@ -144,6 +145,7 @@
 | `kimi` repair | Turn 0 超时/挂起，已停止 |
 
 **关键观察**：
+
 1. Repair loop 工具本身跑通了：评分 → 生成诊断 → 重新 prompt → 再评分 → 记录终止原因。
 2. DeepSeek Flash 能力偏弱，不适合作为 FSE 论文主实验的主力模型；主实验改用 Kimi 与 DeepSeek Pro。
 3. 当 Agent 输出导致 piki 内部异常时，诊断里会混入 traceback，已优化 repair prompt 只抽取 `rule_id`/`name`/`message`/`file`。
