@@ -138,13 +138,6 @@ class Settings:
         default_factory=lambda: _env_str("SD_HWE_KIMI_MODEL", "kimi-code/kimi-for-coding")
     )
 
-    GEMINI_BIN: str = field(default_factory=lambda: _env_str("SD_HWE_GEMINI_BIN", "gemini"))
-    DEFAULT_GEMINI_MODEL: str = field(
-        default_factory=lambda: _env_str("SD_HWE_GEMINI_MODEL", "gemini-2.5-flash")
-    )
-    GEMINI_GIT_TIMEOUT_S: int = field(
-        default_factory=lambda: _env_int("SD_HWE_GEMINI_GIT_TIMEOUT_S", 10)
-    )
 
     CODEX_BIN: str = field(default_factory=lambda: _env_str("SD_HWE_CODEX_BIN", "codex"))
     DEFAULT_CODEX_MODEL: str = field(
@@ -191,24 +184,23 @@ class Settings:
         default_factory=lambda: _env_json(
             "SD_HWE_LAYER_WEIGHTS",
             {
+                # L0-L5: unified QA layers. L6 reserved for future FEM/CFD.
                 "L0": 0.0,
                 "L1": 0.10,
-                "L2a": 0.05,
-                "L2b": 0.05,
-                "L2c": 0.05,
+                "L2": 0.15,
                 "L3": 0.40,
-                "L4": 0.20,
-                "L5": 0.0,
+                "L4": 0.15,
+                "L5": 0.20,
                 "L6": 0.0,
             },
         )
     )
     DELIVERABLE_WEIGHT: float = field(
-        default_factory=lambda: _env_float("SD_HWE_DELIVERABLE_WEIGHT", 0.15)
+        default_factory=lambda: _env_float("SD_HWE_DELIVERABLE_WEIGHT", 0.0)
     )
     RUBRIC_WEIGHT: float = field(default_factory=lambda: _env_float("SD_HWE_RUBRIC_WEIGHT", 0.0))
     CRITICAL_LAYERS: list[str] = field(
-        default_factory=lambda: _env_list("SD_HWE_CRITICAL_LAYERS", ["L0", "L1", "L2a", "L2b", "L2c", "L3", "L4"])
+        default_factory=lambda: _env_list("SD_HWE_CRITICAL_LAYERS", ["L0", "L1", "L2", "L3", "L4", "L5"])
     )
     SYNTAX_PENALTY_PER_ERROR: float = field(
         default_factory=lambda: _env_float("SD_HWE_SYNTAX_PENALTY_PER_ERROR", 0.1)
@@ -223,7 +215,7 @@ class Settings:
         default_factory=lambda: _env_list("SD_HWE_DEFAULT_PLUGINS", ["telecom"])
     )
     DEFAULT_SCORING_LAYERS: list[str] = field(
-        default_factory=lambda: _env_list("SD_HWE_DEFAULT_SCORING_LAYERS", ["L0", "L1", "L2a", "L2b", "L2c", "L3"])
+        default_factory=lambda: _env_list("SD_HWE_DEFAULT_SCORING_LAYERS", ["L0", "L1", "L2", "L3"])
     )
 
     # ------------------------------------------------------------------
@@ -269,6 +261,13 @@ class Settings:
     @property
     def DELIVERABLES_CONFIG(self) -> dict[str, Any]:
         return _load_yaml_config("deliverables.yaml")
+
+
+    # Diagnostic-only weight for the optional performance-improvement score.
+    # This does NOT affect pass/fail and is not a scoring layer weight.
+    PERFORMANCE_SCORE_WEIGHT: float = field(
+        default_factory=lambda: _env_float("SD_HWE_PERFORMANCE_SCORE_WEIGHT", 0.25)
+    )
 
 
 settings = Settings()

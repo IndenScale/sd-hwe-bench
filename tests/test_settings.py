@@ -18,7 +18,7 @@ class TestSettingsDefaults:
 
     def test_layer_weights_sum_sensible(self):
         non_gate = sum(w for k, w in settings.LAYER_WEIGHTS.items() if k != "L0")
-        assert non_gate < 1.0
+        assert non_gate == pytest.approx(1.0)
         assert settings.LAYER_WEIGHTS["L0"] == 0.0
 
     def test_default_run_dir_is_relative_runs(self):

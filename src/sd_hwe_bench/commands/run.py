@@ -7,7 +7,7 @@ import logging
 import os
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Optional
 
 import typer
 
@@ -22,18 +22,6 @@ from sd_hwe_bench.scorer import TaskScore, compute_pass_at_k, score_task
 from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
-
-
-def _output_mode_for_actor(actor_spec: str) -> Literal["cli", "api"]:
-    """Return the prompt output mode suited to the actor driver.
-
-    CLI actors (kimi, codex, gemini) mutate the workspace directly and can read
-    files at runtime, so they receive a concise prompt with file references.
-    API actors (openai/deepseek) receive YAML code blocks, so the design spec
-    and other reference material must be inlined.
-    """
-    driver = actor_spec.split(":", 1)[0].lower() if ":" in actor_spec else actor_spec.lower()
-    return "api" if driver in ("openai", "deepseek") else "cli"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -100,7 +88,7 @@ def _run_rollout(
         task_metadata=task.metadata.model_dump(),
         scaffold_dir=task.scaffold_dir,
         require_generator=True,
-        output_mode=_output_mode_for_actor(actor_spec),
+
     )
     ws.write_prompt(prompt)
 
@@ -280,7 +268,7 @@ def _run_serial(
                 task_metadata=task.metadata.model_dump(),
                 scaffold_dir=task.scaffold_dir,
                 require_generator=True,
-                output_mode=_output_mode_for_actor(actor),
+
             )
             ws.write_prompt(prompt)
 
@@ -434,7 +422,7 @@ def register(app: typer.Typer) -> None:
             settings.DEFAULT_ACTOR,
             "--actor",
             "-a",
-            help="Actor spec: kimi[:model], codex[:model], gemini[:model], openai:MODEL, deepseek:MODEL.",
+            help="Actor spec: kimi[:model], codex[:model].",
         ),
         dataset: Path = typer.Option(Path("."), "--dataset", help="Path to dataset root."),
         passes: int = typer.Option(
@@ -503,7 +491,20 @@ def register(app: typer.Typer) -> None:
 
         effective_jobs = _effective_jobs(jobs)
 
-        if effective_jobs == 1:
+        # ProcessPoolExecutor on macOS can cause silent failures when
+        # forked subprocesses spawn their own subprocesses (e.g. codex CLI).
+        # For single-task rollouts, always use serial mode regardless of
+        # --jobs setting. Parallel mode is only used when multiple *distinct*
+        # task IDs are being run simultaneously.
+        use_parallel = effective_jobs > 1 and len(task_ids) > 1
+
+        if self_check and use_parallel:
+            console.print(
+                "[yellow]Warning: --self-check is disabled in parallel mode.[/yellow]"
+            )
+            self_check = False
+
+        if not use_parallel:
             runner = SandboxRunner(backend=sandbox, image=sandbox_image, env_vars=env_vars)
             builder = PromptBuilder(piki_ref_path=piki_ref)
             all_scores = _run_serial(

@@ -51,7 +51,7 @@ def register(app: typer.Typer) -> None:
             settings.DEFAULT_ACTOR,
             "--actor",
             "-a",
-            help="Actor spec: kimi[:model], gemini[:model], openai:MODEL, deepseek:MODEL.",
+            help="Actor spec: kimi[:model], codex[:model].",
         ),
         dataset: Path = typer.Option(Path("."), "--dataset", help="Path to dataset root."),
         passes: int = typer.Option(
@@ -137,7 +137,7 @@ def register(app: typer.Typer) -> None:
                     require_generator=True,
                     repair_mode=not no_repair,
                     baseline_mode=no_repair,
-                    output_mode="api" if actor.split(":", 1)[0].lower() in ("openai", "deepseek") else "cli",
+
                 )
                 ws.write_prompt(initial_prompt)
 

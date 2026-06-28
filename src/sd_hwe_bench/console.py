@@ -34,7 +34,7 @@ def print_score(score: TaskScore) -> None:
     table.add_column("Passed", style="green")
     table.add_column("Errors", style="red")
 
-    for layer in ["L0", "L1", "L2", "L3", "L4"]:
+    for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
         ls = score.layers.get(layer)
         if not ls:
             continue
@@ -48,6 +48,9 @@ def print_score(score: TaskScore) -> None:
         for name, ok in score.deliverable_scores.items():
             icon = "[green]✓[/green]" if ok else "[red]✗[/red]"
             console.print(f"  {icon} {name}")
+
+    if score.performance_score is not None:
+        console.print(f"\n[bold]Performance score: {score.performance_score:.2%}[/bold]")
 
     if score.rubric_score is not None:
         console.print(f"\n[bold]Rubric score: {score.rubric_score:.2%}[/bold]")
