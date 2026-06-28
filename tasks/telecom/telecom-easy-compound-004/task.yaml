@@ -16,9 +16,7 @@ rubrics: []
 scoring_layers:
 - L0
 - L1
-- L2a
-- L2b
-- L2c
+- L2
 - L3
 task_id: telecom/telecom-easy-compound-004
 task_type: mating-design

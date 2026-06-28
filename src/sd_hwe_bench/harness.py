@@ -151,8 +151,8 @@ class Harness:
 
         for tid in task_ids:
             lines.append(f"## {tid}\n")
-            lines.append("| Model | Pass | Score | L1 | L2 | L3 | L4 | Rubric |")
-            lines.append("|-------|------|-------|----|----|----|----|--------|")
+            lines.append("| Model | Pass | Score | L1 | L2 | L3 | L4 | L5 | Perf | Rubric |")
+            lines.append("|-------|------|-------|----|----|----|----|----|------|--------|")
 
             for model_id, task_results in all_results.items():
                 for scores in task_results:
@@ -166,9 +166,11 @@ class Harness:
                     l2 = "✅" if s.layers.get("L2") and s.layers["L2"].passed else "❌"
                     l3 = "✅" if s.layers.get("L3") and s.layers["L3"].passed else "❌"
                     l4 = "✅" if s.layers.get("L4") and s.layers["L4"].passed else "❌"
+                    l5 = "✅" if s.layers.get("L5") and s.layers["L5"].passed else "❌"
+                    perf = f"{s.performance_score:.0%}" if s.performance_score is not None else "—"
                     rubric = f"{s.rubric_score:.0%}" if s.rubric_score is not None else "—"
                     lines.append(
-                        f"| {model_id} | {status} | {s.overall_score:.0%} | {l1} | {l2} | {l3} | {l4} | {rubric} |"
+                        f"| {model_id} | {status} | {s.overall_score:.0%} | {l1} | {l2} | {l3} | {l4} | {l5} | {perf} | {rubric} |"
                     )
             lines.append("")
 
@@ -191,8 +193,8 @@ class Harness:
         lines.append(f"Average score: {avg_score:.2%}")
         lines.append("")
 
-        layer_totals = {"L0": 0, "L1": 0, "L2": 0, "L3": 0, "L4": 0}
-        layer_passed = {"L0": 0, "L1": 0, "L2": 0, "L3": 0, "L4": 0}
+        layer_totals = {"L0": 0, "L1": 0, "L2": 0, "L3": 0, "L4": 0, "L5": 0}
+        layer_passed = {"L0": 0, "L1": 0, "L2": 0, "L3": 0, "L4": 0, "L5": 0}
         for scores in results:
             if not scores:
                 continue
@@ -202,15 +204,23 @@ class Harness:
                     layer_passed[layer_name] += layer_score.passed
 
         lines.append("Layer Breakdown:")
-        for layer in ["L0", "L1", "L2", "L3", "L4"]:
+        for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
             t, p = layer_totals[layer], layer_passed[layer]
             rate = p / t if t > 0 else 0.0
             lines.append(f"  {layer}: {p}/{t} ({rate:.1%})")
 
         rubric_scores: list[float] = []
+        perf_scores: list[float] = []
         for scores in results:
-            if scores and scores[0].rubric_score is not None:
+            if not scores:
+                continue
+            if scores[0].rubric_score is not None:
                 rubric_scores.append(scores[0].rubric_score)
+            if scores[0].performance_score is not None:
+                perf_scores.append(scores[0].performance_score)
+        if perf_scores:
+            avg_perf = sum(perf_scores) / len(perf_scores)
+            lines.append(f"\nPerformance Score (avg): {avg_perf:.2%}")
         if rubric_scores:
             avg_rubric = sum(rubric_scores) / len(rubric_scores)
             lines.append(f"\nLLM-as-Judge Rubric Score (avg): {avg_rubric:.2%}")
@@ -222,10 +232,13 @@ class Harness:
                 continue
             s = scores[0]
             status = "PASS" if s.success else "FAIL"
+            perf_info = ""
+            if s.performance_score is not None:
+                perf_info = f" | Perf: {s.performance_score:.2%}"
             rubric_info = ""
             if s.rubric_score is not None:
                 rubric_info = f" | Rubric: {s.rubric_score:.2%}"
-            lines.append(f"  [{status}] {s.task_id} — score: {s.overall_score:.2%}{rubric_info}")
+            lines.append(f"  [{status}] {s.task_id} — score: {s.overall_score:.2%}{perf_info}{rubric_info}")
 
         return "\n".join(lines)
 

@@ -25,6 +25,7 @@ class TaskType(str, Enum):
     MATING_DESIGN = "mating-design"
     COMPREHENSIVE = "comprehensive"
     INCREMENTAL = "incremental"
+    CO_DESIGN = "co-design"
 
 
 class Difficulty(str, Enum):
@@ -61,6 +62,16 @@ class RubricSet(BaseModel):
     )
 
 
+class NumericAssertion(BaseModel):
+    """A numeric value check for an expected output file."""
+
+    file: str = Field(description="Relative path from workspace root, e.g. reports/link-budget.yaml")
+    yaml_path: str = Field(description="Dot-separated path, e.g. results.coverage_radius_km")
+    expected: float = Field(description="Expected numeric value")
+    tolerance: float = Field(default=0.05, description="Relative tolerance (0.05 = 5%)")
+    weight: float = Field(default=1.0, description="Weight of this assertion within numeric layer")
+
+
 class TaskMetadata(BaseModel):
     """Metadata for a single benchmark task."""
 
@@ -75,9 +86,21 @@ class TaskMetadata(BaseModel):
     expected_files: list[str] = Field(default_factory=list)
     scoring_layers: list[str] = Field(default_factory=lambda: list(settings.DEFAULT_SCORING_LAYERS))
     expected_deliverables: list[str] = Field(default_factory=list)
+    numeric_assertions: list[NumericAssertion] = Field(
+        default_factory=list,
+        description="Optional numeric value checks for reports with tolerance",
+    )
     rubrics: list[RubricSet] = Field(
         default_factory=list,
         description="Optional LLM-as-Judge rubric sets for qualitative evaluation",
+    )
+    decision_variables: dict = Field(
+        default_factory=dict,
+        description="For co-design tasks: map of ADL paths → allowed value ranges",
+    )
+    l7_config: dict = Field(
+        default_factory=dict,
+        description="L7 simulation config: weather, hours, objective_weights",
     )
 
 

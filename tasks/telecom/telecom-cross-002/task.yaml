@@ -17,10 +17,8 @@ rubrics: []
 scoring_layers:
 - L0
 - L1
-- L2a
-- L2b
-- L2c
+- L2
 - L3
-- L4
+- L5
 task_id: telecom/telecom-cross-002
 task_type: comprehensive

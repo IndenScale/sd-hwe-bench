@@ -15,7 +15,6 @@ rubrics: []
 scoring_layers:
 - L0
 - L1
-- L2a
-- L2b
+- L2
 task_id: telecom/telecom-easy-compound-001
 task_type: instance-declaration

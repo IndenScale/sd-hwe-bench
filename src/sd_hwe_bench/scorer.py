@@ -1,7 +1,8 @@
 """Scoring framework — computes Pass@k using deterministic critics and optional rubrics.
 
 Architecture:
-- Critics run in sequence: Syntax (L0), Piki (L1-L4), Deliverable (L5/L6), Rubric (LLM judge).
+- Critics run in sequence: Syntax (L0), Piki (L1-L5), AIDC simulation compliance (L4),
+  Deliverable generation check (critical, non-layered), Rubric (LLM judge, diagnostic).
 - score_task orchestrates critics and produces a TaskScore.
 - Legacy helper functions remain for backward compatibility and tests.
 """
@@ -16,6 +17,7 @@ from typing import TYPE_CHECKING, Any
 from sd_hwe_bench.critics import (
     CriticResult,
     DeliverableCritic,
+    NumericCritic,
     PikiCritic,
     RubricCritic,
     SyntaxCritic,
@@ -52,6 +54,8 @@ class TaskScore:
     overall_score: float = 0.0
     rubric_results: list[Any] = dataclasses.field(default_factory=list)
     rubric_score: float | None = None
+    # Diagnostic-only performance improvement score (not a scoring layer).
+    performance_score: float | None = None
     critic_results: list[CriticResult] = dataclasses.field(default_factory=list)
 
 
@@ -72,7 +76,7 @@ def _static_check_yaml(project_dir: Path) -> dict[str, Any]:
     """Run static YAML checks (L0-L2) — fallback when piki is unavailable."""
     import yaml as _yaml
 
-    errors: dict[str, list[str]] = {"L0": [], "L1": [], "L2a": []}
+    errors: dict[str, list[str]] = {"L0": [], "L1": [], "L2": []}
     yaml_files = sorted(project_dir.rglob("*.yaml")) + sorted(project_dir.rglob("*.yml"))
 
     if not yaml_files:
@@ -124,7 +128,7 @@ def _static_check_yaml(project_dir: Path) -> dict[str, Any]:
 
     undefined = referenced_ids - declared_ids
     for uid in sorted(undefined):
-        errors["L2a"].append(f"FK-UNDEFINED: '{uid}' is referenced but never declared")
+        errors["L2"].append(f"FK-UNDEFINED: '{uid}' is referenced but never declared")
 
     result: dict[str, Any] = {
         "errors": errors,
@@ -325,14 +329,14 @@ def score_task(
         errors=syntax_res.comments,
     )
 
-    # 2. Piki critic (L1-L4)
+    # 2. Piki critic (L1-L5)
     piki = PikiCritic(runner=runner)
     piki_res = piki.evaluate(project_dir, task)  # type: ignore[arg-type]
     score.critic_results.append(piki_res)
 
     layer_scores = piki_res.artifacts.get("layer_scores", {})
     layer_errors = piki_res.artifacts.get("layer_errors", {})
-    for layer in ("L1", "L2a", "L2b", "L2c", "L3", "L4"):
+    for layer in ("L1", "L2", "L3", "L4", "L5"):
         score.layers[layer] = LayerScore(
             layer=layer,
             total=1,
@@ -347,10 +351,71 @@ def score_task(
         static_result = _static_check_yaml(project_dir)
         _layer_scores_from_static(score, static_result)
 
-    # 3. Deliverable critic (L5/L6)
-    # If deliverables are expected, run piki generate first so the critic
-    # inspects freshly produced artifacts. Generation uses the same sandbox
-    # runner as the rule checks (container or host).
+    # 2.5 Numeric assertions are part of L3 static engineering constraints
+    if hasattr(task.metadata, "numeric_assertions") and task.metadata.numeric_assertions:
+        numeric = NumericCritic()
+        numeric_res = numeric.evaluate(project_dir, task)  # type: ignore[arg-type]
+        score.critic_results.append(numeric_res)
+        if not numeric_res.passed:
+            # Flip L3 to failed and remove its weight contribution
+            l3 = score.layers.get("L3")
+            if l3 and l3.passed:
+                l3.passed = 0
+                l3.failed = 1
+                l3.errors.extend(numeric_res.comments)
+                score.overall_score -= settings.LAYER_WEIGHTS.get("L3", 0.0)
+
+    # 2.6 L4 AIDC simulation compliance (reduced-order dynamic model check)
+    scoring_layers_list = getattr(task.metadata, "scoring_layers", []) if hasattr(task, 'metadata') else []
+    # Accept both legacy L7-Performance and new L4 simulation markers.
+    if "L4" in scoring_layers_list or "L7-Performance" in scoring_layers_list:
+        from sd_hwe_bench.critics.performance import PerformanceCritic
+        from sd_hwe_bench.simulation.model import AIDCWeatherProfile
+
+        sim_config = getattr(task.metadata, "l7_config", {}) or getattr(task.metadata, "l4_config", {}) if hasattr(task, 'metadata') else {}
+        weather_type = sim_config.get("weather", "summer")
+        sim_hours = sim_config.get("hours", 48)
+        weights = sim_config.get("objective_weights", [0.3, 0.3, 0.15, 0.25])
+
+        if weather_type == "summer":
+            weather = AIDCWeatherProfile.synthetic_summer_day()
+        elif weather_type == "winter":
+            weather = AIDCWeatherProfile.synthetic_winter_day()
+        else:
+            weather = AIDCWeatherProfile.synthetic_summer_day()
+
+        import sd_hwe_bench
+        repo_root = Path(sd_hwe_bench.__file__).parent.parent.parent
+        canonical_cfg = sim_config.get("canonical_project", "datacenter-hall")
+        canonical_dir = repo_root / "canonical" / canonical_cfg
+        if (project_dir / "rooms").exists() and any((project_dir / "rooms").glob("*.yaml")):
+            perf_project_dir = None
+        else:
+            perf_project_dir = canonical_dir
+
+        perf = PerformanceCritic(
+            project_dir=perf_project_dir,
+            canonical_project=canonical_dir,
+            weather=weather,
+            simulation_hours=sim_hours,
+            objective_weights=weights,
+            reference=sim_config.get("reference"),
+        )
+        perf_res = perf.evaluate(project_dir, task)
+        score.critic_results.append(perf_res)
+        score.layers["L4"] = LayerScore(
+            layer="L4",
+            total=1,
+            passed=1 if perf_res.passed else 0,
+            failed=0 if perf_res.passed else 1,
+            errors=perf_res.comments,
+        )
+        # Simulation compliance contributes to L4 weight; performance score is diagnostic.
+        if perf_res.passed:
+            score.overall_score += settings.LAYER_WEIGHTS.get("L4", 0.0)
+        score.performance_score = perf_res.score
+
+    # 3. Deliverable generation check (critical but not a scoring layer)
     if expected_deliverables and runner is not None:
         gen_res = runner.generate(project_dir)
         if not gen_res.available:
@@ -366,12 +431,8 @@ def score_task(
     if expected_deliverables:
         for d in expected_deliverables:
             score.deliverable_scores[d] = _check_deliverable(project_dir, d)
-        delivered = sum(score.deliverable_scores.values())
-        total = len(expected_deliverables)
-        if total > 0:
-            score.overall_score += DELIVERABLE_WEIGHT * (delivered / total)
 
-    # 4. Rubric critic (optional)
+    # 4. Rubric critic (optional, diagnostic only)
     if rubric_sets:
         rubric = RubricCritic(model=rubrics_model)
         rubric_res = rubric.evaluate(project_dir, task)  # type: ignore[arg-type]
@@ -379,9 +440,10 @@ def score_task(
         score.rubric_score = rubric_res.score
         score.rubric_results = rubric_res.comments
 
-    # Determine success: all critical layers + deliverables must pass
+    # Determine success: all critical layers + deliverables must pass.
+    critical = list(settings.CRITICAL_LAYERS)
     layers_ok = all(
-        score.layers.get(layer) and score.layers[layer].passed for layer in settings.CRITICAL_LAYERS
+        score.layers.get(layer) and score.layers[layer].passed for layer in critical
     )
     deliverables_ok = all(score.deliverable_scores.values()) if expected_deliverables else True
     score.success = layers_ok and deliverables_ok

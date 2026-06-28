@@ -797,7 +797,7 @@ class PromptBuilder:
                 file = d.get("file", "")
                 parts.append(f"- `{rule}` {name}: {msg}" + (f" (文件: {file})" if file else ""))
         else:
-            for layer in ("L0", "L1", "L2", "L3", "L4"):
+            for layer in ("L0", "L1", "L2", "L3", "L4", "L5"):
                 ls = score.layers.get(layer)
                 if not ls:
                     continue
