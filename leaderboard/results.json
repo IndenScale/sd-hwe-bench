@@ -1,323 +1,321 @@
 {
-  "generated_at": "2026-06-27T08:18:44.008012+00:00",
+  "generated_at": "2026-06-28",
   "models": [
     {
-      "model": "kimi",
-      "tasks": 254,
-      "pass_at_1": 0.9251968503937008,
-      "avg_score": 0.8701771653543308,
-      "task_ids": [
-        "telecom/comprehensive-001",
-        "telecom/connection-design-001",
-        "telecom/datacenter-001",
-        "telecom/datacenter-002",
-        "telecom/datacenter-003",
-        "telecom/datacenter-004",
-        "telecom/datacenter-005",
-        "telecom/datacenter-006",
-        "telecom/datacenter-007",
-        "telecom/datacenter-008",
-        "telecom/instance-declare-001",
-        "telecom/layout-design-001",
-        "telecom/mating-design-001",
-        "telecom/telecom-cross-001",
-        "telecom/telecom-cross-002",
-        "telecom/telecom-cross-003",
-        "telecom/telecom-easy-compound-001",
-        "telecom/telecom-easy-compound-002",
-        "telecom/telecom-easy-compound-003",
-        "telecom/telecom-easy-compound-004",
-        "telecom/telecom-easy-compound-005",
-        "telecom/telecom-emergent-001",
-        "telecom/telecom-emergent-002",
-        "telecom/telecom-emergent-003",
-        "telecom/telecom-emergent-004",
-        "telecom/telecom-rack-001",
-        "telecom/telecom-rack-002",
-        "telecom/telecom-rack-003",
-        "telecom/telecom-rack-004",
-        "telecom/telecom-rack-005",
-        "telecom/telecom-rack-006",
-        "telecom/telecom-rack-007",
-        "telecom/telecom-rack-008",
-        "telecom/telecom-rack-009",
-        "telecom/telecom-rack-010",
-        "telecom/telecom-rack-011",
-        "telecom/telecom-rack-012",
-        "telecom/telecom-rack-013",
-        "telecom/telecom-rack-014",
-        "telecom/telecom-rack-015",
-        "telecom/telecom-site-001",
-        "telecom/telecom-site-002",
-        "telecom/telecom-site-003",
-        "telecom/telecom-site-004",
-        "telecom/telecom-site-005",
-        "telecom/telecom-site-006"
-      ]
+      "model": "kimi (kimi-code)",
+      "tasks": 30,
+      "pass_at_1": 0.8467,
+      "avg_score": 0.8279,
+      "total_passes": "127/150"
     },
     {
-      "model": "deepseek:deepseek-v4-flash",
-      "tasks": 20,
-      "pass_at_1": 0.8,
-      "avg_score": 0.8200000000000001,
-      "task_ids": [
-        "telecom/comprehensive-001",
-        "telecom/connection-design-001",
-        "telecom/instance-declare-001",
-        "telecom/layout-design-001",
-        "telecom/mating-design-001",
-        "telecom/telecom-rack-001",
-        "telecom/telecom-rack-002",
-        "telecom/telecom-rack-003",
-        "telecom/telecom-rack-004",
-        "telecom/telecom-rack-005",
-        "telecom/telecom-rack-006",
-        "telecom/telecom-rack-007",
-        "telecom/telecom-rack-008",
-        "telecom/telecom-rack-009",
-        "telecom/telecom-rack-010",
-        "telecom/telecom-rack-011",
-        "telecom/telecom-rack-012",
-        "telecom/telecom-rack-013",
-        "telecom/telecom-rack-014",
-        "telecom/telecom-rack-015"
-      ]
-    },
-    {
-      "model": "deepseek:deepseek-v4-pro",
-      "tasks": 20,
-      "pass_at_1": 0.9,
-      "avg_score": 0.8405000000000001,
-      "task_ids": [
-        "telecom/comprehensive-001",
-        "telecom/connection-design-001",
-        "telecom/instance-declare-001",
-        "telecom/layout-design-001",
-        "telecom/mating-design-001",
-        "telecom/telecom-rack-001",
-        "telecom/telecom-rack-002",
-        "telecom/telecom-rack-003",
-        "telecom/telecom-rack-004",
-        "telecom/telecom-rack-005",
-        "telecom/telecom-rack-006",
-        "telecom/telecom-rack-007",
-        "telecom/telecom-rack-008",
-        "telecom/telecom-rack-009",
-        "telecom/telecom-rack-010",
-        "telecom/telecom-rack-011",
-        "telecom/telecom-rack-012",
-        "telecom/telecom-rack-013",
-        "telecom/telecom-rack-014",
-        "telecom/telecom-rack-015"
-      ]
-    },
-    {
-      "model": "codex:deepseek-v4-flash",
-      "tasks": 16,
-      "pass_at_1": 1.0,
-      "avg_score": 0.878125,
-      "task_ids": [
-        "telecom/datacenter-001",
-        "telecom/datacenter-002",
-        "telecom/datacenter-003",
-        "telecom/datacenter-004",
-        "telecom/datacenter-005",
-        "telecom/datacenter-006",
-        "telecom/datacenter-007",
-        "telecom/datacenter-008",
-        "telecom/telecom-rack-015",
-        "telecom/telecom-site-001",
-        "telecom/telecom-site-002",
-        "telecom/telecom-site-003",
-        "telecom/telecom-site-004",
-        "telecom/telecom-site-005",
-        "telecom/telecom-site-006"
-      ]
-    },
-    {
-      "model": "codex:deepseek-v4-pro",
-      "tasks": 15,
-      "pass_at_1": 1.0,
-      "avg_score": 0.8800000000000001,
-      "task_ids": [
-        "telecom/datacenter-001",
-        "telecom/datacenter-002",
-        "telecom/datacenter-003",
-        "telecom/datacenter-004",
-        "telecom/datacenter-005",
-        "telecom/datacenter-006",
-        "telecom/datacenter-007",
-        "telecom/datacenter-008",
-        "telecom/telecom-rack-015",
-        "telecom/telecom-site-001",
-        "telecom/telecom-site-002",
-        "telecom/telecom-site-003",
-        "telecom/telecom-site-004",
-        "telecom/telecom-site-005",
-        "telecom/telecom-site-006"
-      ]
-    },
-    {
-      "model": "gemini",
-      "tasks": 47,
-      "pass_at_1": 0.8085106382978723,
-      "avg_score": 0.8637234042553192,
-      "task_ids": [
-        "telecom/comprehensive-001",
-        "telecom/connection-design-001",
-        "telecom/datacenter-001",
-        "telecom/datacenter-002",
-        "telecom/datacenter-003",
-        "telecom/datacenter-004",
-        "telecom/datacenter-005",
-        "telecom/datacenter-006",
-        "telecom/datacenter-007",
-        "telecom/datacenter-008",
-        "telecom/instance-declare-001",
-        "telecom/layout-design-001",
-        "telecom/mating-design-001",
-        "telecom/telecom-cross-001",
-        "telecom/telecom-cross-002",
-        "telecom/telecom-cross-003",
-        "telecom/telecom-easy-compound-001",
-        "telecom/telecom-easy-compound-002",
-        "telecom/telecom-easy-compound-003",
-        "telecom/telecom-easy-compound-004",
-        "telecom/telecom-easy-compound-005",
-        "telecom/telecom-emergent-001",
-        "telecom/telecom-emergent-002",
-        "telecom/telecom-emergent-003",
-        "telecom/telecom-emergent-004",
-        "telecom/telecom-rack-001",
-        "telecom/telecom-rack-002",
-        "telecom/telecom-rack-003",
-        "telecom/telecom-rack-004",
-        "telecom/telecom-rack-005",
-        "telecom/telecom-rack-006",
-        "telecom/telecom-rack-007",
-        "telecom/telecom-rack-008",
-        "telecom/telecom-rack-009",
-        "telecom/telecom-rack-010",
-        "telecom/telecom-rack-011",
-        "telecom/telecom-rack-012",
-        "telecom/telecom-rack-013",
-        "telecom/telecom-rack-014",
-        "telecom/telecom-rack-015",
-        "telecom/telecom-site-001",
-        "telecom/telecom-site-002",
-        "telecom/telecom-site-003",
-        "telecom/telecom-site-004",
-        "telecom/telecom-site-005",
-        "telecom/telecom-site-006"
-      ]
-    },
-    {
-      "model": "openai:deepseek-chat",
-      "tasks": 48,
-      "pass_at_1": 0.6458333333333334,
-      "avg_score": 0.7298958333333334,
-      "task_ids": [
-        "telecom/comprehensive-001",
-        "telecom/connection-design-001",
-        "telecom/datacenter-001",
-        "telecom/datacenter-002",
-        "telecom/datacenter-003",
-        "telecom/datacenter-004",
-        "telecom/datacenter-005",
-        "telecom/datacenter-006",
-        "telecom/datacenter-007",
-        "telecom/datacenter-008",
-        "telecom/instance-declare-001",
-        "telecom/layout-design-001",
-        "telecom/mating-design-001",
-        "telecom/telecom-cross-001",
-        "telecom/telecom-cross-002",
-        "telecom/telecom-cross-003",
-        "telecom/telecom-easy-compound-001",
-        "telecom/telecom-easy-compound-002",
-        "telecom/telecom-easy-compound-003",
-        "telecom/telecom-easy-compound-004",
-        "telecom/telecom-easy-compound-005",
-        "telecom/telecom-emergent-001",
-        "telecom/telecom-emergent-002",
-        "telecom/telecom-emergent-003",
-        "telecom/telecom-emergent-004",
-        "telecom/telecom-rack-001",
-        "telecom/telecom-rack-002",
-        "telecom/telecom-rack-003",
-        "telecom/telecom-rack-004",
-        "telecom/telecom-rack-005",
-        "telecom/telecom-rack-006",
-        "telecom/telecom-rack-007",
-        "telecom/telecom-rack-008",
-        "telecom/telecom-rack-009",
-        "telecom/telecom-rack-010",
-        "telecom/telecom-rack-011",
-        "telecom/telecom-rack-012",
-        "telecom/telecom-rack-013",
-        "telecom/telecom-rack-014",
-        "telecom/telecom-rack-015",
-        "telecom/telecom-site-001",
-        "telecom/telecom-site-002",
-        "telecom/telecom-site-003",
-        "telecom/telecom-site-004",
-        "telecom/telecom-site-005",
-        "telecom/telecom-site-006"
-      ]
-    },
-    {
-      "model": "openai:deepseek-reasoner",
-      "tasks": 46,
-      "pass_at_1": 0.8260869565217391,
-      "avg_score": 0.836413043478261,
-      "task_ids": [
-        "telecom/comprehensive-001",
-        "telecom/connection-design-001",
-        "telecom/datacenter-001",
-        "telecom/datacenter-002",
-        "telecom/datacenter-003",
-        "telecom/datacenter-004",
-        "telecom/datacenter-005",
-        "telecom/datacenter-006",
-        "telecom/datacenter-007",
-        "telecom/datacenter-008",
-        "telecom/instance-declare-001",
-        "telecom/layout-design-001",
-        "telecom/mating-design-001",
-        "telecom/telecom-cross-001",
-        "telecom/telecom-cross-002",
-        "telecom/telecom-cross-003",
-        "telecom/telecom-easy-compound-001",
-        "telecom/telecom-easy-compound-002",
-        "telecom/telecom-easy-compound-003",
-        "telecom/telecom-easy-compound-004",
-        "telecom/telecom-easy-compound-005",
-        "telecom/telecom-emergent-001",
-        "telecom/telecom-emergent-002",
-        "telecom/telecom-emergent-003",
-        "telecom/telecom-emergent-004",
-        "telecom/telecom-rack-001",
-        "telecom/telecom-rack-002",
-        "telecom/telecom-rack-003",
-        "telecom/telecom-rack-004",
-        "telecom/telecom-rack-005",
-        "telecom/telecom-rack-006",
-        "telecom/telecom-rack-007",
-        "telecom/telecom-rack-008",
-        "telecom/telecom-rack-009",
-        "telecom/telecom-rack-010",
-        "telecom/telecom-rack-011",
-        "telecom/telecom-rack-012",
-        "telecom/telecom-rack-013",
-        "telecom/telecom-rack-014",
-        "telecom/telecom-rack-015",
-        "telecom/telecom-site-001",
-        "telecom/telecom-site-002",
-        "telecom/telecom-site-003",
-        "telecom/telecom-site-004",
-        "telecom/telecom-site-005",
-        "telecom/telecom-site-006"
-      ]
+      "model": "deepseek-v4-pro (codex)",
+      "tasks": 30,
+      "pass_at_1": 0.8667,
+      "avg_score": 0.8031,
+      "total_passes": "130/150"
     }
-  ]
+  ],
+  "per_task": {
+    "telecom/aidc-co-design-002": {
+      "kimi": {
+        "pass": "0/5",
+        "avg": 0.787
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.94
+      }
+    },
+    "telecom/aidc-operation-002": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.899
+      },
+      "deepseek": {
+        "pass": "4/5",
+        "avg": 0.908
+      }
+    },
+    "telecom/comprehensive-001": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/connection-design-001": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/dc-stage1-foundation-rackmount-deploy-thermal": {
+      "kimi": {
+        "pass": "1/5",
+        "avg": 0.876
+      },
+      "deepseek": {
+        "pass": "0/5",
+        "avg": 0.87
+      }
+    },
+    "telecom/dc-stage2-foundation-rackmount-deploy-thermal": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/dc-stage3-foundation-rackmount-deploy-thermal": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/dc-stage4-foundation-rackmount-deploy-thermal": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/instance-declare-001": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/layout-design-001": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/mating-design-001": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/rack-stage1-init-deploy-connect-verify": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/rack-stage2-init-deploy-connect-verify": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/rack-stage3-init-deploy-connect-verify": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/rack-stage4-init-deploy-connect-verify": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/site-stage1-tower-feeder-grounding": {
+      "kimi": {
+        "pass": "1/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "4/5",
+        "avg": 0.79
+      }
+    },
+    "telecom/site-stage2-tower-feeder-grounding": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "2/5",
+        "avg": 0.57
+      }
+    },
+    "telecom/site-stage3-tower-feeder-grounding": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "2/5",
+        "avg": 0.6
+      }
+    },
+    "telecom/telecom-cross-001": {
+      "kimi": {
+        "pass": "0/5",
+        "avg": 0.825
+      },
+      "deepseek": {
+        "pass": "0/5",
+        "avg": 0.825
+      }
+    },
+    "telecom/telecom-cross-002": {
+      "kimi": {
+        "pass": "0/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-cross-003": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.9
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.9
+      }
+    },
+    "telecom/telecom-easy-compound-001": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-easy-compound-002": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-easy-compound-003": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-easy-compound-004": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-easy-compound-005": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-emergent-001": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-emergent-002": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "5/5",
+        "avg": 0.75
+      }
+    },
+    "telecom/telecom-emergent-003": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "4/5",
+        "avg": 0.67
+      }
+    },
+    "telecom/telecom-emergent-004": {
+      "kimi": {
+        "pass": "5/5",
+        "avg": 0.75
+      },
+      "deepseek": {
+        "pass": "4/5",
+        "avg": 0.67
+      }
+    }
+  }
 }
