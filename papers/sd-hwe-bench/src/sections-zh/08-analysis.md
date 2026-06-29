@@ -60,9 +60,9 @@ AIDC 与 EPC 任务中，Agent 方案未满足仿真硬约束（温度越限、P
 
 **典型表现**：
 
-- `aidc-conceptual-design-001` 中 TCO 优化后仍不满足 PUE ≤ 1.22；
+- `aidc-60mw-001` 中 TCO 优化后仍不满足 PUE ≤ 1.22；
 - `edge-dc-design-001` 中夏季峰值工况下进风温度超过安全阈值；
-- `aidc-epc-001` 中雨季未启用应急预案导致室外吊装延误，超过 deadline。
+- `aidc-60mw-003` 中雨季未启用应急预案导致室外吊装延误，超过 deadline。
 
 **根因**：Agent 对全年 8760h 运营或多专业施工网络的耦合约束（冷却器台数、冷冻水设定点、储能调度、变压器负载率、施工资源、天气窗口）缺乏全局优化能力，往往只满足局部指标。
 
@@ -114,7 +114,7 @@ AIDC/EPC 任务引入时间维度上的耦合约束：冷却器台数、储能 S
 | TELECOM-POWER-001 | PDU 功率预算检查 | dc-stage1, site-stage1 | L3 约束 |
 | TELECOM-CONN-002 | 连接端口类型兼容性 | site-stage2, site-stage3 | L3 约束 |
 | TELECOM-FK-001 | 外键完整性检查 | telecom-emergent-003/004 | L2 引用 |
-| AIDC-TEMP-001 / PUE-001 / CPML-DEADLINE-001 | 温度/PUE/工期硬约束 | aidc-conceptual-design-001, aidc-epc-001 | L4 仿真/排程 |
+| AIDC-TEMP-001 / PUE-001 / CPML-DEADLINE-001 | 温度/PUE/工期硬约束 | aidc-60mw-001, aidc-60mw-003 | L4 仿真/排程 |
 
 Table: Top 失败规则。{#tbl:top-failures}
 

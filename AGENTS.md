@@ -1,6 +1,6 @@
 # SD-HWE-Bench Agent Instructions
 
-本文件记录 SD-HWE-Bench 项目当前阶段的关键概念、目标与开发约定。最后更新：2026-06-29（v7.1：concept-design DecisionCritic MVP 落地 / ADR 0006 分期 1）。
+本文件记录 SD-HWE-Bench 项目当前阶段的关键概念、目标与开发约定。最后更新：2026-06-29（v7.2：AIDC 60MW 三阶段统一为 `canonical/aidc-60mw` git-lineage——概念→详细→施工排程单一事实源，经 `extract_tasks.py` 抽取出 `aidc-60mw-001/002/003`）。
 
 ## 全局约束
 
@@ -40,7 +40,7 @@
   - 5 复合 easy（telecom-easy-compound-001~005）
   - 4 涌现约束（telecom-emergent-001~004）
   - 3 跨专业综合（telecom-cross-001~003）
-  - 4 AIDC 任务：edge-dc-design-001、aidc-conceptual-design-001、aidc-detailed-design-001、aidc-epc-001
+  - 4 AIDC 任务：edge-dc-design-001、**aidc-60mw-001/002/003**（概念→详细→施工排程，由 `canonical/aidc-60mw` git-lineage 抽取）
   - 1 概念设计多方案比选：aidc-scheme-selection-001（conceptual-design，DecisionCritic）
 - **源码**：`src/sd_hwe_bench/` ~50 个 Python 文件，~8400 行
 - **CLI**：7 个命令（`list` / `run` / `run-repair` / `score` / `archive` / `leaderboard` / `batch`）
@@ -54,11 +54,13 @@
 #### AIDC 任务体系重构
 
 - 退役原 `aidc-operation-001/002` 与 `aidc-co-design-001/002`（移至 `tasks/telecom/_legacy/`）。
-- 新增 4 个 AIDC/数据中心任务，覆盖从 edge 到 60MW、从概念设计到施工建造的全生命周期：
+- AIDC 60MW 三阶段统一为 **`canonical/aidc-60mw` git-lineage**（commit 链 `base→concept→detailed→epc`，`task_manifest.yaml` 驱动），经 `extract_tasks.py` 抽取出三个独立任务，单一事实源、零内容重复（v7.2）：
   - `edge-dc-design-001`：medium 边缘数据中心设计-调度联合优化（`canonical/datacenter-hall`）。
-  - `aidc-conceptual-design-001`：hard 60MW AIDC 概念设计-调度联合优化（`canonical/datacenter-hall-60mw`）。
-  - `aidc-detailed-design-001`：hard 60MW AIDC 详细设计（`canonical/aidc-detailed`），包含吊装、临时道路、VDC 工作面等施工可建性检查。
-  - `aidc-epc-001`：hard 60MW AIDC EPC 施工排程与风险响应（`canonical/aidc-detailed`），使用 CPML 施工排程模型。
+  - `aidc-60mw-001`：hard 60MW AIDC 概念设计-调度联合优化（co-design，`canonical/aidc-60mw` concept tag）。
+  - `aidc-60mw-002`：hard 60MW AIDC 详细设计（detailed-design，detailed tag），包含吊装、临时道路、VDC 工作面等施工可建性检查。
+  - `aidc-60mw-003`：hard 60MW AIDC EPC 施工排程与风险响应（epc，epc tag），使用 CPML 施工排程模型。
+  - 旧 `aidc-conceptual-design-001 / aidc-detailed-design-001 / aidc-epc-001` 已退役至 `tasks/telecom/_legacy/`；旧 `canonical/datacenter-hall-60mw`、`canonical/aidc-detailed` 已退役至 `canonical/_legacy/`。
+  - 权威物理设计（三阶段共用冻结点）：液冷 / 8×10MW 冷机 N+1 / 5MWp 光伏 / 20MWh 储能 / 标准 40MVA 变压器 / 200×300kW 机柜 / 1000×ai-server-8u（修正了旧概念 canonical 风冷+30kW 与液冷服务器矛盾的遗留 bug）。
 
 **施工可建性 Critic**（`src/sd_hwe_bench/critics/constructability.py`）
 
@@ -72,14 +74,14 @@
 - `events.py` / `evaluator.py`：20 组随机天气/供应链场景下的 SLA 鲁棒性评估。
 - `EPCCritic`（`src/sd_hwe_bench/critics/epc.py`）：硬约束检查（工期 ≤ deadline、资源不超容、应急预案合法）+ Performance Score（P90 工期与成本）。
 
-**详细设计 canonical 工程**（`canonical/aidc-detailed/`）
+**详细设计 canonical 工程**（`canonical/aidc-60mw` 的 detailed tag）
 
-- 在 `datacenter-hall-60mw` 物理模型基础上增加：主机房建筑 geometry、架空地板、车辆通道、大门、机柜行列布局、`placed-on` 配合、冷水机组/变压器设备实体。
-- 通过 `piki check`：30 passes，0 errors。
+- 在 concept tag 权威系统配置基础上增加：主机房建筑 geometry、架空地板、车辆通道、大门、机柜行列布局、`placed-on` 配合、冷水机组/变压器设备实体、机柜 floor 坐标。
+- 通过 `piki check`：30 passes，0 errors（concept/detailed/epc 三 tag 均通过）。
 
 ### 1.3 v6/v5 保留要点
 
-**60MW AIDC 模型**：`canonical/datacenter-hall-60mw/` 提供 200 台机柜、1000 台 60kW 液冷 AI 服务器、8×10MW 冷水机组、20MWh 储能、5MWp 光伏、双路 40MVA 变压器、分时电价、湿球温度、变压器效率曲线。
+**60MW AIDC 模型**：`canonical/aidc-60mw/`（concept tag）提供 200 台机柜、1000 台 60kW 液冷 AI 服务器、8×10MW 冷水机组、20MWh 储能、5MWp 光伏、双路 40MVA 变压器、分时电价、湿球温度、变压器效率曲线。
 
 **AIDC 仿真/LCC 引擎**：保留 RC 热网络、分时电价、湿球温度免费冷却、设定点-COP 曲线、CAPEX/OPEX/NPV/TCO/LCOE 全生命周期成本模型。
 
@@ -92,7 +94,7 @@
 | Kimi k2.7 | CLI (kimi) | 84.7% (127/150) | 82.8% | 30 tasks（旧 AIDC 任务） |
 | DeepSeek-v4-Pro | CLI (codex) | 86.7% (130/150) | 80.3% | 30 tasks（旧 AIDC 任务） |
 
-> 注：v7 新增 4 个 AIDC 任务尚未完成多模型 pass@1 实验，当前仅验证参考方案全通过。下一步需在 edge-dc-design-001 / aidc-conceptual-design-001 / aidc-detailed-design-001 / aidc-epc-001 上重跑 baseline。
+> 注：AIDC 60MW 三任务尚未完成多模型 pass@1 实验，当前仅验证参考方案全通过（concept/detailed/epc 均 PASS，overall 115%）。下一步需在 edge-dc-design-001 / aidc-60mw-001 / aidc-60mw-002 / aidc-60mw-003 上重跑 baseline。
 
 ### 1.5 论文
 
@@ -105,7 +107,20 @@
 
 ## 2. 下一步优先级
 
-### 2.1 当前会话完成（2026-06-29 v7）
+### 2.1 当前会话完成（2026-06-29 v7.2：AIDC 60MW 三阶段 lineage 化）
+
+| 产出 | 说明 |
+|------|------|
+| `canonical/aidc-60mw/` | 新建 git-lineage canonical 仓：commit 链 `base→concept→detailed→epc` + 4 tag + `task_manifest.yaml`，三 tag 均过 piki check（30/0） |
+| `tools/extract_tasks.py` | `build_task_yaml` 透传 `l7_config / decision_variables / scenario / evaluation / scoring_layers`（向后兼容旧 manifest） |
+| `tasks/telecom/aidc-60mw-001/002/003` | 由 lineage 抽取的概念/详细/EPC 三独立任务，参考解全 PASS（overall 115%），reference 用 PerformanceCritic 实测自洽 |
+| 退役 | 旧 `aidc-conceptual-design-001/aidc-detailed-design-001/aidc-epc-001` → `tasks/telecom/_legacy/`；旧 `canonical/datacenter-hall-60mw`、`canonical/aidc-detailed` → `canonical/_legacy/` |
+| 内容归一 | 三阶段共用权威物理设计（液冷/8 冷机 N+1/5MWp/20MWh/标准变压器/300kW 机柜），修正旧概念 canonical 风冷+30kW 与液冷服务器矛盾的遗留 bug |
+| 测试/文档 | `tests/{test_aidc_simulation_60mw,test_critic_registry,test_batch}.py` 改用新 id；`scripts/{verify_aidc_benchmark,assemble_paper}.py`、`AGENTS.md` 同步；145 passed/2 skipped |
+
+> 待办（文档同步）：`papers/sd-hwe-bench/src/sections-zh/*`、`docs/evaluation/methodology.md`、`docs/adr/0006-*.md` 中对旧任务 id/canonical 的散文引用与任务计数尚需一次编辑性同步并重跑 `assemble_paper.py`。
+
+### 2.1b 上一会话（2026-06-29 v7，历史记录）
 
 | 产出 | 说明 |
 |------|------|
@@ -162,8 +177,7 @@
 | canonical/datacenter | 5 | 数据中心机房，ToR 组网，地板载荷 |
 | canonical/telecom-site | 7 | 户外基站，天线/RRU/防雷/馈线/结构/热管理/频谱 |
 | canonical/datacenter-hall | 1 | AIDC 14.8kW 运营/设计-调度（edge-dc-design-001） |
-| canonical/datacenter-hall-60mw | 1 | 60MW AIDC 概念设计-调度联合优化 |
-| canonical/aidc-detailed | 2 | 60MW AIDC 详细设计 + EPC 施工排程 |
+| canonical/aidc-60mw | 3 | 60MW AIDC 全生命周期 git-lineage：概念(aidc-60mw-001)→详细(002)→施工排程(003) |
 | （无 canonical，方案库内嵌 task.yaml） | 1 | 60MW AIDC 概念设计多方案比选（aidc-scheme-selection-001） |
 
 ### 3.2 任务结构
@@ -211,10 +225,11 @@ sd-hwe-bench batch --matrix <matrix.yaml> [--dry-run] [--max-workers N]
 
 ## 5. 开发约定
 
-- 测试目标：保持 ≥110 tests 通过
+- 测试目标：保持 ≥110 tests 通过（当前 145 passed / 2 skipped）
 - 新增任务含完整 `task.yaml`、`scaffold/`、`solution/`
 - 所有 solution 必须通过 `piki check`
 - `scoring_layers` 可从 task.yaml 覆盖
+- **生命周期 lineage canonical**：跨阶段递进的工程（如 AIDC 概念→详细→施工排程）用单一 git 仓 + tag 建模——commit 链每个 tag 是一个独立可 `piki check` 的项目状态，`task_manifest.yaml` 把相邻 commit 对映射成任务，`tools/extract_tasks.py --validate` 抽取出 `scaffold(k)/solution(k+1)/task.yaml`。后一阶段 commit 物理包含前一阶段 → 单一事实源、零漂移。富字段（`l7_config/decision_variables/scenario/evaluation/scoring_layers`）写在 manifest 的 commit 条目里，由 `build_task_yaml` 透传。范例：`canonical/aidc-60mw`（base→concept→detailed→epc）。**修改 lineage 任务请改 manifest/源仓后重跑 `extract_tasks.py`，勿手改生成的 `tasks/telecom/aidc-60mw-00x/`。**
 - **分析型 critic（L4/L5）选择由 `src/sd_hwe_bench/critics/registry.py` 注册表驱动**：默认按 `task_type` 推导，可在 task.yaml 用 `evaluation:` 块显式覆盖（`{critic, layer, mode, provides_performance, params}`）。新增评分品类 = 注册一个 builder + 写 critic，不改 `scorer.py`。
 - 批量实验用 `sd-hwe-bench batch --matrix <yaml>`（模型 × 任务矩阵），示例见 `scripts/batch/pass5.yaml`；旧的硬编码批量脚本已归档至 `scripts/legacy/`
 - AIDC 设计任务需在 `l7_config` 中提供 `reference` 以支持合理 score 区分度；EPC 任务需在 `l7_config` 中提供 `deadline_days`、`resource_limits`、`contingency_policy` 等 CPML 参数；detailed-design 任务需包含 `construction/` 吊装与 VDC 交付物；conceptual-design 任务需在 `scenario` 提供 `criteria_weights` 与场景标量、在 `l7_config.scheme_library` 内嵌逐方案确定性准则与 `feasible` 标志（答案键，Agent 不可见），交付 `comparison.yaml` + `recommendation.yaml`

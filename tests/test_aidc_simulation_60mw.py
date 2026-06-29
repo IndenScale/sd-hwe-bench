@@ -14,11 +14,11 @@ from sd_hwe_bench.scorer import score_task
 from sd_hwe_bench.task import TaskInstance
 
 
-PROJECT_60MW = Path(__file__).parent.parent / "canonical" / "datacenter-hall-60mw"
+PROJECT_60MW = Path(__file__).parent.parent / "canonical" / "aidc-60mw"
 TASK_EDGE = Path(__file__).parent.parent / "tasks" / "telecom" / "edge-dc-design-001"
-TASK_CONCEPTUAL = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-conceptual-design-001"
-TASK_DETAILED = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-detailed-design-001"
-TASK_EPC = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-epc-001"
+TASK_CONCEPTUAL = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-60mw-001"
+TASK_DETAILED = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-60mw-002"
+TASK_EPC = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-60mw-003"
 
 
 def test_60mw_adl_loading():
@@ -96,7 +96,7 @@ def test_task_edge_dc_design_solution_passes():
 
 
 def test_task_conceptual_design_solution_passes():
-    """aidc-conceptual-design-001 reference solution passes scoring."""
+    """aidc-60mw-001 (concept) reference solution passes scoring."""
     task = TaskInstance(TASK_CONCEPTUAL)
     score = score_task(
         task_id=task.task_id,
@@ -110,7 +110,7 @@ def test_task_conceptual_design_solution_passes():
 
 
 def test_task_detailed_design_solution_passes():
-    """aidc-detailed-design-001 reference solution passes scoring."""
+    """aidc-60mw-002 (detailed) reference solution passes scoring."""
     task = TaskInstance(TASK_DETAILED)
     score = score_task(
         task_id=task.task_id,
@@ -125,7 +125,7 @@ def test_task_detailed_design_solution_passes():
 
 
 def test_task_epc_solution_passes():
-    """aidc-epc-001 reference solution passes scoring."""
+    """aidc-60mw-003 (epc) reference solution passes scoring."""
     task = TaskInstance(TASK_EPC)
     score = score_task(
         task_id=task.task_id,

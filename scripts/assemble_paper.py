@@ -20,7 +20,7 @@ DIST_DIR = SECTIONS_DIR.parent / "dist"
 # ── Real data (update these after re-running experiments) ──
 N_DATASET_TASKS = 37      # total tasks in tasks/telecom/
 N_EVAL_TASKS = 28         # tasks with current pass@1 experiments (excluding new AIDC tasks)
-N_CANONICAL = 6           # telecom-rack / datacenter / telecom-site / datacenter-hall / datacenter-hall-60mw / aidc-detailed
+N_CANONICAL = 5           # telecom-rack / datacenter / telecom-site / datacenter-hall / aidc-60mw (concept→detailed→epc lineage)
 N_DOMAINS = 4             # rack, datacenter, telecom-site, AIDC
 N_MODELS = 2              # Kimi k2.7, DeepSeek-v4-Pro via CLI
 BEST_PASS1 = 87.1         # Kimi k2.7, pass@1, no repair (122/140)
@@ -94,7 +94,7 @@ lines.append(
     f"我们在 SD-HWE-Bench 上评测了 Kimi k2.7 与 DeepSeek-v4-Pro（均通过 CLI Agent）。"
     f"在完整上下文、pass@1、无 repair 设置下，{N_EVAL_TASKS} 个已评测任务的当前最佳 pass@1 为 **{BEST_PASS1}%**，"
     f"最佳平均加权得分为 **{BEST_SCORE}%**。跨专业综合任务（telecom-cross-001）和 60MW AIDC "
-    f"概念设计-调度联合优化任务（aidc-conceptual-design-001）构成了当前主要的区分度来源。"
+    f"概念设计-调度联合优化任务（aidc-60mw-001）构成了当前主要的区分度来源。"
     f"此外，v7 新增的 detailed-design 与 epc 任务将施工可建性与 CPML 排程纳入评测，以拓展长程优化与工程建造维度。"
     f"我们开源了 canonical ADL 工程、任务提取工具与评测 harness，以支持后续研究与 RLVR 训练。"
 )

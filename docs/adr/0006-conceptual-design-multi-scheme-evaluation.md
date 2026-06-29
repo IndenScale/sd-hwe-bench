@@ -131,5 +131,5 @@ evaluation:
 
 ## 参考
 
-- 现有 AIDC 设计任务：`tasks/telecom/aidc-conceptual-design-001/`（单解 co-design，本 ADR 的前身）。
+- 现有 AIDC 设计任务：`tasks/telecom/aidc-60mw-001/`（单解 co-design，本 ADR 的前身）。
 - 仿真/LCC 引擎：`src/sd_hwe_bench/simulation/`。

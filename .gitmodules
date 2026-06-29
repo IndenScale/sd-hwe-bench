@@ -1,3 +1,6 @@
 [submodule "canonical/telecom-rack"]
 	path = canonical/telecom-rack
 	url = https://github.com/IndenScale/sd-hwe-bench-canonical-telecom-rack.git
+[submodule "canonical/aidc-60mw"]
+	path = canonical/aidc-60mw
+	url = https://github.com/IndenScale/sd-hwe-bench-canonical-aidc-60mw.git

@@ -24,7 +24,7 @@ def _specs(task_id: str) -> list[AnalysisSpec]:
 
 
 def test_epc_task_resolves_to_epc_critic():
-    specs = _specs("aidc-epc-001")
+    specs = _specs("aidc-60mw-003")
     assert len(specs) == 1
     assert specs[0].critic == "epc"
     assert specs[0].layer == "L4"
@@ -33,7 +33,7 @@ def test_epc_task_resolves_to_epc_critic():
 
 
 def test_detailed_design_resolves_perf_plus_constructability():
-    specs = _specs("aidc-detailed-design-001")
+    specs = _specs("aidc-60mw-002")
     by_critic = {s.critic: s for s in specs}
     assert set(by_critic) == {"aidc-performance", "constructability"}
     # L4 performance must precede L5 constructability.
@@ -46,7 +46,7 @@ def test_detailed_design_resolves_perf_plus_constructability():
 
 
 def test_co_design_resolves_to_performance_only():
-    specs = _specs("aidc-conceptual-design-001")
+    specs = _specs("aidc-60mw-001")
     assert [s.critic for s in specs] == ["aidc-performance"]
     assert specs[0].layer == "L4"
 

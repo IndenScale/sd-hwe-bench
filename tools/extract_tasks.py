@@ -253,12 +253,22 @@ def build_task_yaml(
     to_commit: dict[str, Any],
     task_id: str,
 ) -> dict[str, Any]:
-    """Compose the task.yaml content for one task."""
+    """Compose the task.yaml content for one task.
+
+    Optional analysis-critic fields (``l7_config``, ``decision_variables``,
+    ``scenario``, ``evaluation``, ``numeric_assertions``) and a per-commit
+    ``scoring_layers`` override are passed through from the manifest commit
+    entry when present. Manifests that omit them render identical output to
+    before, so existing canonical projects are unaffected.
+    """
     domain = manifest.get("domain", "unknown")
-    return {
+    task: dict[str, Any] = {
         "task_id": task_id,
-        "name": to_commit.get("summary", f"Step {to_commit.get('step', 0)}"),
-        "description": f"Canonical task extracted from {manifest['project']} commit {from_commit['commit']} → {to_commit['commit']}",
+        "name": to_commit.get("name", to_commit.get("summary", f"Step {to_commit.get('step', 0)}")),
+        "description": to_commit.get(
+            "description",
+            f"Canonical task extracted from {manifest['project']} commit {from_commit['commit']} → {to_commit['commit']}",
+        ),
         "domain": domain,
         "source_project": manifest["project"],
         "source_commit_from": from_commit["commit"],
@@ -268,10 +278,17 @@ def build_task_yaml(
         "requirement": to_commit.get("requirement", "").strip(),
         "plugins": [domain],
         "expected_files": to_commit.get("expected_files", []),
-        "scoring_layers": ["L0", "L1", "L2", "L3", "L4"],
+        "scoring_layers": to_commit.get("scoring_layers", ["L0", "L1", "L2", "L3", "L4"]),
         "expected_deliverables": to_commit.get("expected_deliverables", []),
-        "rubrics": [],
+        "rubrics": to_commit.get("rubrics", []),
     }
+    # Pass through rich fields only when supplied, so output stays byte-identical
+    # for manifests that do not use them.
+    for key in ("l7_config", "decision_variables", "scenario", "evaluation", "numeric_assertions"):
+        value = to_commit.get(key)
+        if value:
+            task[key] = value
+    return task
 
 
 def extract_task(

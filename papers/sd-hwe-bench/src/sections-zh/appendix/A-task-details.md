@@ -4,9 +4,9 @@
 
 | # | Task ID | 名称 | 类型 | 难度 |
 |---|---------|------|------|------|
-| 1 | `aidc-conceptual-design-001` | AIDC 60MW 概念设计-调度联合优化 | co-design | hard |
-| 2 | `aidc-detailed-design-001` | AIDC 60MW 详细设计 | detailed-design | hard |
-| 3 | `aidc-epc-001` | AIDC 60MW EPC 施工排程与风险响应 | epc | hard |
+| 1 | `aidc-60mw-001` | AIDC 60MW 概念设计-调度联合优化 | co-design | hard |
+| 2 | `aidc-60mw-002` | AIDC 60MW 详细设计 | detailed-design | hard |
+| 3 | `aidc-60mw-003` | AIDC 60MW EPC 施工排程与风险响应 | epc | hard |
 | 4 | `comprehensive-001` | 综合设计-完整机柜部署 | comprehensive | hard |
 | 5 | `connection-design-001` | 连接设计-服务器上联 | connection-design | medium |
 | 6 | `dc-stage1-foundation-rackmount-deploy-thermal` | 数据中心基础阶段：机柜排、机柜、PDU 与计算节点声明 | comprehensive | medium |
@@ -46,7 +46,7 @@ Table: SD-HWE-Bench 完整任务列表。{#tbl:task-list}
 
 ## A.1 任务来源
 
-全部 37 个任务从 6 个 Canonical 工程的 commit 历史中提取或基于其构建：
+全部 37 个任务从 5 个 Canonical 工程的 commit 历史中提取或基于其构建：
 
 | Canonical 工程 | 任务数 | 领域 | 描述 |
 |----------------|--------|------|------|
@@ -54,8 +54,7 @@ Table: SD-HWE-Bench 完整任务列表。{#tbl:task-list}
 | `canonical/datacenter` | 5 | 数据中心 | 数据中心机房，ToR 组网，地板载荷 |
 | `canonical/telecom-site` | 7 | 电信基站 | 户外基站，天线/RRU/防雷/馈线/结构/热管理/频谱 |
 | `canonical/datacenter-hall` | 1 | AIDC | 14.8kW 小机房设计-调度联合优化 |
-| `canonical/datacenter-hall-60mw` | 1 | AIDC | 60MW 大型 AI 数据中心概念设计-调度联合优化 |
-| `canonical/aidc-detailed` | 2 | AIDC | 60MW AIDC 详细设计与 EPC 施工排程 |
+| `canonical/aidc-60mw` | 3 | AIDC | 60MW AIDC 全生命周期 git-lineage：概念设计（concept tag，系统级模型）→详细设计（detailed tag，+几何/施工）→EPC 施工排程（epc tag，+排程） |
 
 ## A.2 代表性任务结构
 
@@ -80,6 +79,6 @@ tasks/telecom/rack-stage1-init-deploy-connect-verify/
 |------|------|------|-----------|
 | easy | 7 | 19% | telecom-easy-compound-001~005, instance-declare-001, layout-design-001 |
 | medium | 14 | 38% | rack-stage1~2, dc-stage1~2/site-stage2~3, connection-design-001, mating-design-001, telecom-emergent-001~004, edge-dc-design-001 |
-| hard | 16 | 43% | comprehensive-001, rack-stage3~4, dc-stage3/5, site-stage1/4~7, telecom-cross-001~003, aidc-conceptual-design-001, aidc-detailed-design-001, aidc-epc-001 |
+| hard | 16 | 43% | comprehensive-001, rack-stage3~4, dc-stage3/5, site-stage1/4~7, telecom-cross-001~003, aidc-60mw-001, aidc-60mw-002, aidc-60mw-003 |
 
 Table: 当前版本难度分布。{#tbl:difficulty-dist}

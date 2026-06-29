@@ -125,7 +125,7 @@ def verify_60mw_optimized_strategy():
     print("Verify: 60MW Optimized Strategy")
     print("=" * 60)
 
-    project_dir = BENCH_DIR / "canonical" / "datacenter-hall-60mw"
+    project_dir = BENCH_DIR / "canonical" / "aidc-60mw"
     model = AIDCRoomModel.from_adl_project(project_dir, room_id="DC-HALL-60MW")
     weather = AIDCWeatherProfile.synthetic_summer_day(peak_temp_c=35.0, night_temp_c=22.0)
 
@@ -159,7 +159,7 @@ def verify_lcc():
     print("Verify: LCC Model")
     print("=" * 60)
 
-    project_dir = BENCH_DIR / "canonical" / "datacenter-hall-60mw"
+    project_dir = BENCH_DIR / "canonical" / "aidc-60mw"
     model = AIDCRoomModel.from_adl_project(project_dir, room_id="DC-HALL-60MW")
     weather = AIDCWeatherProfile.synthetic_summer_day(peak_temp_c=35.0, night_temp_c=22.0)
     sim = AIDCSimulator(model, weather)
@@ -260,7 +260,7 @@ def main():
     small_model = verify_adl_loading(BENCH_DIR / "canonical" / "datacenter-hall")
 
     # Verify 2: 60MW large room
-    large_model = verify_adl_loading(BENCH_DIR / "canonical" / "datacenter-hall-60mw", room_id="DC-HALL-60MW")
+    large_model = verify_adl_loading(BENCH_DIR / "canonical" / "aidc-60mw", room_id="DC-HALL-60MW")
 
     # Verify 3: Small room summer/winter comparison
     summer = AIDCWeatherProfile.synthetic_summer_day(peak_temp_c=35.0, night_temp_c=25.0)

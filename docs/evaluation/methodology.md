@@ -115,7 +115,7 @@ sd-hwe-bench run <task-id> --actor <spec> --passes 5 --jobs 1
 | telecom-rack | canonical/telecom-rack/ | 42U 机柜扩容 |
 | datacenter | canonical/datacenter/ | 数据中心 ToR 组网 |
 | datacenter-hall | canonical/datacenter-hall/ | AIDC 14.8kW 运营 |
-| datacenter-hall-60mw | canonical/datacenter-hall-60mw/ | 60MW AIDC 高精度模型 |
+| aidc-60mw | canonical/aidc-60mw/ | 60MW AIDC 全生命周期 git-lineage（concept/detailed/epc，3 tasks） |
 | telecom-site | canonical/telecom-site/ | 户外基站 |
 
 ---

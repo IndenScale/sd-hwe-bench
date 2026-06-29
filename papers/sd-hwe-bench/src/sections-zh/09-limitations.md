@@ -8,7 +8,7 @@
 
 当前 37 个任务中 easy 占 19%（7/37），medium 占 38%（14/37），hard 占 43%（16/37）。相比早期版本，hard 比例已显著提升，但部分 hard 任务（如 comprehensive 阶段任务）仍可通过规范查阅和局部修改完成。CLI Native Actor 在已评测的 30 个任务上达到 84–87% pass@1，说明任务集已具备一定区分度，但尚未饱和。
 
-改进方向：已新增 3 个跨专业综合任务（telecom-cross-*）、4 个涌现约束任务（telecom-emergent-*）和 4 个 AIDC 任务（edge-dc-design-001、aidc-conceptual-design-001、aidc-detailed-design-001、aidc-epc-001），初步缓解了区分度不足的问题。未来可继续增加 failure injection 任务和需要跨多个规范文档推断的 hidden constraint 任务。
+改进方向：已新增 3 个跨专业综合任务（telecom-cross-*）、4 个涌现约束任务（telecom-emergent-*）和 4 个 AIDC 任务（edge-dc-design-001、aidc-60mw-001、aidc-60mw-002、aidc-60mw-003），初步缓解了区分度不足的问题。未来可继续增加 failure injection 任务和需要跨多个规范文档推断的 hidden constraint 任务。
 
 ## 9.3 规则区分度
 

@@ -33,10 +33,10 @@ def test_expand_tasks_glob_and_prefix():
     ids = expand_tasks(ds, ["telecom/aidc-*"])
     assert ids, "glob should match aidc tasks"
     assert all(tid.startswith("telecom/aidc-") for tid in ids)
-    assert "telecom/aidc-epc-001" in ids
+    assert "telecom/aidc-60mw-003" in ids
     # Exact id passes through; dedup keeps a single entry.
-    ids2 = expand_tasks(ds, ["telecom/aidc-epc-001", "telecom/aidc-epc-001"])
-    assert ids2 == ["telecom/aidc-epc-001"]
+    ids2 = expand_tasks(ds, ["telecom/aidc-60mw-003", "telecom/aidc-60mw-003"])
+    assert ids2 == ["telecom/aidc-60mw-003"]
 
 
 def test_dry_run_plan_count(tmp_path):
