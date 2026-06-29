@@ -1,0 +1,603 @@
+# 60MW 主机房逻辑布局：4 排 × 50 机柜 = 200 台 42U 机柜
+room_id: DC-HALL-60MW
+placements:
+  - rack_id: RACK-A01
+    row: ROW-A
+    position: 1
+  - rack_id: RACK-A02
+    row: ROW-A
+    position: 2
+  - rack_id: RACK-A03
+    row: ROW-A
+    position: 3
+  - rack_id: RACK-A04
+    row: ROW-A
+    position: 4
+  - rack_id: RACK-A05
+    row: ROW-A
+    position: 5
+  - rack_id: RACK-A06
+    row: ROW-A
+    position: 6
+  - rack_id: RACK-A07
+    row: ROW-A
+    position: 7
+  - rack_id: RACK-A08
+    row: ROW-A
+    position: 8
+  - rack_id: RACK-A09
+    row: ROW-A
+    position: 9
+  - rack_id: RACK-A10
+    row: ROW-A
+    position: 10
+  - rack_id: RACK-A11
+    row: ROW-A
+    position: 11
+  - rack_id: RACK-A12
+    row: ROW-A
+    position: 12
+  - rack_id: RACK-A13
+    row: ROW-A
+    position: 13
+  - rack_id: RACK-A14
+    row: ROW-A
+    position: 14
+  - rack_id: RACK-A15
+    row: ROW-A
+    position: 15
+  - rack_id: RACK-A16
+    row: ROW-A
+    position: 16
+  - rack_id: RACK-A17
+    row: ROW-A
+    position: 17
+  - rack_id: RACK-A18
+    row: ROW-A
+    position: 18
+  - rack_id: RACK-A19
+    row: ROW-A
+    position: 19
+  - rack_id: RACK-A20
+    row: ROW-A
+    position: 20
+  - rack_id: RACK-A21
+    row: ROW-A
+    position: 21
+  - rack_id: RACK-A22
+    row: ROW-A
+    position: 22
+  - rack_id: RACK-A23
+    row: ROW-A
+    position: 23
+  - rack_id: RACK-A24
+    row: ROW-A
+    position: 24
+  - rack_id: RACK-A25
+    row: ROW-A
+    position: 25
+  - rack_id: RACK-A26
+    row: ROW-A
+    position: 26
+  - rack_id: RACK-A27
+    row: ROW-A
+    position: 27
+  - rack_id: RACK-A28
+    row: ROW-A
+    position: 28
+  - rack_id: RACK-A29
+    row: ROW-A
+    position: 29
+  - rack_id: RACK-A30
+    row: ROW-A
+    position: 30
+  - rack_id: RACK-A31
+    row: ROW-A
+    position: 31
+  - rack_id: RACK-A32
+    row: ROW-A
+    position: 32
+  - rack_id: RACK-A33
+    row: ROW-A
+    position: 33
+  - rack_id: RACK-A34
+    row: ROW-A
+    position: 34
+  - rack_id: RACK-A35
+    row: ROW-A
+    position: 35
+  - rack_id: RACK-A36
+    row: ROW-A
+    position: 36
+  - rack_id: RACK-A37
+    row: ROW-A
+    position: 37
+  - rack_id: RACK-A38
+    row: ROW-A
+    position: 38
+  - rack_id: RACK-A39
+    row: ROW-A
+    position: 39
+  - rack_id: RACK-A40
+    row: ROW-A
+    position: 40
+  - rack_id: RACK-A41
+    row: ROW-A
+    position: 41
+  - rack_id: RACK-A42
+    row: ROW-A
+    position: 42
+  - rack_id: RACK-A43
+    row: ROW-A
+    position: 43
+  - rack_id: RACK-A44
+    row: ROW-A
+    position: 44
+  - rack_id: RACK-A45
+    row: ROW-A
+    position: 45
+  - rack_id: RACK-A46
+    row: ROW-A
+    position: 46
+  - rack_id: RACK-A47
+    row: ROW-A
+    position: 47
+  - rack_id: RACK-A48
+    row: ROW-A
+    position: 48
+  - rack_id: RACK-A49
+    row: ROW-A
+    position: 49
+  - rack_id: RACK-A50
+    row: ROW-A
+    position: 50
+  - rack_id: RACK-B01
+    row: ROW-B
+    position: 1
+  - rack_id: RACK-B02
+    row: ROW-B
+    position: 2
+  - rack_id: RACK-B03
+    row: ROW-B
+    position: 3
+  - rack_id: RACK-B04
+    row: ROW-B
+    position: 4
+  - rack_id: RACK-B05
+    row: ROW-B
+    position: 5
+  - rack_id: RACK-B06
+    row: ROW-B
+    position: 6
+  - rack_id: RACK-B07
+    row: ROW-B
+    position: 7
+  - rack_id: RACK-B08
+    row: ROW-B
+    position: 8
+  - rack_id: RACK-B09
+    row: ROW-B
+    position: 9
+  - rack_id: RACK-B10
+    row: ROW-B
+    position: 10
+  - rack_id: RACK-B11
+    row: ROW-B
+    position: 11
+  - rack_id: RACK-B12
+    row: ROW-B
+    position: 12
+  - rack_id: RACK-B13
+    row: ROW-B
+    position: 13
+  - rack_id: RACK-B14
+    row: ROW-B
+    position: 14
+  - rack_id: RACK-B15
+    row: ROW-B
+    position: 15
+  - rack_id: RACK-B16
+    row: ROW-B
+    position: 16
+  - rack_id: RACK-B17
+    row: ROW-B
+    position: 17
+  - rack_id: RACK-B18
+    row: ROW-B
+    position: 18
+  - rack_id: RACK-B19
+    row: ROW-B
+    position: 19
+  - rack_id: RACK-B20
+    row: ROW-B
+    position: 20
+  - rack_id: RACK-B21
+    row: ROW-B
+    position: 21
+  - rack_id: RACK-B22
+    row: ROW-B
+    position: 22
+  - rack_id: RACK-B23
+    row: ROW-B
+    position: 23
+  - rack_id: RACK-B24
+    row: ROW-B
+    position: 24
+  - rack_id: RACK-B25
+    row: ROW-B
+    position: 25
+  - rack_id: RACK-B26
+    row: ROW-B
+    position: 26
+  - rack_id: RACK-B27
+    row: ROW-B
+    position: 27
+  - rack_id: RACK-B28
+    row: ROW-B
+    position: 28
+  - rack_id: RACK-B29
+    row: ROW-B
+    position: 29
+  - rack_id: RACK-B30
+    row: ROW-B
+    position: 30
+  - rack_id: RACK-B31
+    row: ROW-B
+    position: 31
+  - rack_id: RACK-B32
+    row: ROW-B
+    position: 32
+  - rack_id: RACK-B33
+    row: ROW-B
+    position: 33
+  - rack_id: RACK-B34
+    row: ROW-B
+    position: 34
+  - rack_id: RACK-B35
+    row: ROW-B
+    position: 35
+  - rack_id: RACK-B36
+    row: ROW-B
+    position: 36
+  - rack_id: RACK-B37
+    row: ROW-B
+    position: 37
+  - rack_id: RACK-B38
+    row: ROW-B
+    position: 38
+  - rack_id: RACK-B39
+    row: ROW-B
+    position: 39
+  - rack_id: RACK-B40
+    row: ROW-B
+    position: 40
+  - rack_id: RACK-B41
+    row: ROW-B
+    position: 41
+  - rack_id: RACK-B42
+    row: ROW-B
+    position: 42
+  - rack_id: RACK-B43
+    row: ROW-B
+    position: 43
+  - rack_id: RACK-B44
+    row: ROW-B
+    position: 44
+  - rack_id: RACK-B45
+    row: ROW-B
+    position: 45
+  - rack_id: RACK-B46
+    row: ROW-B
+    position: 46
+  - rack_id: RACK-B47
+    row: ROW-B
+    position: 47
+  - rack_id: RACK-B48
+    row: ROW-B
+    position: 48
+  - rack_id: RACK-B49
+    row: ROW-B
+    position: 49
+  - rack_id: RACK-B50
+    row: ROW-B
+    position: 50
+  - rack_id: RACK-C01
+    row: ROW-C
+    position: 1
+  - rack_id: RACK-C02
+    row: ROW-C
+    position: 2
+  - rack_id: RACK-C03
+    row: ROW-C
+    position: 3
+  - rack_id: RACK-C04
+    row: ROW-C
+    position: 4
+  - rack_id: RACK-C05
+    row: ROW-C
+    position: 5
+  - rack_id: RACK-C06
+    row: ROW-C
+    position: 6
+  - rack_id: RACK-C07
+    row: ROW-C
+    position: 7
+  - rack_id: RACK-C08
+    row: ROW-C
+    position: 8
+  - rack_id: RACK-C09
+    row: ROW-C
+    position: 9
+  - rack_id: RACK-C10
+    row: ROW-C
+    position: 10
+  - rack_id: RACK-C11
+    row: ROW-C
+    position: 11
+  - rack_id: RACK-C12
+    row: ROW-C
+    position: 12
+  - rack_id: RACK-C13
+    row: ROW-C
+    position: 13
+  - rack_id: RACK-C14
+    row: ROW-C
+    position: 14
+  - rack_id: RACK-C15
+    row: ROW-C
+    position: 15
+  - rack_id: RACK-C16
+    row: ROW-C
+    position: 16
+  - rack_id: RACK-C17
+    row: ROW-C
+    position: 17
+  - rack_id: RACK-C18
+    row: ROW-C
+    position: 18
+  - rack_id: RACK-C19
+    row: ROW-C
+    position: 19
+  - rack_id: RACK-C20
+    row: ROW-C
+    position: 20
+  - rack_id: RACK-C21
+    row: ROW-C
+    position: 21
+  - rack_id: RACK-C22
+    row: ROW-C
+    position: 22
+  - rack_id: RACK-C23
+    row: ROW-C
+    position: 23
+  - rack_id: RACK-C24
+    row: ROW-C
+    position: 24
+  - rack_id: RACK-C25
+    row: ROW-C
+    position: 25
+  - rack_id: RACK-C26
+    row: ROW-C
+    position: 26
+  - rack_id: RACK-C27
+    row: ROW-C
+    position: 27
+  - rack_id: RACK-C28
+    row: ROW-C
+    position: 28
+  - rack_id: RACK-C29
+    row: ROW-C
+    position: 29
+  - rack_id: RACK-C30
+    row: ROW-C
+    position: 30
+  - rack_id: RACK-C31
+    row: ROW-C
+    position: 31
+  - rack_id: RACK-C32
+    row: ROW-C
+    position: 32
+  - rack_id: RACK-C33
+    row: ROW-C
+    position: 33
+  - rack_id: RACK-C34
+    row: ROW-C
+    position: 34
+  - rack_id: RACK-C35
+    row: ROW-C
+    position: 35
+  - rack_id: RACK-C36
+    row: ROW-C
+    position: 36
+  - rack_id: RACK-C37
+    row: ROW-C
+    position: 37
+  - rack_id: RACK-C38
+    row: ROW-C
+    position: 38
+  - rack_id: RACK-C39
+    row: ROW-C
+    position: 39
+  - rack_id: RACK-C40
+    row: ROW-C
+    position: 40
+  - rack_id: RACK-C41
+    row: ROW-C
+    position: 41
+  - rack_id: RACK-C42
+    row: ROW-C
+    position: 42
+  - rack_id: RACK-C43
+    row: ROW-C
+    position: 43
+  - rack_id: RACK-C44
+    row: ROW-C
+    position: 44
+  - rack_id: RACK-C45
+    row: ROW-C
+    position: 45
+  - rack_id: RACK-C46
+    row: ROW-C
+    position: 46
+  - rack_id: RACK-C47
+    row: ROW-C
+    position: 47
+  - rack_id: RACK-C48
+    row: ROW-C
+    position: 48
+  - rack_id: RACK-C49
+    row: ROW-C
+    position: 49
+  - rack_id: RACK-C50
+    row: ROW-C
+    position: 50
+  - rack_id: RACK-D01
+    row: ROW-D
+    position: 1
+  - rack_id: RACK-D02
+    row: ROW-D
+    position: 2
+  - rack_id: RACK-D03
+    row: ROW-D
+    position: 3
+  - rack_id: RACK-D04
+    row: ROW-D
+    position: 4
+  - rack_id: RACK-D05
+    row: ROW-D
+    position: 5
+  - rack_id: RACK-D06
+    row: ROW-D
+    position: 6
+  - rack_id: RACK-D07
+    row: ROW-D
+    position: 7
+  - rack_id: RACK-D08
+    row: ROW-D
+    position: 8
+  - rack_id: RACK-D09
+    row: ROW-D
+    position: 9
+  - rack_id: RACK-D10
+    row: ROW-D
+    position: 10
+  - rack_id: RACK-D11
+    row: ROW-D
+    position: 11
+  - rack_id: RACK-D12
+    row: ROW-D
+    position: 12
+  - rack_id: RACK-D13
+    row: ROW-D
+    position: 13
+  - rack_id: RACK-D14
+    row: ROW-D
+    position: 14
+  - rack_id: RACK-D15
+    row: ROW-D
+    position: 15
+  - rack_id: RACK-D16
+    row: ROW-D
+    position: 16
+  - rack_id: RACK-D17
+    row: ROW-D
+    position: 17
+  - rack_id: RACK-D18
+    row: ROW-D
+    position: 18
+  - rack_id: RACK-D19
+    row: ROW-D
+    position: 19
+  - rack_id: RACK-D20
+    row: ROW-D
+    position: 20
+  - rack_id: RACK-D21
+    row: ROW-D
+    position: 21
+  - rack_id: RACK-D22
+    row: ROW-D
+    position: 22
+  - rack_id: RACK-D23
+    row: ROW-D
+    position: 23
+  - rack_id: RACK-D24
+    row: ROW-D
+    position: 24
+  - rack_id: RACK-D25
+    row: ROW-D
+    position: 25
+  - rack_id: RACK-D26
+    row: ROW-D
+    position: 26
+  - rack_id: RACK-D27
+    row: ROW-D
+    position: 27
+  - rack_id: RACK-D28
+    row: ROW-D
+    position: 28
+  - rack_id: RACK-D29
+    row: ROW-D
+    position: 29
+  - rack_id: RACK-D30
+    row: ROW-D
+    position: 30
+  - rack_id: RACK-D31
+    row: ROW-D
+    position: 31
+  - rack_id: RACK-D32
+    row: ROW-D
+    position: 32
+  - rack_id: RACK-D33
+    row: ROW-D
+    position: 33
+  - rack_id: RACK-D34
+    row: ROW-D
+    position: 34
+  - rack_id: RACK-D35
+    row: ROW-D
+    position: 35
+  - rack_id: RACK-D36
+    row: ROW-D
+    position: 36
+  - rack_id: RACK-D37
+    row: ROW-D
+    position: 37
+  - rack_id: RACK-D38
+    row: ROW-D
+    position: 38
+  - rack_id: RACK-D39
+    row: ROW-D
+    position: 39
+  - rack_id: RACK-D40
+    row: ROW-D
+    position: 40
+  - rack_id: RACK-D41
+    row: ROW-D
+    position: 41
+  - rack_id: RACK-D42
+    row: ROW-D
+    position: 42
+  - rack_id: RACK-D43
+    row: ROW-D
+    position: 43
+  - rack_id: RACK-D44
+    row: ROW-D
+    position: 44
+  - rack_id: RACK-D45
+    row: ROW-D
+    position: 45
+  - rack_id: RACK-D46
+    row: ROW-D
+    position: 46
+  - rack_id: RACK-D47
+    row: ROW-D
+    position: 47
+  - rack_id: RACK-D48
+    row: ROW-D
+    position: 48
+  - rack_id: RACK-D49
+    row: ROW-D
+    position: 49
+  - rack_id: RACK-D50
+    row: ROW-D
+    position: 50

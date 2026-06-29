@@ -1,0 +1,265 @@
+id: DC-HALL-60MW
+family: RoomFamily
+name: AIDC 60MW 主机房
+description: '80m × 40m × 5.5m 主机房，4 排 × 50 机柜 = 200 台 42U 机柜。 设计 IT 负载 60MW，单机柜 300kW
+  高密度。 支持风冷（中央冷水机组 + CRAH）与液冷（CDU + 冷板）两种冷却架构。 中压 110/10kV 配电，双路 40MVA 变压器 N+1，20MWh
+  储能，5MWp 光伏。
+
+  '
+length_mm: 80000
+width_mm: 40000
+height_mm: 5500
+floor_area_m2: 3200.0
+room_volume_m3: 176000.0
+thermal:
+  envelope_u_value_w_m2k: 0.35
+  envelope_area_m2: 11680.0
+  thermal_capacity_kj_k: 4500000.0
+  design_indoor_temp_c: 25.0
+  supply_air_temp_c: 20.0
+  hot_aisle_temp_limit_c: 45.0
+rack_rows:
+- id: ROW-A
+  name: A 排（冷通道侧）
+  rack_count: 50
+  rack_power_capacity_kw: 300.0
+  rack_cooling_capacity_kw: 300.0
+- id: ROW-B
+  name: B 排（热通道侧）
+  rack_count: 50
+  rack_power_capacity_kw: 300.0
+  rack_cooling_capacity_kw: 300.0
+- id: ROW-C
+  name: C 排（冷通道侧）
+  rack_count: 50
+  rack_power_capacity_kw: 300.0
+  rack_cooling_capacity_kw: 300.0
+- id: ROW-D
+  name: D 排（热通道侧）
+  rack_count: 50
+  rack_power_capacity_kw: 300.0
+  rack_cooling_capacity_kw: 300.0
+cooling:
+  architecture: liquid-cooled
+  total_capacity_kw: 80000.0
+  units:
+  - id: CHILLER-01
+    model: chiller-10mw
+    row: ROW-A
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+  - id: CHILLER-02
+    model: chiller-10mw
+    row: ROW-B
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+  - id: CHILLER-03
+    model: chiller-10mw
+    row: ROW-C
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+  - id: CHILLER-04
+    model: chiller-10mw
+    row: ROW-D
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+  - id: CHILLER-05
+    model: chiller-10mw
+    row: ROW-A
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+  - id: CHILLER-06
+    model: chiller-10mw
+    row: ROW-B
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+  - id: CHILLER-07
+    model: chiller-10mw
+    row: ROW-C
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+  - id: CHILLER-08
+    model: chiller-10mw
+    row: ROW-D
+    capacity_kw: 10000.0
+    cop_nominal: 4.5
+    cop_curve:
+    - - 0.2
+      - 3.0
+    - - 0.4
+      - 3.8
+    - - 0.6
+      - 4.5
+    - - 0.8
+      - 4.8
+    - - 1.0
+      - 4.5
+    free_cooling_threshold_c: 24.0
+    water_consumption_l_per_kwh: 1.2
+power:
+  grid_capacity_kw: 80000.0
+  voltage_kv: 10.0
+  solar_capacity_kwp: 5000.0
+  battery_capacity_kwh: 20000.0
+  battery_charge_efficiency: 0.94
+  battery_max_charge_rate_kw: 5000.0
+  battery_max_discharge_rate_kw: 5000.0
+  pue_mechanical_baseline: 0.05
+  pue_electrical_loss: 0.02
+  transformers:
+  - id: TR-A
+    model: transformer-40mva
+    capacity_mva: 40.0
+    efficiency_curve:
+    - - 0.1
+      - 0.985
+    - - 0.25
+      - 0.992
+    - - 0.5
+      - 0.996
+    - - 0.75
+      - 0.9975
+    - - 1.0
+      - 0.996
+  - id: TR-B
+    model: transformer-40mva
+    capacity_mva: 40.0
+    efficiency_curve:
+    - - 0.1
+      - 0.985
+    - - 0.25
+      - 0.992
+    - - 0.5
+      - 0.996
+    - - 0.75
+      - 0.9975
+    - - 1.0
+      - 0.996
+  electricity_price_profile:
+  - hours: 0-7,23
+    price: 0.35
+  - hours: 8-11,13-17,22
+    price: 0.65
+  - hours: 12,18-21
+    price: 1.05
+  grid_carbon_intensity_profile:
+  - hours: 0-23
+    intensity: 0.581
+lifecycle:
+  project_lifetime_years: 15
+  discount_rate: 0.08
+  capex:
+    chiller_10mw_cny_per_kw: 1200.0
+    cdu_2mw_cny_per_kw: 2500.0
+    cooling_tower_cny_per_kw: 300.0
+    transformer_40mva_cny_per_mva: 800000.0
+    ups_cny_per_kw: 400.0
+    battery_cny_per_kwh: 1200.0
+    solar_cny_per_kwp: 3500.0
+    rack_cny_per_unit: 80000.0
+    civil_cny_per_m2: 12000.0
+  opex_rate:
+    cooling: 0.04
+    electrical: 0.025
+    battery: 0.03
+    solar: 0.015
+  water_price_cny_per_m3: 5.0
+  revenue:
+    it_revenue_cny_per_kw_year: 8000.0
+    gpu_depreciation_years: 4
+rack_bay_spacing_mm: 2000
+rack_inline_spacing_mm: 600
+wall_margin_mm: 2000
+floor_height_mm: 400
+tile_size_mm: 600

@@ -1,0 +1,14 @@
+id: raised-floor-600
+family: FacilityFamily
+facility_type: raised-floor
+name: 600mm 抬高地板
+width_mm: 600
+depth_mm: 600
+height_mm: 400
+weight_kg: 20
+load_capacity:
+  uniform_load_kg_m2: 1500
+  max_concentrated_load_kg: 1800
+  dynamic_factor: 1.2
+panel_width_mm: 600
+panel_depth_mm: 600

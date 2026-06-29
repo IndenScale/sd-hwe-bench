@@ -2,17 +2,17 @@
 
 ## 9.1 领域覆盖
 
-当前 SD-HWE-Bench 仅覆盖 telecom 领域（机柜扩容、数据中心、户外基站三个传统子领域，以及 AIDC 运营/协同设计）。其他硬件工程领域（机械结构、PCB 设计、管道系统、HVAC）尚未纳入。多领域扩展需要构建新的 canonical 工程和对应的 DTS 规则插件，这是明确的未来工作方向。
+当前 SD-HWE-Bench 仅覆盖 telecom 领域（机柜扩容、数据中心、户外基站三个传统子领域，以及 AIDC 设计/施工/运营）。其他硬件工程领域（机械结构、PCB 设计、管道系统、HVAC）尚未纳入。多领域扩展需要构建新的 canonical 工程和对应的 DTS 规则插件，这是明确的未来工作方向。
 
 ## 9.2 任务难度分布
 
 当前 37 个任务中 easy 占 19%（7/37），medium 占 38%（14/37），hard 占 43%（16/37）。相比早期版本，hard 比例已显著提升，但部分 hard 任务（如 comprehensive 阶段任务）仍可通过规范查阅和局部修改完成。CLI Native Actor 在已评测的 30 个任务上达到 84–87% pass@1，说明任务集已具备一定区分度，但尚未饱和。
 
-改进方向：已新增 3 个跨专业综合任务（telecom-cross-*）、4 个涌现约束任务（telecom-emergent-*）和 4 个 AIDC 任务，初步缓解了区分度不足的问题。未来可继续增加 failure injection 任务和需要跨多个规范文档推断的 hidden constraint 任务。
+改进方向：已新增 3 个跨专业综合任务（telecom-cross-*）、4 个涌现约束任务（telecom-emergent-*）和 4 个 AIDC 任务（edge-dc-design-001、aidc-conceptual-design-001、aidc-detailed-design-001、aidc-epc-001），初步缓解了区分度不足的问题。未来可继续增加 failure injection 任务和需要跨多个规范文档推断的 hidden constraint 任务。
 
 ## 9.3 规则区分度
 
-虽然每个任务平均有 25–35 条 DTS 规则，但当前规则集中在预防性检查（schema 校验、引用完整性、静态工程约束），缺少需要深度推理的压力测试级约束（如全局功率优化、cost-performance tradeoff、多目标 Pareto 优化）。AIDC 任务通过 Performance Score 引入了优化类诊断指标，但这些指标目前仅作参考，未计入 resolved 判定。
+虽然每个任务平均有 25–35 条 DTS 规则，但当前规则集中在预防性检查（schema 校验、引用完整性、静态工程约束），缺少需要深度推理的压力测试级约束（如全局功率优化、cost-performance tradeoff、多目标 Pareto 优化、施工网络鲁棒性）。AIDC 任务通过 Performance Score 引入了优化类诊断指标，EPC 任务通过 CPML 排程引入了 deadline/资源/应急预案硬约束，但这些指标目前仅作参考（或部分硬约束未充分压力化），未完全计入 resolved 判定。
 
 改进方向：未来可引入 multi-rack 全局约束、cross-domain joint constraint、更复杂的 AIDC 多目标优化规则，并将部分 Performance Score 约束转化为硬约束以提升区分度。
 

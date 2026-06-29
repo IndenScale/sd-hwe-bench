@@ -1,0 +1,10 @@
+id: ROW-A
+family: RackRowFamily
+name: ROW-A 机柜排
+room_id: DC-HALL-60MW
+row_index: 0
+orientation_deg: 90
+centerline_y_mm: 6000
+start_x_mm: 2000
+rack_count: 50
+rack_inline_spacing_mm: 1200

@@ -1,0 +1,16 @@
+id: VEHICLE-PATH
+family: SpaceFamily
+space_type: vehicle-path
+name: 主机房物流通道
+room_id: DC-HALL-60MW
+shape:
+  type: corridor
+  corridor_width_mm: 4000
+  corridor_height_mm: 5000
+  centerline:
+  - x_mm: 1000
+    y_mm: 20000
+    z_mm: 0
+  - x_mm: 79000
+    y_mm: 20000
+    z_mm: 0

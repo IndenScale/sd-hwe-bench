@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typer
 
-from sd_hwe_bench.commands import archive, leaderboard, list, run, run_repair, score
+from sd_hwe_bench.commands import archive, batch, leaderboard, list, run, run_repair, score
 
 app = typer.Typer(
     name="sd-hwe-bench",
@@ -19,6 +19,7 @@ run_repair.register(app)
 score.register(app)
 archive.register(app)
 leaderboard.register(app)
+batch.register(app)
 
 
 def main() -> None:

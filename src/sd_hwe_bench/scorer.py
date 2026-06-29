@@ -32,6 +32,40 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def _apply_analysis_result(score: TaskScore, spec: Any, res: CriticResult) -> None:
+    """Fold an analysis critic's result into the appropriate scoring layer.
+
+    ``replace`` overwrites the layer and adds its weight when passed; ``merge``
+    only acts on failure (flip the existing layer to failed and remove its
+    weight) — this matches the legacy L4 (epc/performance) and L5
+    (constructability) handling exactly.
+    """
+    layer = spec.layer
+    if spec.mode == "merge":
+        ls = score.layers.get(layer)
+        if ls is None:
+            ls = LayerScore(layer=layer, total=1, passed=0, failed=1, errors=[])
+            score.layers[layer] = ls
+        if not res.passed:
+            if ls.passed:
+                score.overall_score -= settings.LAYER_WEIGHTS.get(layer, 0.0)
+            ls.passed = 0
+            ls.failed = 1
+            ls.errors.extend(res.comments)
+    else:  # replace
+        score.layers[layer] = LayerScore(
+            layer=layer,
+            total=1,
+            passed=1 if res.passed else 0,
+            failed=0 if res.passed else 1,
+            errors=res.comments,
+        )
+        if res.passed:
+            score.overall_score += settings.LAYER_WEIGHTS.get(layer, 0.0)
+    if spec.provides_performance:
+        score.performance_score = res.score
+
+
 @dataclasses.dataclass
 class LayerScore:
     """Score for one check layer."""
@@ -365,55 +399,19 @@ def score_task(
                 l3.errors.extend(numeric_res.comments)
                 score.overall_score -= settings.LAYER_WEIGHTS.get("L3", 0.0)
 
-    # 2.6 L4 AIDC simulation compliance (reduced-order dynamic model check)
-    scoring_layers_list = getattr(task.metadata, "scoring_layers", []) if hasattr(task, 'metadata') else []
-    # Accept both legacy L7-Performance and new L4 simulation markers.
-    if "L4" in scoring_layers_list or "L7-Performance" in scoring_layers_list:
-        from sd_hwe_bench.critics.performance import PerformanceCritic
-        from sd_hwe_bench.simulation.model import AIDCWeatherProfile
+    # 2.6 Analysis critics (L4 dynamic model / L5 constructability), resolved
+    # declaratively via the critic registry instead of a hardcoded task_type ladder.
+    from sd_hwe_bench.critics.registry import (
+        build_context,
+        build_critic,
+        resolve_analysis_critics,
+    )
 
-        sim_config = getattr(task.metadata, "l7_config", {}) or getattr(task.metadata, "l4_config", {}) if hasattr(task, 'metadata') else {}
-        weather_type = sim_config.get("weather", "summer")
-        sim_hours = sim_config.get("hours", 48)
-        weights = sim_config.get("objective_weights", [0.3, 0.3, 0.15, 0.25])
-
-        if weather_type == "summer":
-            weather = AIDCWeatherProfile.synthetic_summer_day()
-        elif weather_type == "winter":
-            weather = AIDCWeatherProfile.synthetic_winter_day()
-        else:
-            weather = AIDCWeatherProfile.synthetic_summer_day()
-
-        import sd_hwe_bench
-        repo_root = Path(sd_hwe_bench.__file__).parent.parent.parent
-        canonical_cfg = sim_config.get("canonical_project", "datacenter-hall")
-        canonical_dir = repo_root / "canonical" / canonical_cfg
-        if (project_dir / "rooms").exists() and any((project_dir / "rooms").glob("*.yaml")):
-            perf_project_dir = None
-        else:
-            perf_project_dir = canonical_dir
-
-        perf = PerformanceCritic(
-            project_dir=perf_project_dir,
-            canonical_project=canonical_dir,
-            weather=weather,
-            simulation_hours=sim_hours,
-            objective_weights=weights,
-            reference=sim_config.get("reference"),
-        )
-        perf_res = perf.evaluate(project_dir, task)
-        score.critic_results.append(perf_res)
-        score.layers["L4"] = LayerScore(
-            layer="L4",
-            total=1,
-            passed=1 if perf_res.passed else 0,
-            failed=0 if perf_res.passed else 1,
-            errors=perf_res.comments,
-        )
-        # Simulation compliance contributes to L4 weight; performance score is diagnostic.
-        if perf_res.passed:
-            score.overall_score += settings.LAYER_WEIGHTS.get("L4", 0.0)
-        score.performance_score = perf_res.score
+    ctx = build_context(task, project_dir)
+    for spec in resolve_analysis_critics(task):
+        analysis_res = build_critic(spec, ctx).evaluate(project_dir, task)
+        score.critic_results.append(analysis_res)
+        _apply_analysis_result(score, spec, analysis_res)
 
     # 3. Deliverable generation check (critical but not a scoring layer)
     if expected_deliverables and runner is not None:

@@ -1,0 +1,15 @@
+id: DOOR-MAIN
+family: FacilityFamily
+model: main-door
+facility_type: door
+name: 主门
+room_id: DC-HALL-60MW
+floor_x_mm: 77000
+floor_y_mm: 20000
+position_x_mm: 77000
+position_y_mm: 20000
+position_z_mm: 0
+orientation_deg: 90
+kinematics:
+  type: swing
+  sweep_radius_mm: 3000

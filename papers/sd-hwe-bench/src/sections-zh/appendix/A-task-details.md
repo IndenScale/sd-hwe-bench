@@ -4,17 +4,17 @@
 
 | # | Task ID | 名称 | 类型 | 难度 |
 |---|---------|------|------|------|
-| 1 | `aidc-co-design-001` | AIDC 机房设计-调度联合优化 | co-design | hard |
-| 2 | `aidc-co-design-002` | AIDC 60MW 设计-调度联合优化 | co-design | hard |
-| 3 | `aidc-operation-001` | AIDC 夏季运营优化 | comprehensive | medium |
-| 4 | `aidc-operation-002` | AIDC 60MW 夏季运营优化 | comprehensive | hard |
-| 5 | `comprehensive-001` | 综合设计-完整机柜部署 | comprehensive | hard |
-| 6 | `connection-design-001` | 连接设计-服务器上联 | connection-design | medium |
-| 7 | `dc-stage1-foundation-rackmount-deploy-thermal` | 数据中心基础阶段：机柜排、机柜、PDU 与计算节点声明 | comprehensive | medium |
-| 8 | `dc-stage2-foundation-rackmount-deploy-thermal` | 数据中心机柜入排配合阶段 | comprehensive | medium |
-| 9 | `dc-stage3-foundation-rackmount-deploy-thermal` | 数据中心设备部署阶段：RACK-A01 完整部署 | comprehensive | hard |
-| 10 | `dc-stage4-foundation-rackmount-deploy-thermal` | 数据中心散热阶段：列间空调声明与布线配合 | comprehensive | medium |
-| 11 | `dc-stage5-spine-leaf-topology` | 数据中心网络阶段：Spine-Leaf 组网全互联设计 | comprehensive | hard |
+| 1 | `aidc-conceptual-design-001` | AIDC 60MW 概念设计-调度联合优化 | co-design | hard |
+| 2 | `aidc-detailed-design-001` | AIDC 60MW 详细设计 | detailed-design | hard |
+| 3 | `aidc-epc-001` | AIDC 60MW EPC 施工排程与风险响应 | epc | hard |
+| 4 | `comprehensive-001` | 综合设计-完整机柜部署 | comprehensive | hard |
+| 5 | `connection-design-001` | 连接设计-服务器上联 | connection-design | medium |
+| 6 | `dc-stage1-foundation-rackmount-deploy-thermal` | 数据中心基础阶段：机柜排、机柜、PDU 与计算节点声明 | comprehensive | medium |
+| 7 | `dc-stage2-foundation-rackmount-deploy-thermal` | 数据中心机柜入排配合阶段 | comprehensive | medium |
+| 8 | `dc-stage3-foundation-rackmount-deploy-thermal` | 数据中心设备部署阶段：RACK-A01 完整部署 | comprehensive | hard |
+| 9 | `dc-stage4-foundation-rackmount-deploy-thermal` | 数据中心散热阶段：列间空调声明与布线配合 | comprehensive | medium |
+| 10 | `dc-stage5-spine-leaf-topology` | 数据中心网络阶段：Spine-Leaf 组网全互联设计 | comprehensive | hard |
+| 11 | `edge-dc-design-001` | 边缘数据中心设计-调度联合优化 | co-design | medium |
 | 12 | `instance-declare-001` | 实例声明-服务器部署 | instance-declaration | easy |
 | 13 | `layout-design-001` | 布局设计-机柜部署 | layout-design | easy |
 | 14 | `mating-design-001` | 配合设计-机柜装配与供电 | mating-design | medium |
@@ -44,19 +44,20 @@
 
 Table: SD-HWE-Bench 完整任务列表。{#tbl:task-list}
 
-# A.1 任务来源
+## A.1 任务来源
 
-全部 37 个任务从 5 个 Canonical 工程的 commit 历史中提取或基于其构建：
+全部 37 个任务从 6 个 Canonical 工程的 commit 历史中提取或基于其构建：
 
 | Canonical 工程 | 任务数 | 领域 | 描述 |
 |----------------|--------|------|------|
 | `canonical/telecom-rack` | 4 | 电信机柜 | 42U 机柜扩容，PDU/设备/光纤/跨机柜 |
 | `canonical/datacenter` | 5 | 数据中心 | 数据中心机房，ToR 组网，地板载荷 |
 | `canonical/telecom-site` | 7 | 电信基站 | 户外基站，天线/RRU/防雷/馈线/结构/热管理/频谱 |
-| `canonical/datacenter-hall` | 2 | AIDC | 14.8kW 小机房运营与设计-调度联合优化 |
-| `canonical/datacenter-hall-60mw` | 2 | AIDC | 60MW 大型 AI 数据中心运营与设计-调度联合优化 |
+| `canonical/datacenter-hall` | 1 | AIDC | 14.8kW 小机房设计-调度联合优化 |
+| `canonical/datacenter-hall-60mw` | 1 | AIDC | 60MW 大型 AI 数据中心概念设计-调度联合优化 |
+| `canonical/aidc-detailed` | 2 | AIDC | 60MW AIDC 详细设计与 EPC 施工排程 |
 
-# A.2 代表性任务结构
+## A.2 代表性任务结构
 
 以 `rack-stage1-init-deploy-connect-verify` 为例，任务目录结构如下：
 
@@ -73,12 +74,12 @@ tasks/telecom/rack-stage1-init-deploy-connect-verify/
 `task.yaml` 包含：任务名称、类型、难度、需求描述、评分层配置。
 评分层可在任务级别覆盖——例如 compound-001 不含 L3（工程约束）层，AIDC 任务启用 L4 仿真合规层。
 
-# A.3 难度分布
+## A.3 难度分布
 
 | 难度 | 数量 | 占比 | 代表性任务 |
 |------|------|------|-----------|
 | easy | 7 | 19% | telecom-easy-compound-001~005, instance-declare-001, layout-design-001 |
-| medium | 14 | 38% | rack-stage1~2, dc-stage1~2/site-stage2~3, connection-design-001, mating-design-001, telecom-emergent-001~004, aidc-operation-001 |
-| hard | 16 | 43% | comprehensive-001, rack-stage3~4, dc-stage3/5, site-stage1/4~7, telecom-cross-001~003, aidc-operation-002, aidc-co-design-001/002 |
+| medium | 14 | 38% | rack-stage1~2, dc-stage1~2/site-stage2~3, connection-design-001, mating-design-001, telecom-emergent-001~004, edge-dc-design-001 |
+| hard | 16 | 43% | comprehensive-001, rack-stage3~4, dc-stage3/5, site-stage1/4~7, telecom-cross-001~003, aidc-conceptual-design-001, aidc-detailed-design-001, aidc-epc-001 |
 
 Table: 当前版本难度分布。{#tbl:difficulty-dist}

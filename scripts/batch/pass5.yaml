@@ -1,0 +1,25 @@
+# Example batch matrix for pass@5 across kimi + deepseek.
+# Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/pass5.yaml
+# Preview only:  uv run sd-hwe-bench batch --matrix scripts/batch/pass5.yaml --dry-run
+run_dir: runs/pass5-example
+passes: 5
+sandbox: none
+timeout: 600
+max_workers: 4
+models:
+  kimi: kimi
+  deepseek-v4-pro: codex:deepseek-v4-pro
+tasks:
+  - telecom/comprehensive-001
+  - telecom/connection-design-001
+  - telecom/instance-declare-001
+  - telecom/layout-design-001
+  - telecom/mating-design-001
+  - telecom/dc-stage*
+  - telecom/rack-stage*
+  - telecom/site-stage*
+  - telecom/telecom-cross-*
+  - telecom/telecom-easy-compound-*
+  - telecom/telecom-emergent-*
+  - telecom/aidc-*
+  - telecom/edge-dc-design-001

@@ -82,10 +82,14 @@ def test_fire_resistance(assembly):
 
 **检查内容**：
 
-- **AIDC 仿真合规**：对 AIDC 主机房模型进行全年 8760 小时（或 48h 简化）步进仿真，验证：
+- **AIDC 设计任务仿真合规**：对 AIDC 主机房模型进行全年 8760 小时（或 48h 简化）步进仿真，验证：
   - 进风温度不超过安全阈值；
   - PUE、电费、碳排、水耗满足任务声明的硬约束；
   - 对于 `co-design` 任务，TCO/NPV/LCOE 满足约束。
+- **EPC 施工排程仿真**：对 CPML 活动网络进行离散事件调度，验证：
+  - 项目完工日期不超过 `deadline_days`；
+  - 任意时刻人工/机械/材料资源使用不超过可用量；
+  - 应急预案决策合法（如雨天不进行室外吊装、加班需额外成本）。
 - **防火检查**：施加热荷载（时间、温度曲线），验证被保护结构的温升是否低于燃点。防火等级（如 EI60/EI120）是打包了多个 ADA test case 的语法糖。
 - **承重/结构检查**：施加重力荷载和地震荷载，验证应力分布是否低于材料屈服强度。
 - **散热检查**：施加热功率荷载，验证散热路径是否满足设计要求（区别于 ASA 的间距声明——ADA 实际模拟热传导/对流）。
@@ -93,19 +97,23 @@ def test_fire_resistance(assembly):
 - **硬碰撞/几何干涉**：施加碰撞体，检测 Part 包围盒在水密/干密条件下是否存在干涉（传统任务中由 L5 几何规则覆盖；AIDC 任务中不启用）。
 - **电缆电压降验证**：施加额定电流荷载，计算给定长度和线规的电压降是否在允许范围内。
 
-**设计原则**：ADA 不要求高精度 CFD/FEA 仿真。当前 DTS 使用解析公式和轻量代理模型（包围盒碰撞、集总参数热模型、简支梁公式等）。这足以筛除明显违规，并为未来接入高精度仿真后端（参见 §9.2）提供接口预留。
+**设计原则**：ADA 不要求高精度 CFD/FEA 仿真。当前 DTS 使用解析公式和轻量代理模型（包围盒碰撞、集总参数热模型、简支梁公式、CPML 离散事件调度等）。这足以筛除明显违规，并为未来接入高精度仿真后端（参见 §9.2）提供接口预留。
 
-**检查延迟**：1–5 秒（AIDC 全年仿真约 1–3 秒）
+**检查延迟**：1–5 秒（AIDC 全年仿真约 1–3 秒，CPML 排程约 0.5–2 秒）
 
-### 5.1.6 L5：几何干涉与误差分析
+### 5.1.6 L5：几何干涉、误差分析与施工可建性
 
-**检查内容**：几何碰撞、rack 空间冲突、装配误差等。
+**检查内容**：几何碰撞、rack 空间冲突、装配误差、施工可建性等。
 
 - **3D 包围盒碰撞**：Part 在三维空间中的占用体是否存在重叠。
 - **U 位/Rack 空间**：机柜内 Part 的 U 位范围是否冲突、是否超出机柜高度。
 - **装配误差**：机械配合的公差/间隙是否满足设计要求。
+- **施工可建性**（detailed-design / epc 任务）：
+  - 重型设备（冷水机组、变压器等）是否配置吊装方案：起重机吨位 ≥ 1.25× 设备重量、作业半径、净空高度、吊点位置；
+  - 主吊车在设备到场至就位期间持续在场；
+  - 至少两个 VDC 工作面，含编号、区域、里程碑、前置条件。
 
-这些规则由 piki 的几何规则引擎执行（如 `TELECOM-RACK-001`/`TELECOM-COLLISION-001`），映射为 L5 失败。
+这些规则由 piki 几何规则引擎与 `ConstructabilityCritic` 共同执行，映射为 L5 失败。
 
 ### 5.1.7 L6：高精度物理仿真（预留）
 
@@ -119,11 +127,16 @@ def test_fire_resistance(assembly):
 
 ### 5.1.8 Performance Score：诊断性性能评分
 
-针对 AIDC 运营优化和 co-design 任务，DTS 在通过 L0–L4 后计算 **Performance Score**，作为诊断指标：
+针对 AIDC 设计任务与 EPC 任务，DTS 在通过 L0–L4 后计算 **Performance Score**，作为诊断指标：
 
-- **物理性能指标**：全年 PUE、总电费（CNY）、总碳排放（kg CO₂）、总水耗（m³）。
-- **经济指标**：15 年 TCO、NPV、LCOE（由 `lifecycle.py` 计算）。
-- **评分方式**：采用相对归一化以避免天花板效应：
+- **AIDC 设计任务**：
+  - 物理性能指标：全年 PUE、总电费（CNY）、总碳排放（kg CO₂）、总水耗（m³）。
+  - 经济指标：15 年 TCO、NPV、LCOE（由 `lifecycle.py` 计算）。
+- **EPC 任务**：
+  - 工期指标：P90 完工天数。
+  - 成本指标：P90 总成本（含正常施工、加班、应急预案成本）。
+
+**评分方式**：采用相对归一化以避免天花板效应：
 
 $$\text{score}_i = \max\left(0, \min\left(1, \frac{v_i^{\text{baseline}} - v_i^{\text{agent}}}{v_i^{\text{baseline}} - v_i^{\text{reference}}}\right)\right)$$
 
@@ -133,7 +146,11 @@ $$\text{score}_i = \max\left(0, \min\left(1, \frac{v_i^{\text{baseline}} - v_i^{
 
 $$\text{Performance Score} = \lambda_{\text{performance}} \cdot \text{score}_{\text{performance}} + \lambda_{\text{lcc}} \cdot \text{score}_{\text{lcc}}$$
 
-**Performance Score 不计入 overall_score，仅用于 leaderboard 诊断和 AIDC 任务区分度分析。**
+对于 `epc` 任务，Performance Score 为 P90 工期与 P90 成本的加权和：
+
+$$\text{Performance Score} = \lambda_{\text{duration}} \cdot \text{score}_{\text{duration}} + \lambda_{\text{cost}} \cdot \text{score}_{\text{cost}}$$
+
+**Performance Score 不计入 overall_score，仅用于 leaderboard 诊断和任务区分度分析。**
 
 ### 5.1.9 交付物检查（Deliverable Check）
 
@@ -154,17 +171,17 @@ $$\text{Performance Score} = \lambda_{\text{performance}} \cdot \text{score}_{\t
 | L1 | 语义层 | 字段值 | 断言 | Schema 校验、类型系统 | <50ms |
 | L2 | 引用完整性 | 符号图 | 解析 | Part/端口引用可解析、无循环依赖 | <100ms |
 | L3 | ASA 装配体静态分析 | 物理装配体 | 静态断言 | 功率预算、U位、端口兼容、散热间距 | <500ms |
-| L4 | ADA 装配体动态分析 | 物理装配体 | 激励→响应→阈值 | AIDC 仿真合规、防火、承重、电压降 | 1-5s |
-| L5 | 几何干涉与误差分析 | 物理装配体 | 几何断言 | 3D 碰撞、rack 空间、装配误差 | 1-5s |
+| L4 | ADA 装配体动态分析 | 物理装配体 | 激励→响应→阈值 | AIDC 仿真合规 / CPML 施工排程 / 防火、承重、电压降 | 1-5s |
+| L5 | 几何干涉、误差分析与可建性 | 物理装配体 | 几何断言 + 施工检查 | 3D 碰撞、rack 空间、吊装/VDC | 1-5s |
 | L6 | 高精度物理仿真 | 物理场模型 | FEM/CFD（预留） | 气流、应力、电磁兼容 | — |
-| — | Performance Score | 策略与设计 | 相对归一化 | PUE、TCO、NPV、LCOE | <100ms |
+| — | Performance Score | 策略与设计/施工方案 | 相对归一化 | PUE、TCO、NPV、LCOE / P90 工期、P90 成本 | <100ms |
 | — | Deliverable Check | 生成物文件 | 存在性断言 | piki generate 成功、期望文件齐全 | 数秒 |
 
 Table: DTS 分层检查体系。{#tbl:dts-layers}
 
 DTS 的关键设计特点：**低层通过后才执行高层**——如果 L0 失败，L1–L5 不再检测。这种"快速失败"设计在批量评测场景中显著降低时间成本。L3（ASA）和 L4（ADA）的区别在于：ASA 只看声明即可断言对错；ADA 需要施加激励并观察系统响应——但二者都是物理装配体层面的检查，区别于 L2 的符号图层面的引用完整性。
 
-AIDC 任务的评分路径与传统任务一致：L0–L5 全部通过后，Performance Score 作为诊断指标输出。任务是否 resolved 仍由 L0–L5 决定。
+AIDC 任务同样遵循上述判定：设计类任务（operation / co-design）需 L0–L4 通过，详细设计任务（detailed-design）需 L0–L5 通过，EPC 任务需 L0–L4 通过；Performance Score 仅作为附加诊断指标。
 
 ## 5.2 Rubric 评估（LLM-as-Judge）
 

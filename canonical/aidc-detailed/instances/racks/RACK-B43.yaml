@@ -1,0 +1,14 @@
+id: RACK-B43
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-B
+position_in_row: 43
+tags:
+  discipline: it
+  security_zone: production
+room_id: DC-HALL-60MW
+row_id: ROW-B
+bay_index: 42
+floor_x_mm: 52400
+floor_y_mm: 15400.0
+orientation_deg: 0

@@ -1,0 +1,14 @@
+id: RACK-A49
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-A
+position_in_row: 49
+tags:
+  discipline: it
+  security_zone: production
+room_id: DC-HALL-60MW
+row_id: ROW-A
+bay_index: 48
+floor_x_mm: 59600
+floor_y_mm: 5400.0
+orientation_deg: 0

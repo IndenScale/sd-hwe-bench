@@ -1,0 +1,12 @@
+id: TR-A
+family: FacilityFamily
+model: transformer-40mva-facility
+facility_type: power-cabinet
+name: 变压器 TR-A
+room_id: DC-HALL-60MW
+floor_x_mm: 20000
+floor_y_mm: 37000
+position_x_mm: 20000
+position_y_mm: 37000
+position_z_mm: 400
+orientation_deg: 0

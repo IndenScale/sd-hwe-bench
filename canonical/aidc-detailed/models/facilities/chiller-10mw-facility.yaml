@@ -1,0 +1,10 @@
+id: chiller-10mw-facility
+family: FacilityFamily
+facility_type: cooler
+name: 10MW 离心式冷水机组
+width_mm: 4000
+depth_mm: 2500
+height_mm: 2500
+weight_kg: 15000
+maintenance_front_mm: 3000
+maintenance_rear_mm: 2000

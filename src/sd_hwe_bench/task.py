@@ -26,6 +26,9 @@ class TaskType(str, Enum):
     COMPREHENSIVE = "comprehensive"
     INCREMENTAL = "incremental"
     CO_DESIGN = "co-design"
+    EPC = "epc"
+    DETAILED_DESIGN = "detailed-design"
+    CONCEPTUAL_DESIGN = "conceptual-design"
 
 
 class Difficulty(str, Enum):
@@ -72,6 +75,28 @@ class NumericAssertion(BaseModel):
     weight: float = Field(default=1.0, description="Weight of this assertion within numeric layer")
 
 
+class EvaluationSpec(BaseModel):
+    """Declarative spec for one analysis critic bound to a scoring layer.
+
+    When a task supplies ``evaluation``, it overrides the task_type-derived
+    default dispatch in the critic registry.
+    """
+
+    critic: str = Field(
+        description="Registered analysis critic name (e.g. epc, aidc-performance, constructability)"
+    )
+    layer: str = Field(default="L4", description="Scoring layer this critic writes (L4/L5/...)")
+    mode: str = Field(
+        default="replace",
+        description="replace=overwrite the layer; merge=combine with the existing layer",
+    )
+    provides_performance: bool = Field(
+        default=False,
+        description="Whether this critic's score sets the diagnostic performance_score",
+    )
+    params: dict = Field(default_factory=dict, description="Critic-specific parameters")
+
+
 class TaskMetadata(BaseModel):
     """Metadata for a single benchmark task."""
 
@@ -98,9 +123,20 @@ class TaskMetadata(BaseModel):
         default_factory=dict,
         description="For co-design tasks: map of ADL paths → allowed value ranges",
     )
+    scenario: dict = Field(
+        default_factory=dict,
+        description=(
+            "For conceptual-design tasks: scenario parameters (climate, tariff, "
+            "quotas, supplier maturity) and criteria_weights driving multi-scheme selection"
+        ),
+    )
     l7_config: dict = Field(
         default_factory=dict,
         description="L7 simulation config: weather, hours, objective_weights",
+    )
+    evaluation: list[EvaluationSpec] = Field(
+        default_factory=list,
+        description="Optional explicit analysis-critic specs; overrides task_type-derived defaults",
     )
 
 

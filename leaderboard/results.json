@@ -3,40 +3,20 @@
   "models": [
     {
       "model": "kimi (kimi-code)",
-      "tasks": 30,
-      "pass_at_1": 0.8467,
-      "avg_score": 0.8279,
-      "total_passes": "127/150"
+      "tasks": 28,
+      "pass_at_1": 0.8714,
+      "avg_score": 0.8268,
+      "total_passes": "122/140"
     },
     {
       "model": "deepseek-v4-pro (codex)",
-      "tasks": 30,
-      "pass_at_1": 0.8667,
-      "avg_score": 0.8031,
-      "total_passes": "130/150"
+      "tasks": 28,
+      "pass_at_1": 0.8643,
+      "avg_score": 0.7945,
+      "total_passes": "121/140"
     }
   ],
   "per_task": {
-    "telecom/aidc-co-design-002": {
-      "kimi": {
-        "pass": "0/5",
-        "avg": 0.787
-      },
-      "deepseek": {
-        "pass": "5/5",
-        "avg": 0.94
-      }
-    },
-    "telecom/aidc-operation-002": {
-      "kimi": {
-        "pass": "5/5",
-        "avg": 0.899
-      },
-      "deepseek": {
-        "pass": "4/5",
-        "avg": 0.908
-      }
-    },
     "telecom/comprehensive-001": {
       "kimi": {
         "pass": "5/5",

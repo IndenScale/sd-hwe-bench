@@ -1,0 +1,11 @@
+id: main-door
+family: FacilityFamily
+facility_type: door
+name: 主机房主门
+width_mm: 3000
+depth_mm: 200
+height_mm: 3000
+weight_kg: 200
+kinematics:
+  type: swing
+  sweep_radius_mm: 3000

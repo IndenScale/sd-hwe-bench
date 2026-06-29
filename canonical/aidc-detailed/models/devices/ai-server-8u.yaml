@@ -1,0 +1,27 @@
+id: ai-server-8u
+family: ServerFamily
+name: "AI 训练服务器 8U（液冷）"
+description: >
+  8U 高密度液冷 AI 训练服务器，8×GPU，典型 TDP 60kW。
+  必须配合 CDU/液冷基础设施使用。
+height_u: 8
+depth_mm: 1100
+width_mm: 446
+weight_kg: 95
+tdp_w: 60000
+idle_power_w: 18000
+cpu_util_to_power_ratio: 0.80
+psu_efficiency: 0.97
+interfaces:
+  - id: eth0
+    type: SFP28
+    direction: bidir
+  - id: eth1
+    type: SFP28
+    direction: bidir
+  - id: liquid-in
+    type: QUICK_CONNECT
+    direction: in
+  - id: liquid-out
+    type: QUICK_CONNECT
+    direction: out

@@ -1,0 +1,14 @@
+id: RACK-C06
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-C
+position_in_row: 6
+tags:
+  discipline: it
+  security_zone: production
+room_id: DC-HALL-60MW
+row_id: ROW-C
+bay_index: 5
+floor_x_mm: 8000
+floor_y_mm: 25400.0
+orientation_deg: 0

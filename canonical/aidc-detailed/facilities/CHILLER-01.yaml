@@ -1,0 +1,12 @@
+id: CHILLER-01
+family: FacilityFamily
+model: chiller-10mw-facility
+facility_type: cooler
+name: 冷水机组 01
+room_id: DC-HALL-60MW
+floor_x_mm: 2000
+floor_y_mm: 500
+position_x_mm: 2000
+position_y_mm: 500
+position_z_mm: 400
+orientation_deg: 0

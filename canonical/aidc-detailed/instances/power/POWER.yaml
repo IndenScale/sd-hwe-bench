@@ -1,0 +1,24 @@
+- id: SOLAR-ROOF
+  family: SolarFamily
+  model: solar-array-5mw
+  peak_power_kw: 5000.0
+  inverter_efficiency: 0.97
+
+- id: BATTERY-01
+  family: BatteryFamily
+  model: lithium-battery-20mwh
+  capacity_kwh: 20000.0
+  max_charge_kw: 5000.0
+  max_discharge_kw: 5000.0
+  roundtrip_efficiency: 0.94
+  min_soc: 0.10
+
+- id: TR-A
+  family: TransformerFamily
+  model: transformer-40mva
+  capacity_mva: 40.0
+
+- id: TR-B
+  family: TransformerFamily
+  model: transformer-40mva
+  capacity_mva: 40.0

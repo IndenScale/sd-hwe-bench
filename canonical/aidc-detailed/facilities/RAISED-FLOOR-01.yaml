@@ -1,0 +1,12 @@
+id: RAISED-FLOOR-01
+family: FacilityFamily
+model: raised-floor-600
+facility_type: raised-floor
+name: 主机房抬高地板
+room_id: DC-HALL-60MW
+floor_x_mm: 0
+floor_y_mm: 0
+position_x_mm: 0
+position_y_mm: 0
+position_z_mm: 0
+orientation_deg: 0

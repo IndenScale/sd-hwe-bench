@@ -1,0 +1,700 @@
+- id: AI-0101
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A21
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0102
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A21
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0103
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A21
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0104
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A21
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0105
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A21
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0106
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A22
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0107
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A22
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0108
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A22
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0109
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A22
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0110
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A22
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0111
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A23
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0112
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A23
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0113
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A23
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0114
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A23
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0115
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A23
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0116
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A24
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0117
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A24
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0118
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A24
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0119
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A24
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0120
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A24
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0121
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A25
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0122
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A25
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0123
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A25
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0124
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A25
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0125
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A25
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0126
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A26
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0127
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A26
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0128
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A26
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0129
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A26
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0130
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A26
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0131
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A27
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0132
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A27
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0133
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A27
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0134
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A27
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0135
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A27
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0136
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A28
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0137
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A28
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0138
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A28
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0139
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A28
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0140
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A28
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0141
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A29
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0142
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A29
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0143
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A29
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0144
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A29
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0145
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A29
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0146
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A30
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0147
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A30
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0148
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A30
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0149
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A30
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0150
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A30
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0151
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A31
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0152
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A31
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0153
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A31
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0154
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A31
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0155
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A31
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0156
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A32
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0157
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A32
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0158
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A32
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0159
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A32
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0160
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A32
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0161
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A33
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0162
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A33
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0163
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A33
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0164
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A33
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0165
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A33
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0166
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A34
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0167
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A34
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0168
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A34
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0169
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A34
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0170
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A34
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0171
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A35
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0172
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A35
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0173
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A35
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0174
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A35
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0175
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A35
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0176
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A36
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0177
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A36
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0178
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A36
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0179
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A36
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0180
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A36
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0181
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A37
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0182
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A37
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0183
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A37
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0184
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A37
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0185
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A37
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0186
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A38
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0187
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A38
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0188
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A38
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0189
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A38
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0190
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A38
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0191
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A39
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0192
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A39
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0193
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A39
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0194
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A39
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0195
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A39
+  u_position: 33
+  tags:
+    discipline: it
+- id: AI-0196
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A40
+  u_position: 1
+  tags:
+    discipline: it
+- id: AI-0197
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A40
+  u_position: 9
+  tags:
+    discipline: it
+- id: AI-0198
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A40
+  u_position: 17
+  tags:
+    discipline: it
+- id: AI-0199
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A40
+  u_position: 25
+  tags:
+    discipline: it
+- id: AI-0200
+  family: ServerFamily
+  model: ai-server-8u
+  rack: RACK-A40
+  u_position: 33
+  tags:
+    discipline: it

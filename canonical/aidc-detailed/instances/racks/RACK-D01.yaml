@@ -1,0 +1,14 @@
+id: RACK-D01
+family: RackFamily
+model: dc-rack-42u-300kw
+row: ROW-D
+position_in_row: 1
+tags:
+  discipline: it
+  security_zone: production
+room_id: DC-HALL-60MW
+row_id: ROW-D
+bay_index: 0
+floor_x_mm: 2000
+floor_y_mm: 35400.0
+orientation_deg: 0

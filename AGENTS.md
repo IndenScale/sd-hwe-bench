@@ -1,6 +1,6 @@
 # SD-HWE-Bench Agent Instructions
 
-本文件记录 SD-HWE-Bench 项目当前阶段的关键概念、目标与开发约定。最后更新：2026-06-28（v6：评分层体系统一 + 论文/文档同步）。
+本文件记录 SD-HWE-Bench 项目当前阶段的关键概念、目标与开发约定。最后更新：2026-06-29（v7.1：concept-design DecisionCritic MVP 落地 / ADR 0006 分期 1）。
 
 ## 全局约束
 
@@ -21,6 +21,7 @@
 | M2. 任务集扩展与框架稳定 | 37 任务，接口稳定 | ✅ | ✅ 已完成 |
 | M3. 基准实验与 Leaderboard | 全量实验，可发表 Leaderboard | 30-task 评测 Kimi/DeepSeek pass@1 84.7%/86.7% | ✅ 完成 |
 | M3b. v2/v6 改进 | 诊断+修复区分度不足 | 37-task，L2 统一，涌现+跨专业+AIDC 任务就绪 | ✅ 已完成 |
+| M3c. v7 AIDC 任务升级 | detailed-design + EPC 任务，施工排程/吊装/VDC | 4 个新 AIDC 任务（conceptual/detailed/EPC/edge） + Constructability/EPC critics | ✅ 本次更新 |
 | M4. 论文 A 定稿 | EaC 概念论文 | arXiv PDF 已生成；FSE 缩写版待写 | ✅ arXiv done |
 | M5. 论文 B 定稿 | SD-HWE-Bench 实验论文 | 中文初稿更新 37 task + L0–L6 层体系 + v6 文档/论文同步；英文待翻译 | ✅ 本次更新 |
 | M6. 投稿与发表 | 按目标刊物投稿 | 未开始 | 未开始 |
@@ -33,103 +34,102 @@
 
 ### 1.1 代码库
 
-- **任务集**：37 个 telecom 任务
+- **任务集**：38 个 telecom 任务
   - 16 阶段式 commit 任务：4 telecom-rack + 5 datacenter + 7 telecom-site
   - 5 POC 手工任务（comprehensive/connection/instance/layout/mating）
   - 5 复合 easy（telecom-easy-compound-001~005）
   - 4 涌现约束（telecom-emergent-001~004）
   - 3 跨专业综合（telecom-cross-001~003）
-  - 4 AIDC 任务：aidc-operation-001/002、aidc-co-design-001/002
-- **源码**：`src/sd_hwe_bench/` ~45 个 Python 文件，~7600 行
-- **CLI**：6 个命令（`list` / `run` / `run-repair` / `score` / `archive` / `leaderboard`）
+  - 4 AIDC 任务：edge-dc-design-001、aidc-conceptual-design-001、aidc-detailed-design-001、aidc-epc-001
+  - 1 概念设计多方案比选：aidc-scheme-selection-001（conceptual-design，DecisionCritic）
+- **源码**：`src/sd_hwe_bench/` ~50 个 Python 文件，~8400 行
+- **CLI**：7 个命令（`list` / `run` / `run-repair` / `score` / `archive` / `leaderboard` / `batch`）
 - **Actor**：4 种——`kimi` / `codex` / `openai`（含 `deepseek` 别名）
-- **Critic**：L0(Syntax) / L1(Schema) / L2(Reference Integrity) / L3(Static Constraints) / L4(Reduced-Order Dynamic Model) / L5(Geometry Interference) / L6(FEM/CFD reserved) / Deliverable(critical, non-layer) / Performance Score(diagnostic) / Rubric(LLM-judge)
+- **Critic**：L0(Syntax) / L1(Schema) / L2(Reference Integrity) / L3(Static Constraints) / L4(Reduced-Order Dynamic Model / CPML Schedule / Multi-Scheme Decision) / L5(Geometry Interference + Constructability) / L6(FEM/CFD reserved) / Deliverable(critical, non-layer) / Performance Score(diagnostic) / Rubric(LLM-judge)
 - **Container**：镜像 `sd-hwe-bench-piki:latest` 已构建（1.58GB）
-- **测试**：118 passed, 2 skipped
+- **测试**：145 passed, 2 skipped
 
-### 1.2 v5 改进要点
+### 1.2 v7 改进要点（当前版本）
 
-**60MW AIDC 模型**：新增 `canonical/datacenter-hall-60mw/`
+#### AIDC 任务体系重构
 
-- 200 台机柜，1000 台 60kW 液冷 AI 服务器，总 TDP 60MW
-- 8×10MW 离心式冷水机组（可缩放至 6-8 台）
-- 20MWh 储能、5MWp 光伏、双路 40MVA 变压器
-- 分时电价、湿球温度、变压器效率曲线
+- 退役原 `aidc-operation-001/002` 与 `aidc-co-design-001/002`（移至 `tasks/telecom/_legacy/`）。
+- 新增 4 个 AIDC/数据中心任务，覆盖从 edge 到 60MW、从概念设计到施工建造的全生命周期：
+  - `edge-dc-design-001`：medium 边缘数据中心设计-调度联合优化（`canonical/datacenter-hall`）。
+  - `aidc-conceptual-design-001`：hard 60MW AIDC 概念设计-调度联合优化（`canonical/datacenter-hall-60mw`）。
+  - `aidc-detailed-design-001`：hard 60MW AIDC 详细设计（`canonical/aidc-detailed`），包含吊装、临时道路、VDC 工作面等施工可建性检查。
+  - `aidc-epc-001`：hard 60MW AIDC EPC 施工排程与风险响应（`canonical/aidc-detailed`），使用 CPML 施工排程模型。
 
-**AIDC 仿真引擎升级**（`src/sd_hwe_bench/simulation/`）
+**施工可建性 Critic**（`src/sd_hwe_bench/critics/constructability.py`）
 
-- 变压器效率随负载率变化
-- 冷却液泵/风机功耗（风冷/液冷区分）
-- 分时电价与电网碳强度
-- 湿球温度驱动的免费冷却模型
-- 冷冻水设定点影响 COP（越高 COP 越高）
+- 检查每个重型设备（冷水机组、变压器等）是否配置吊装方案：起重机吨位 ≥ 1.25× 设备重量、作业半径、净空高度、吊点位置。
+- 检查主吊车在设备到场至就位期间持续在场（租赁期覆盖最迟吊装日）。
+- 检查至少两个 VDC（虚拟建造）工作面，含编号、区域、里程碑、前置条件。
 
-**全生命周期成本模型**（`src/sd_hwe_bench/simulation/lifecycle.py`）
+**CPML/EPC 施工排程引擎**（`src/sd_hwe_bench/construction/`）
 
-- CAPEX：冷却、变压器、储能、光伏、机柜、土建
-- OPEX：电费、水费、维护费
-- 收益：IT 负载租金 / GPU 折旧
-- NPV / TCO / LCOE 计算
+- `cpml.py` / `parser.py` / `scheduler.py`：活动、资源、天气、延迟、应急预案的 YAML 建模与离散事件调度。
+- `events.py` / `evaluator.py`：20 组随机天气/供应链场景下的 SLA 鲁棒性评估。
+- `EPCCritic`（`src/sd_hwe_bench/critics/epc.py`）：硬约束检查（工期 ≤ deadline、资源不超容、应急预案合法）+ Performance Score（P90 工期与成本）。
 
-**L4 AIDC 仿真合规**（`src/sd_hwe_bench/critics/performance.py`）
+**详细设计 canonical 工程**（`canonical/aidc-detailed/`）
 
-- 支持 `objective: performance | lcc | combined`
-- 支持 `reference` 作为最优解参考，避免 baseline 归一化天花板
-- 自动检测 room_id，支持多 canonical 项目
+- 在 `datacenter-hall-60mw` 物理模型基础上增加：主机房建筑 geometry、架空地板、车辆通道、大门、机柜行列布局、`placed-on` 配合、冷水机组/变压器设备实体。
+- 通过 `piki check`：30 passes，0 errors。
 
-### 新增任务
+### 1.3 v6/v5 保留要点
 
-- `tasks/telecom/aidc-operation-002/`：60MW 运营优化（hard）
-  - 基线 PUE 1.27，优化后 PUE 1.20（-5.3%）
-- `tasks/telecom/aidc-co-design-002/`：60MW 设计-调度联合优化（hard）
-  - 目标：TCO 最小化 + PUE ≤ 1.22
-  - 基线 TCO ¥4785M，优化后 TCO ¥4363M（-8.8%）
+**60MW AIDC 模型**：`canonical/datacenter-hall-60mw/` 提供 200 台机柜、1000 台 60kW 液冷 AI 服务器、8×10MW 冷水机组、20MWh 储能、5MWp 光伏、双路 40MVA 变压器、分时电价、湿球温度、变压器效率曲线。
 
-### 1.3 实验数据（30-task 已评测）
+**AIDC 仿真/LCC 引擎**：保留 RC 热网络、分时电价、湿球温度免费冷却、设定点-COP 曲线、CAPEX/OPEX/NPV/TCO/LCOE 全生命周期成本模型。
+
+**L4 分支**：AIDC 设计任务走 `PerformanceCritic`（热/电/LCC 仿真），EPC 任务走 `EPCCritic`（施工排程仿真）。
+
+### 1.4 实验数据
 
 | Model | Actor | Pass@1 | Avg Score | 任务覆盖 |
 |---|---|---|---|
-| Kimi k2.7 | CLI (kimi) | 84.7% (127/150) | 82.8% | 30 tasks |
-| DeepSeek-v4-Pro | CLI (codex) | 86.7% (130/150) | 80.3% | 30 tasks |
+| Kimi k2.7 | CLI (kimi) | 84.7% (127/150) | 82.8% | 30 tasks（旧 AIDC 任务） |
+| DeepSeek-v4-Pro | CLI (codex) | 86.7% (130/150) | 80.3% | 30 tasks（旧 AIDC 任务） |
 
-60MW AIDC 新任务已部分评测（aidc-operation-002 / aidc-co-design-002）。
+> 注：v7 新增 4 个 AIDC 任务尚未完成多模型 pass@1 实验，当前仅验证参考方案全通过。下一步需在 edge-dc-design-001 / aidc-conceptual-design-001 / aidc-detailed-design-001 / aidc-epc-001 上重跑 baseline。
 
-### 1.4 论文
+### 1.5 论文
 
 | 论文 | 位置 | 状态 |
 |------|------|------|
 | A: EaC 概念篇 | `papers/engineering-as-code/` | arXiv PDF 完成；FSE 缩写版待做 |
-| B: SD-HWE-Bench 实验篇 | `papers/sd-hwe-bench/` | 37-task + L0–L6 层体系 + v6 文档/论文同步完成；英文待翻译 |
+| B: SD-HWE-Bench 实验篇 | `papers/sd-hwe-bench/` | 37-task + L0–L6 层体系 + v7 AIDC 任务同步完成；英文待翻译 |
 
 ---
 
 ## 2. 下一步优先级
 
-### 2.1 当前会话完成（2026-06-28）
+### 2.1 当前会话完成（2026-06-29 v7）
 
 | 产出 | 说明 |
 |------|------|
-| `docs/` | 文档重组 + `evaluation/scoring.md` v6 评分规则同步 |
-| `papers/sd-hwe-bench/src/sections-zh/` | 论文全部 sections 与附录同步到 L0–L6 新体系、37 任务统计、30-task 实验结果 |
-| `scripts/assemble_paper.py` | 聚合脚本常量与摘要更新为当前 37/30 task、2 model 数据 |
-| `AGENTS.md` | 当前状态与任务统计同步到 v6 |
-| `canonical/datacenter-hall-60mw/` | 60MW AIDC 高精度 ADL 项目 |
-| `src/sd_hwe_bench/simulation/` | 仿真引擎升级：变压器、泵、分时电价、湿球温度、设定点-COP |
-| `src/sd_hwe_bench/simulation/lifecycle.py` | 全生命周期成本模型（CAPEX/OPEX/NPV/TCO/LCOE） |
-| `tasks/telecom/aidc-operation-002/` | 60MW 运营优化任务（PUE 区分度 5.3%） |
-| `tasks/telecom/aidc-co-design-002/` | 60MW 设计-调度联合优化任务（TCO 区分度 8.8%） |
-| `src/sd_hwe_bench/critics/performance.py` | L4 AIDC 仿真合规：硬约束检查 + performance_score 诊断 |
-| `tests/test_aidc_simulation_60mw.py` | 60MW + LCC 单元测试 |
-| `scripts/verify_aidc_benchmark.py` | 端到端验证脚本更新 |
+| `canonical/aidc-detailed/` | 60MW AIDC 详细设计 canonical，含 geometry、吊装条件、VDC 工作面 |
+| `src/sd_hwe_bench/critics/constructability.py` | 施工可建性 Critic（吊装、主吊车租赁、VDC 工作面） |
+| `tasks/telecom/aidc-detailed-design-001/` | hard detailed-design 任务，参考方案通过 L0–L5 |
+| `src/sd_hwe_bench/construction/` | CPML 施工排程引擎（活动/资源/天气/延迟/应急预案/评估） |
+| `src/sd_hwe_bench/critics/epc.py` | EPCCritic（工期、资源、应急预案 + 20 场景 SLA） |
+| `tasks/telecom/aidc-epc-001/` | hard EPC 任务，参考方案通过 L0–L4 |
+| `tasks/telecom/edge-dc-design-001/` | medium co-design 任务（`canonical/datacenter-hall`） |
+| `tasks/telecom/aidc-conceptual-design-001/` | hard co-design 任务（`canonical/datacenter-hall-60mw`） |
+| `src/sd_hwe_bench/task.py` | 新增 `EPC` / `DETAILED_DESIGN` 任务类型 |
+| `src/sd_hwe_bench/scorer.py` | L4 按任务类型分支，L5 合并 ConstructabilityCritic |
+| `tests/test_aidc_simulation_60mw.py` | 更新为 4 个新 AIDC 任务 + 原有仿真/LCC 测试 |
+| `AGENTS.md` / `docs/evaluation/scoring.md` / `papers/` | 同步 v7 任务与评分体系 |
 
 ### 2.2 下个会话推进
 
-1. **AIDC 仿真实验**
-   - 在 60MW 新任务上运行 flash/codex/kimi pass@1
-   - 更新 leaderboard/results.json
+1. **AIDC 新任务 baseline 实验**
+   - 在 4 个新 AIDC 任务上运行 flash/codex/kimi pass@1
+   - 更新 `leaderboard/results.json` 与 `runs/`
 
 2. **论文 B 英文版**
-   - 将 v5 AIDC 结果翻译成英文 sections
+   - 将 v7 AIDC 结果翻译成英文 sections
    - 更新 figures/tables
 
 3. **论文 A FSE 缩写版**
@@ -160,9 +160,11 @@
 |------|--------|------|
 | canonical/telecom-rack | 4 | 42U 机柜扩容，PDU/设备/光纤/跨机柜 |
 | canonical/datacenter | 5 | 数据中心机房，ToR 组网，地板载荷 |
-| canonical/datacenter-hall | 2 | AIDC 14.8kW 运营与设计-调度联合优化 |
-| canonical/datacenter-hall-60mw | 2 | 60MW AIDC 高精度模型 |
 | canonical/telecom-site | 7 | 户外基站，天线/RRU/防雷/馈线/结构/热管理/频谱 |
+| canonical/datacenter-hall | 1 | AIDC 14.8kW 运营/设计-调度（edge-dc-design-001） |
+| canonical/datacenter-hall-60mw | 1 | 60MW AIDC 概念设计-调度联合优化 |
+| canonical/aidc-detailed | 2 | 60MW AIDC 详细设计 + EPC 施工排程 |
+| （无 canonical，方案库内嵌 task.yaml） | 1 | 60MW AIDC 概念设计多方案比选（aidc-scheme-selection-001） |
 
 ### 3.2 任务结构
 
@@ -176,9 +178,20 @@ tasks/<domain>/<task-name>/
 
 ### 3.3 评分层
 
-L0(Syntax) → L1(Schema) → L2(Reference Integrity) → L3(Static Constraints) → L4(Reduced-Order Dynamic Model) → L5(Geometry Interference) → L6(FEM/CFD reserved) → Deliverable(critical, non-layer) → Performance Score(diagnostic) → Rubric(LLM)
+L0(Syntax) → L1(Schema) → L2(Reference Integrity) → L3(Static Constraints) → L4(Dynamic Model / CPML Schedule) → L5(Geometry Interference + Constructability) → L6(FEM/CFD reserved) → Deliverable(critical, non-layer) → Performance Score(diagnostic) → Rubric(LLM)
 
-权重：L0=0%, L1=10%, L2=15%, L3=40%, L4=15%, L5=20%；交付物与性能分数不占层权重
+权重：L0=0%, L1=10%, L2=15%, L3=40%, L4=15%, L5=20%；交付物与性能分数不占层权重。
+
+**L4 按任务类型分支**：
+
+- AIDC 设计任务（operation / co-design）：`PerformanceCritic` 执行热/电/LCC 仿真。
+- EPC 任务（epc）：`EPCCritic` 执行 CPML 施工排程与风险响应仿真。
+- 概念设计任务（conceptual-design）：`DecisionCritic` 执行多方案比选（可行性闸门 / 矩阵正确性 / Pareto + 加权决策质量），确定性可复现，见 ADR 0006。
+
+**L5 合并几何与可建性**：
+
+- piki 几何规则（碰撞、U 位、间距）继续作为 L5 基础。
+- `ConstructabilityCritic` 对 detailed-design / epc 任务检查吊装方案、主吊车租赁、VDC 工作面。
 
 ---
 
@@ -191,6 +204,7 @@ sd-hwe-bench run-repair <task-id> --actor <spec> [--max-repair N]
 sd-hwe-bench score <task-id> <output-dir> [--sandbox docker]
 sd-hwe-bench archive [--format json]
 sd-hwe-bench leaderboard [--update]
+sd-hwe-bench batch --matrix <matrix.yaml> [--dry-run] [--max-workers N]
 ```
 
 ---
@@ -201,7 +215,9 @@ sd-hwe-bench leaderboard [--update]
 - 新增任务含完整 `task.yaml`、`scaffold/`、`solution/`
 - 所有 solution 必须通过 `piki check`
 - `scoring_layers` 可从 task.yaml 覆盖
-- AIDC 任务需在 `l7_config` 中提供 `reference` 以支持合理 score 区分度
+- **分析型 critic（L4/L5）选择由 `src/sd_hwe_bench/critics/registry.py` 注册表驱动**：默认按 `task_type` 推导，可在 task.yaml 用 `evaluation:` 块显式覆盖（`{critic, layer, mode, provides_performance, params}`）。新增评分品类 = 注册一个 builder + 写 critic，不改 `scorer.py`。
+- 批量实验用 `sd-hwe-bench batch --matrix <yaml>`（模型 × 任务矩阵），示例见 `scripts/batch/pass5.yaml`；旧的硬编码批量脚本已归档至 `scripts/legacy/`
+- AIDC 设计任务需在 `l7_config` 中提供 `reference` 以支持合理 score 区分度；EPC 任务需在 `l7_config` 中提供 `deadline_days`、`resource_limits`、`contingency_policy` 等 CPML 参数；detailed-design 任务需包含 `construction/` 吊装与 VDC 交付物；conceptual-design 任务需在 `scenario` 提供 `criteria_weights` 与场景标量、在 `l7_config.scheme_library` 内嵌逐方案确定性准则与 `feasible` 标志（答案键，Agent 不可见），交付 `comparison.yaml` + `recommendation.yaml`
 - 实验数据归档到 `runs/`
 - 论文源文件在 `papers/*/src/`；`dist/` 为生成产物
 - **论文编译**：`dist/draft-full.zh.md` 由 sections 源文件通过 `scripts/assemble_paper.py` 聚合生成，禁止手写占位符。修改 section 后运行 `uv run scripts/assemble_paper.py` 即可更新。所有数字必须来自代码库实测数据

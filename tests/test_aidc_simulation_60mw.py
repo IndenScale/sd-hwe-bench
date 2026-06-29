@@ -1,4 +1,4 @@
-"""Tests for 60MW AIDC simulation engine, LCC model, and new benchmark tasks."""
+"""Tests for 60MW AIDC simulation engine, LCC model, and new AIDC design tasks."""
 
 from __future__ import annotations
 
@@ -15,8 +15,10 @@ from sd_hwe_bench.task import TaskInstance
 
 
 PROJECT_60MW = Path(__file__).parent.parent / "canonical" / "datacenter-hall-60mw"
-TASK_OPERATION = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-operation-002"
-TASK_CODesign = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-co-design-002"
+TASK_EDGE = Path(__file__).parent.parent / "tasks" / "telecom" / "edge-dc-design-001"
+TASK_CONCEPTUAL = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-conceptual-design-001"
+TASK_DETAILED = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-detailed-design-001"
+TASK_EPC = Path(__file__).parent.parent / "tasks" / "telecom" / "aidc-epc-001"
 
 
 def test_60mw_adl_loading():
@@ -79,12 +81,12 @@ def test_lcc_model_positive():
     assert lcc.lcoe_cny_per_kwh > 0
 
 
-def test_task_operation_002_solution_passes():
-    """aidc-operation-002 reference solution passes scoring."""
-    task = TaskInstance(TASK_OPERATION)
+def test_task_edge_dc_design_solution_passes():
+    """edge-dc-design-001 reference solution passes scoring."""
+    task = TaskInstance(TASK_EDGE)
     score = score_task(
         task_id=task.task_id,
-        agent_output_dir=TASK_OPERATION / "solution",
+        agent_output_dir=TASK_EDGE / "solution",
         task=task,
     )
     assert score.success
@@ -93,12 +95,41 @@ def test_task_operation_002_solution_passes():
     assert score.performance_score is not None
 
 
-def test_task_co_design_002_solution_passes():
-    """aidc-co-design-002 reference solution passes scoring."""
-    task = TaskInstance(TASK_CODesign)
+def test_task_conceptual_design_solution_passes():
+    """aidc-conceptual-design-001 reference solution passes scoring."""
+    task = TaskInstance(TASK_CONCEPTUAL)
     score = score_task(
         task_id=task.task_id,
-        agent_output_dir=TASK_CODesign / "solution",
+        agent_output_dir=TASK_CONCEPTUAL / "solution",
+        task=task,
+    )
+    assert score.success
+    assert "L4" in score.layers
+    assert score.layers["L4"].passed
+    assert score.performance_score is not None
+
+
+def test_task_detailed_design_solution_passes():
+    """aidc-detailed-design-001 reference solution passes scoring."""
+    task = TaskInstance(TASK_DETAILED)
+    score = score_task(
+        task_id=task.task_id,
+        agent_output_dir=TASK_DETAILED / "solution",
+        task=task,
+    )
+    assert score.success
+    assert "L4" in score.layers
+    assert score.layers["L4"].passed
+    assert "L5" in score.layers
+    assert score.layers["L5"].passed
+
+
+def test_task_epc_solution_passes():
+    """aidc-epc-001 reference solution passes scoring."""
+    task = TaskInstance(TASK_EPC)
+    score = score_task(
+        task_id=task.task_id,
+        agent_output_dir=TASK_EPC / "solution",
         task=task,
     )
     assert score.success
