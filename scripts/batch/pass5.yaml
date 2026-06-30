@@ -1,4 +1,7 @@
-# Example batch matrix for pass@5 across kimi + deepseek.
+# Legacy example batch matrix for pass@5 across a small model set.
+# Paper-facing lifecycle experiments should use:
+#   scripts/batch/main-lifecycle-pass1.yaml
+#   scripts/batch/aidc-lifecycle-pass1.yaml
 # Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/pass5.yaml
 # Preview only:  uv run sd-hwe-bench batch --matrix scripts/batch/pass5.yaml --dry-run
 run_dir: runs/pass5-example
@@ -6,9 +9,10 @@ passes: 5
 sandbox: none
 timeout: 600
 max_workers: 4
+self_check: false
 models:
   kimi: kimi
-  deepseek-v4-pro: codex:deepseek-v4-pro
+  deepseek-v4-pro: claude:deepseek-v4-pro
 tasks:
   - telecom/comprehensive-001
   - telecom/connection-design-001

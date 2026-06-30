@@ -1,0 +1,23 @@
+# AIDC lifecycle slice for the pivoted SD-HWE-Bench paper.
+# Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/aidc-lifecycle-pass1.yaml
+# Preview:   uv run sd-hwe-bench batch --matrix scripts/batch/aidc-lifecycle-pass1.yaml --dry-run
+#
+# Separately reports the lifecycle family: edge co-design, 60MW concept,
+# detailed design, EPC schedule, and multi-scheme conceptual decision.
+run_dir: /tmp/sd-hwe-bench-runs/aidc-lifecycle-pass1-20260630
+passes: 5
+sandbox: none
+timeout: 1800
+max_workers: 1
+self_check: false
+models:
+  kimi-k2.7-kimi-code: kimi
+  deepseek-v4-pro-claude-code: claude:deepseek-v4-pro
+  deepseek-v4-flash-claude-code: claude:deepseek-v4-flash
+  gpt-5.5-codex: codex:gpt-5.5
+tasks:
+  - telecom/edge-dc-design-001
+  - telecom/aidc-60mw-001
+  - telecom/aidc-60mw-002
+  - telecom/aidc-60mw-003
+  - telecom/aidc-scheme-selection-001

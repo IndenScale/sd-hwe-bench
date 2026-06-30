@@ -1,0 +1,19 @@
+# Main lifecycle benchmark baseline matrix.
+# Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/main-lifecycle-pass1.yaml
+# Preview:   uv run sd-hwe-bench batch --matrix scripts/batch/main-lifecycle-pass1.yaml --dry-run
+#
+# This is the paper-facing no-repair/no-self-check baseline:
+# 4 model + agent-runtime configurations × 38 active tasks × 5 passes.
+run_dir: /tmp/sd-hwe-bench-runs/main-lifecycle-pass1-20260630
+passes: 5
+sandbox: none
+timeout: 1800
+max_workers: 1
+self_check: false
+models:
+  kimi-k2.7-kimi-code: kimi
+  deepseek-v4-pro-claude-code: claude:deepseek-v4-pro
+  deepseek-v4-flash-claude-code: claude:deepseek-v4-flash
+  gpt-5.5-codex: codex:gpt-5.5
+tasks:
+  - telecom/*

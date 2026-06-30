@@ -93,6 +93,13 @@ def _run_rollout(
     ws.write_prompt(prompt)
 
     act = create_actor(actor_spec, timeout=timeout)
+    ws.log_trajectory(
+        {
+            "event": "actor_started",
+            "actor": actor_spec,
+            "timeout_s": timeout,
+        }
+    )
     result = act.run(prompt, ws.project_dir)
 
     ws.log_trajectory(
@@ -165,6 +172,13 @@ def _run_rollout(
             "event": "self_check_prompt",
             "round": self_check_rounds,
             "diagnostics_count": len(diagnostics),
+        })
+        ws.log_trajectory({
+            "event": "actor_started",
+            "actor": actor_spec,
+            "timeout_s": timeout,
+            "phase": "self_check_repair",
+            "round": self_check_rounds,
         })
         result = act.run(sc_prompt, ws.project_dir)
         ws.log_trajectory({
@@ -278,6 +292,13 @@ def _run_serial(
             ws.write_prompt(prompt)
 
             act = create_actor(actor, timeout=timeout)
+            ws.log_trajectory(
+                {
+                    "event": "actor_started",
+                    "actor": actor,
+                    "timeout_s": timeout,
+                }
+            )
             result = act.run(prompt, ws.project_dir)
 
             ws.log_trajectory(

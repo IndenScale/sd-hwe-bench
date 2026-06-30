@@ -70,12 +70,16 @@ class KimiActor(Actor):
             )
             elapsed = time.time() - start
             raw = result.stdout + "\n" + result.stderr
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as exc:
             elapsed = time.time() - start
+            files_changed = count_changed_yaml_files(before, workspace_root)
+            stdout = exc.stdout or ""
+            stderr = exc.stderr or ""
+            raw = "[TIMEOUT]\n" + stdout + "\n" + stderr
             return ActorResult(
                 success=False,
-                raw_output="[TIMEOUT]",
-                files_written=0,
+                raw_output=raw,
+                files_written=files_changed,
                 elapsed_s=elapsed,
                 error=f"Timeout after {self.timeout}s",
             )

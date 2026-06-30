@@ -698,6 +698,14 @@ class PromptBuilder:
             for d in deliverables:
                 parts.append(f"- `{d}`")
 
+        parts.append(
+            "\n## 实验隔离要求\n\n"
+            "你只能使用当前 workspace 中的 scaffold、docs、models、piki.toml 和自己创建的文件。"
+            "不要读取、搜索或复制 benchmark 仓库中的 `tasks/**/solution`、`tasks/**/expected`、"
+            "`runs/`、`leaderboard/`、历史 rollout、参考答案或其他任务的解答。"
+            "如果你在文件系统中发现这些材料，也必须忽略；本任务要求你根据需求和当前 workspace 独立完成设计。\n"
+        )
+
         # Output instructions
         if output_mode == "api":
             parts.append(

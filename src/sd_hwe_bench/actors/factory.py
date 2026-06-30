@@ -18,7 +18,7 @@ def create_actor(spec: str, timeout: int | None = None) -> Actor:
 
     Example:
         create_actor("kimi")
-        create_actor("codex:gpt-5.1-codex")
+        create_actor("codex:gpt-5.5")
         create_actor("claude:deepseek-v4-flash")
     """
     if ":" in spec:

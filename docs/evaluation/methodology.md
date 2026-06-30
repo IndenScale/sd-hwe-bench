@@ -1,6 +1,6 @@
 # SD-HWE-Bench 评估方法论
 
-> 最后更新：2026-06-28 · 反映当前 37-task telecom 实现
+> 最后更新：2026-06-30 · 反映当前 38-task lifecycle benchmark 实验口径
 
 ---
 
@@ -85,20 +85,25 @@ sd-hwe-bench run <task-id> --actor <spec> --passes 5 --jobs 1
 
 ### 4.2 模型
 
-| Actor | 模型 | 说明 |
-|-------|------|------|
-| kimi | kimi (kimi-code) | Kimi 代码助手 |
-| codex:deepseek-v4-pro | DeepSeek-v4-Pro | 通过 Codex CLI |
-| codex:deepseek-v4-flash | DeepSeek Flash | 通过 Codex CLI |
+| 配置名 | 模型 | Agent runtime | Actor spec | 说明 |
+|--------|------|---------------|------------|------|
+| kimi-k2.7-kimi-code | Kimi k2.7 | Kimi Code CLI | `kimi` | 国内代码 Agent 基线 |
+| deepseek-v4-pro-claude-code | DeepSeek v4 Pro | Claude Code CLI | `claude:deepseek-v4-pro` | 强推理/长任务基线 |
+| deepseek-v4-flash-claude-code | DeepSeek v4 Flash | Claude Code CLI | `claude:deepseek-v4-flash` | 轻量/速度基线 |
+| gpt-5.5-codex | GPT-5.5 | Codex CLI | `codex:gpt-5.5` | OpenAI frontier coding-agent 基线 |
 
-### 4.3 基线
+主实验使用 `scripts/batch/main-lifecycle-pass1.yaml`：38 个 active tasks × 4 个 Agent 配置 × 5 passes，关闭 repair 与 self-check。AIDC lifecycle 专项使用 `scripts/batch/aidc-lifecycle-pass1.yaml`。
 
-当前实验基线：
+### 4.3 基线状态
+
+历史实验基线（pivot 前旧口径，仅作连续性参考）：
 
 - **Flash pass@1** (28-task): 82.1% — 早期单次实验
 - **Kimi pass@5** (30-task): 84.7% — 本会话
 - **DSv4-Pro pass@5** (30-task): 86.7% — 本会话
 - **Flash pass@5** (25-task): 96.0% — 本会话（6 个 hard 任务未完成）
+
+当前 paper-facing baseline 尚需按 `scripts/batch/main-lifecycle-pass1.yaml` 重跑并归档到 `runs/` 与 `leaderboard/results.json`。旧 `codex:deepseek-v4-pro` 结果可作为历史连续性参考，但不进入 pivot 后主表。
 
 ### 4.4 人类基线
 
@@ -122,9 +127,9 @@ sd-hwe-bench run <task-id> --actor <spec> --passes 5 --jobs 1
 
 ## 6. 已知局限
 
-1. **pass@1 偏高**：30 tasks 中 Kimi 84.7%、DS-Pro 86.7%，仅有 7 个区分度任务
-2. **Flash 未完成**：6 个 hard 任务（cross-*, aidc-*）上 codex flash 频繁 hang，数据缺
-3. **人类基线缺失**：无法回答"人类工程师表现如何"
-4. **模型覆盖少**：仅 3 个模型，无 GPT-4o/Claude/
-5. **AIDC 仿真为集总参数模型**：未引入 CFD/二维热模型
-6. **LCC 收益模型简化**：统一 IT 租金/显卡折旧
+1. **新口径 baseline 待重跑**：38-task × 4 Agent 配置 × 5 passes 尚未形成最终 leaderboard。
+2. **AIDC lifecycle 专项缺数据**：`edge-dc-design-001`、`aidc-60mw-001/002/003`、`aidc-scheme-selection-001` 需要单独报告。
+3. **人类基线缺失**：无法回答"人类工程师表现如何"。
+4. **Actor runtime 影响显著**：结果是模型 + CLI runtime 组合，不可解释为裸模型能力。
+5. **AIDC 仿真为集总参数模型**：未引入 CFD/二维热模型。
+6. **LCC 收益模型简化**：统一 IT 租金/显卡折旧。

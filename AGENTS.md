@@ -19,8 +19,8 @@
 | M0. 发表目标锁定 | 确定分篇发表策略、目标会议/期刊 | ✅ | ✅ 已完成 |
 | M1. POC 跑通 | 5 个 telecom 任务流程闭环 | ✅ | ✅ 已完成 |
 | M2. 任务集扩展与框架稳定 | 37 任务，接口稳定 | ✅ | ✅ 已完成 |
-| M3. 基准实验与 Leaderboard | 全量实验，可发表 Leaderboard | 30-task 评测 Kimi/DeepSeek pass@1 84.7%/86.7% | ✅ 完成 |
-| M3b. v2/v6 改进 | 诊断+修复区分度不足 | 37-task，L2 统一，涌现+跨专业+AIDC 任务就绪 | ✅ 已完成 |
+| M3. 基准实验与 Leaderboard | 全量实验，可发表 Leaderboard | 历史 30-task 评测 Kimi/DeepSeek pass@1 84.7%/86.7%；pivot 后 38-task × 4 配置待重跑 | ✅ 旧口径完成 / 新口径待跑 |
+| M3b. v2/v6 改进 | 诊断+修复区分度不足 | 38-task，L2 统一，涌现+跨专业+AIDC lifecycle 任务就绪 | ✅ 已完成 |
 | M3c. v7 AIDC 任务升级 | detailed-design + EPC 任务，施工排程/吊装/VDC | 4 个新 AIDC 任务（conceptual/detailed/EPC/edge） + Constructability/EPC critics | ✅ 本次更新 |
 | M4. 论文 A 定稿 | EaC 概念论文 | arXiv PDF 已生成；FSE 缩写版待写 | ✅ arXiv done |
 | M5. 论文 B 定稿 | SD-HWE-Bench 实验论文 | 中文初稿更新 37 task + L0–L6 层体系 + v6 文档/论文同步；英文待翻译 | ✅ 本次更新 |
@@ -44,7 +44,7 @@
   - 1 概念设计多方案比选：aidc-scheme-selection-001（conceptual-design，DecisionCritic）
 - **源码**：`src/sd_hwe_bench/` ~50 个 Python 文件，~8400 行
 - **CLI**：7 个命令（`list` / `run` / `run-repair` / `score` / `archive` / `leaderboard` / `batch`）
-- **Actor**：4 种——`kimi` / `codex` / `openai`（含 `deepseek` 别名）
+- **Actor**：3 种 CLI runtime——`kimi` / `claude` / `codex`。pivot 后论文主实验统一为 4 组 model + runtime 配置：`kimi-k2.7-kimi-code`（`kimi`）、`deepseek-v4-pro-claude-code`（`claude:deepseek-v4-pro`）、`deepseek-v4-flash-claude-code`（`claude:deepseek-v4-flash`）、`gpt-5.5-codex`（`codex:gpt-5.5`）。
 - **Critic**：L0(Syntax) / L1(Schema) / L2(Reference Integrity) / L3(Static Constraints) / L4(Reduced-Order Dynamic Model / CPML Schedule / Multi-Scheme Decision) / L5(Geometry Interference + Constructability) / L6(FEM/CFD reserved) / Deliverable(critical, non-layer) / Performance Score(diagnostic) / Rubric(LLM-judge)
 - **Container**：镜像 `sd-hwe-bench-piki:latest` 已构建（1.58GB）
 - **测试**：145 passed, 2 skipped
@@ -101,7 +101,7 @@
 | 论文 | 位置 | 状态 |
 |------|------|------|
 | A: EaC 概念篇 | `papers/engineering-as-code/` | arXiv PDF 完成；FSE 缩写版待做 |
-| B: SD-HWE-Bench 实验篇 | `papers/sd-hwe-bench/` | 37-task + L0–L6 层体系 + v7 AIDC 任务同步完成；英文待翻译 |
+| B: SD-HWE-Bench 实验篇 | `papers/sd-hwe-bench/` | 38-task + L0–L6 层体系 + AIDC lifecycle pivot 同步中；四配置 baseline 待重跑；英文待翻译 |
 
 ---
 
