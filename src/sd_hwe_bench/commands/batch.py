@@ -14,7 +14,7 @@ Matrix YAML schema::
     max_workers: 4                   # concurrent (model, task) rollouts
     models:                          # name -> actor spec
       kimi: kimi
-      deepseek-v4-pro: codex:deepseek-v4-pro
+      deepseek-v4-flash: claude:deepseek-v4-flash
     tasks:                           # ids / prefixes / globs, expanded via dataset
       - telecom/aidc-*
       - telecom/comprehensive-001

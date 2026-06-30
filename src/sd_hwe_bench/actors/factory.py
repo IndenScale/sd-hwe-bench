@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from sd_hwe_bench.actors.base import Actor
+from sd_hwe_bench.actors.claude import ClaudeActor
 from sd_hwe_bench.actors.codex import CodexActor
 from sd_hwe_bench.actors.kimi import KimiActor
 
@@ -13,10 +14,12 @@ def create_actor(spec: str, timeout: int | None = None) -> Actor:
     Supported specs:
     - 'kimi[:model]'
     - 'codex[:model]'
+    - 'claude[:model]'
 
     Example:
         create_actor("kimi")
         create_actor("codex:gpt-5.1-codex")
+        create_actor("claude:deepseek-v4-flash")
     """
     if ":" in spec:
         driver, model = spec.split(":", 1)
@@ -29,8 +32,10 @@ def create_actor(spec: str, timeout: int | None = None) -> Actor:
         return KimiActor(model=model, timeout=timeout)
     if driver == "codex":
         return CodexActor(model=model, timeout=timeout)
+    if driver == "claude":
+        return ClaudeActor(model=model, timeout=timeout)
 
     raise ValueError(
         f"Unknown actor driver: {driver}. "
-        "Supported: kimi, codex"
+        "Supported: kimi, codex, claude"
     )

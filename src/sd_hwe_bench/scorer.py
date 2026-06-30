@@ -363,6 +363,22 @@ def score_task(
         errors=syntax_res.comments,
     )
 
+    # Resolve analysis critics up front. A "replace"-mode analysis critic
+    # (L4 dynamic model / EPC / decision) is authoritative for its layer, so the
+    # piki loop below must NOT also add that layer's weight: piki has no L4 rules
+    # and would otherwise award L4's weight vacuously *in addition* to the
+    # analysis critic's contribution, double-counting it (the source of the
+    # spurious 1.15 ceiling). Layers owned in "merge" mode (e.g. L5
+    # constructability) keep piki's weight, since merge only subtracts on failure.
+    from sd_hwe_bench.critics.registry import (
+        build_context,
+        build_critic,
+        resolve_analysis_critics,
+    )
+
+    analysis_specs = resolve_analysis_critics(task)
+    replace_layers = {spec.layer for spec in analysis_specs if spec.mode == "replace"}
+
     # 2. Piki critic (L1-L5)
     piki = PikiCritic(runner=runner)
     piki_res = piki.evaluate(project_dir, task)  # type: ignore[arg-type]
@@ -378,7 +394,8 @@ def score_task(
             failed=0 if not layer_errors.get(layer) else 1,
             errors=layer_errors.get(layer, []),
         )
-        score.overall_score += layer_scores.get(layer, 0.0)
+        if layer not in replace_layers:
+            score.overall_score += layer_scores.get(layer, 0.0)
 
     # If piki unavailable, fall back to static checks
     if not piki_res.artifacts.get("available", True):
@@ -400,15 +417,10 @@ def score_task(
                 score.overall_score -= settings.LAYER_WEIGHTS.get("L3", 0.0)
 
     # 2.6 Analysis critics (L4 dynamic model / L5 constructability), resolved
-    # declaratively via the critic registry instead of a hardcoded task_type ladder.
-    from sd_hwe_bench.critics.registry import (
-        build_context,
-        build_critic,
-        resolve_analysis_critics,
-    )
-
+    # declaratively via the critic registry (specs resolved above, before the
+    # piki loop, so replace-mode layers are not double-counted).
     ctx = build_context(task, project_dir)
-    for spec in resolve_analysis_critics(task):
+    for spec in analysis_specs:
         analysis_res = build_critic(spec, ctx).evaluate(project_dir, task)
         score.critic_results.append(analysis_res)
         _apply_analysis_result(score, spec, analysis_res)

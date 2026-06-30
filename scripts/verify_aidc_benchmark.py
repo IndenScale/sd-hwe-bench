@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""端到端验证：AIDC 运营优化 benchmark — ADL 加载 → 仿真 → 评分。
+"""端到端验证：AIDC v7 benchmark — ADL 加载 → 仿真 → 评分。
 
 验证内容：
 1. 14.8kW 小机房 ADL 项目加载与仿真
 2. 60MW 大机房 ADL 项目加载与仿真
 3. 夏季 48h 仿真策略区分度
-4. L7 评分 critic（含 reference 归一化）
+4. PerformanceCritic 评分（含 reference 归一化）
 5. 全生命周期成本（LCC）模型
+6. v7 AIDC / EPC 任务参考解评分
 """
 
 from __future__ import annotations
@@ -205,7 +206,7 @@ def verify_task_scoring(task_dir: Path):
 def verify_scoring_small(model, weather):
     """验证小机房评分 critic 输出。"""
     print("=" * 60)
-    print("Verify: L7 Performance Scoring (14.8kW)")
+    print("Verify: Performance Scoring (14.8kW)")
     print("=" * 60)
 
     critic = PerformanceCritic(
@@ -282,9 +283,14 @@ def main():
     # Verify 7: Scoring
     verify_scoring_small(small_model, summer)
 
-    # Verify 8: Task scoring
-    verify_task_scoring(BENCH_DIR / "tasks" / "telecom" / "aidc-operation-002")
-    verify_task_scoring(BENCH_DIR / "tasks" / "telecom" / "aidc-co-design-002")
+    # Verify 8: v7 task scoring
+    for task_name in [
+        "edge-dc-design-001",
+        "aidc-60mw-001",
+        "aidc-60mw-002",
+        "aidc-60mw-003",
+    ]:
+        verify_task_scoring(BENCH_DIR / "tasks" / "telecom" / task_name)
 
     print("=" * 60)
     print("🎉 ALL VERIFICATIONS PASSED")

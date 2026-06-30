@@ -51,8 +51,7 @@ class SyntaxCritic(Critic):
         if missing_expected:
             comments.append(f"Missing expected files: {', '.join(missing_expected)}")
 
-        # L0 fails only on YAML parse errors or empty project, not on missing expected files.
-        passed = parse_errors == 0
+        passed = parse_errors == 0 and not missing_expected
         score = 1.0
         score -= settings.SYNTAX_PENALTY_PER_ERROR * parse_errors
         score = max(0.0, score)

@@ -1,0 +1,17 @@
+# AIDC v7 Kimi pass@1 rerun after harness fixes.
+# Run with: uv run sd-hwe-bench batch --matrix scripts/batch/aidc-v7-kimi-pass1.yaml
+#
+# Keep run_dir outside the repository so CLI actors do not start inside a path
+# that advertises the benchmark repo and reference solutions.
+run_dir: /tmp/sd-hwe-bench-runs/aidc-v7-kimi-pass1-20260630
+passes: 1
+sandbox: none
+timeout: 1800
+max_workers: 1
+models:
+  kimi: kimi
+tasks:
+  - telecom/edge-dc-design-001
+  - telecom/aidc-60mw-001
+  - telecom/aidc-60mw-002
+  - telecom/aidc-60mw-003

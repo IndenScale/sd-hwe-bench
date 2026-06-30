@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 from pathlib import Path
 
 from sd_hwe_bench.settings import settings
@@ -43,3 +44,25 @@ def list_yaml_files(root: Path) -> set[Path]:
         for p in root.rglob("*")
         if p.is_file() and p.suffix in (".yaml", ".yml")
     }
+
+
+def snapshot_yaml_files(root: Path) -> dict[Path, str]:
+    """Return content hashes for YAML files under root, keyed by relative path."""
+    snapshot: dict[Path, str] = {}
+    for rel in list_yaml_files(root):
+        path = root / rel
+        snapshot[rel] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return snapshot
+
+
+def count_changed_yaml_files(before: dict[Path, str], root: Path) -> int:
+    """Count added, modified, and deleted YAML files relative to a snapshot."""
+    after = snapshot_yaml_files(root)
+    changed = 0
+    for rel, digest in after.items():
+        if before.get(rel) != digest:
+            changed += 1
+    for rel in before:
+        if rel not in after:
+            changed += 1
+    return changed

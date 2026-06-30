@@ -3,9 +3,7 @@ difficulty: hard
 domain: telecom
 expected_deliverables:
 - power-budget
-expected_files:
-- mates/power-iec/PDU-A-SRV-01-power-a.yaml
-- mates/power-iec/PDU-B-SRV-01-power-b.yaml
+expected_files: []
 name: 跨专业综合：供电容量规划和设备部署
 plugins:
 - telecom

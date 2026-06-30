@@ -1,0 +1,15 @@
+title: "Beyond Benchmarks: 工程 AI 的表征、约束与知识鸿沟"
+subtitle: "以 SD-HWE-Bench 为可执行实验平台"
+authors:
+  - name: "IndenScale"
+    affiliation: "IndenScale"
+abstract: |
+  大语言模型和 Agent 系统在软件工程、数学推理与开放域工具使用中快速进步，但系统级工程设计中的 AI 能力仍缺少可复现、可解释、可训练的评估闭环。本文主张，这一滞后并非单纯来自模型能力不足，而是来自三类基础设施缺失：表征鸿沟、约束鸿沟与知识鸿沟。表征鸿沟指工程对象缺少类似代码的可计算、可 diff、可验证表示；约束鸿沟指工程正确性大量停留在自然语言规范、人工审查和 GUI 软件中，导致 Agent 生成 pseudo-correct 方案；知识鸿沟指前沿设备、材料、工艺、气候、电价与供应链知识缺少类似半导体 PDK 的形式化传播机制，难以进入跨层优化循环。我们以 SD-HWE-Bench 为可执行实验平台，提出三组验证：比较 MCP、CUA、OpenSCAD 与 ADL 等表征路径的闭环能力；比较自然语言规范与可执行 DTS 约束下的 pseudo-correctness 和 repair 饱和行为；通过 AIDC 设计-调度联合优化 probe 分析情境化知识如何改变工程优化上限。本文的目标不是证明一个 benchmark 的规模，而是说明工程 AI 的核心问题在于能否从“看起来正确”走向“可验证正确”，并进一步走向“前沿最优”。
+keywords:
+  - Engineering AI
+  - Evaluation
+  - Representation Gap
+  - Constraint Gap
+  - Knowledge Gap
+  - Engineering as Code
+  - SD-HWE-Bench

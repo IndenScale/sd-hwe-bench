@@ -93,6 +93,9 @@ def test_task_edge_dc_design_solution_passes():
     assert "L4" in score.layers
     assert score.layers["L4"].passed
     assert score.performance_score is not None
+    # Regression: L4 weight must be counted once. A passing L4-replace task
+    # tops out at exactly 1.0, not the old double-counted 1.15.
+    assert score.overall_score == pytest.approx(1.0)
 
 
 def test_task_conceptual_design_solution_passes():
@@ -107,6 +110,19 @@ def test_task_conceptual_design_solution_passes():
     assert "L4" in score.layers
     assert score.layers["L4"].passed
     assert score.performance_score is not None
+    assert score.overall_score == pytest.approx(1.0)
+
+
+def test_task_conceptual_design_scaffold_fails():
+    """aidc-60mw-001 scaffold must not pass without agent outputs."""
+    task = TaskInstance(TASK_CONCEPTUAL)
+    score = score_task(
+        task_id=task.task_id,
+        agent_output_dir=TASK_CONCEPTUAL / "scaffold",
+        task=task,
+    )
+    assert not score.success
+    assert not score.layers["L0"].passed
 
 
 def test_task_detailed_design_solution_passes():
@@ -122,6 +138,7 @@ def test_task_detailed_design_solution_passes():
     assert score.layers["L4"].passed
     assert "L5" in score.layers
     assert score.layers["L5"].passed
+    assert score.overall_score == pytest.approx(1.0)
 
 
 def test_task_epc_solution_passes():
@@ -136,6 +153,7 @@ def test_task_epc_solution_passes():
     assert "L4" in score.layers
     assert score.layers["L4"].passed
     assert score.performance_score is not None
+    assert score.overall_score == pytest.approx(1.0)
 
 
 def test_weather_wet_bulb_calculation():

@@ -188,9 +188,12 @@ def _run_rollout(
         task=task,
     )
 
+    rollout_success = result.success and score.success
     ws.update_manifest(
         {
-            "success": score.success,
+            "success": rollout_success,
+            "score_success": score.success,
+            "actor_success": result.success,
             "overall_score": score.overall_score,
             "layers": {
                 name: {"passed": ls.passed, "total": ls.total} for name, ls in score.layers.items()
@@ -206,7 +209,9 @@ def _run_rollout(
         "task_id": job.task_id,
         "attempt": job.attempt,
         "run_dir": str(ws.run_dir),
-        "success": score.success,
+        "success": rollout_success,
+        "score_success": score.success,
+        "actor_success": result.success,
         "overall_score": score.overall_score,
         "layers": {
             name: {"passed": ls.passed, "total": ls.total, "errors": ls.errors}
@@ -301,9 +306,12 @@ def _run_serial(
                 task=task,
             )
 
+            rollout_success = result.success and score.success
             ws.update_manifest(
                 {
-                    "success": score.success,
+                    "success": rollout_success,
+                    "score_success": score.success,
+                    "actor_success": result.success,
                     "overall_score": score.overall_score,
                     "layers": {
                         name: {"passed": ls.passed, "total": ls.total}
@@ -316,6 +324,7 @@ def _run_serial(
                 }
             )
 
+            score.success = rollout_success
             task_scores.append(score)
             print_score(score)
 
@@ -422,7 +431,7 @@ def register(app: typer.Typer) -> None:
             settings.DEFAULT_ACTOR,
             "--actor",
             "-a",
-            help="Actor spec: kimi[:model], codex[:model].",
+            help="Actor spec: kimi[:model], codex[:model], claude[:model].",
         ),
         dataset: Path = typer.Option(Path("."), "--dataset", help="Path to dataset root."),
         passes: int = typer.Option(

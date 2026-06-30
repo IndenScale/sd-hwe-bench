@@ -138,6 +138,37 @@ class Settings:
         default_factory=lambda: _env_str("SD_HWE_KIMI_MODEL", "kimi-code/kimi-for-coding")
     )
 
+    CLAUDE_BIN: str = field(default_factory=lambda: _env_str("SD_HWE_CLAUDE_BIN", "claude"))
+    DEFAULT_CLAUDE_MODEL: str = field(
+        default_factory=lambda: _env_str("SD_HWE_CLAUDE_MODEL", "deepseek-v4-flash")
+    )
+    CLAUDE_EFFORT_LEVEL: str = field(
+        default_factory=lambda: _env_str("SD_HWE_CLAUDE_EFFORT_LEVEL", "max")
+    )
+    CLAUDE_BASE_URL: str = field(
+        default_factory=lambda: _env_str(
+            "SD_HWE_CLAUDE_BASE_URL", "https://api.deepseek.com/anthropic"
+        )
+    )
+    CLAUDE_DEFAULT_OPUS_MODEL: str = field(
+        default_factory=lambda: _env_str(
+            "SD_HWE_CLAUDE_DEFAULT_OPUS_MODEL", "deepseek-v4-pro[1m]"
+        )
+    )
+    CLAUDE_DEFAULT_SONNET_MODEL: str = field(
+        default_factory=lambda: _env_str(
+            "SD_HWE_CLAUDE_DEFAULT_SONNET_MODEL", "deepseek-v4-pro[1m]"
+        )
+    )
+    CLAUDE_DEFAULT_HAIKU_MODEL: str = field(
+        default_factory=lambda: _env_str("SD_HWE_CLAUDE_DEFAULT_HAIKU_MODEL", "deepseek-v4-flash")
+    )
+    CLAUDE_EXTRA_ARGS: list[str] = field(
+        default_factory=lambda: _env_list(
+            "SD_HWE_CLAUDE_EXTRA_ARGS",
+            ["--permission-mode", "bypassPermissions"],
+        )
+    )
 
     CODEX_BIN: str = field(default_factory=lambda: _env_str("SD_HWE_CODEX_BIN", "codex"))
     DEFAULT_CODEX_MODEL: str = field(

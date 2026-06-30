@@ -14,7 +14,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from sd_hwe_bench.actors.base import Actor, ActorResult, list_yaml_files
+from sd_hwe_bench.actors.base import Actor, ActorResult, count_changed_yaml_files, snapshot_yaml_files
 from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -57,8 +57,7 @@ class KimiActor(Actor):
             prompt,
         ]
 
-        # Snapshot files before the agent runs so we can count net-new files.
-        before = list_yaml_files(workspace_root)
+        before = snapshot_yaml_files(workspace_root)
 
         start = time.time()
         try:
@@ -89,12 +88,20 @@ class KimiActor(Actor):
                 error=str(exc),
             )
 
-        after = list_yaml_files(workspace_root)
-        new_files = after - before
+        files_changed = count_changed_yaml_files(before, workspace_root)
+        error = None
+        success = True
+        if result.returncode != 0:
+            success = False
+            error = f"Kimi CLI exited with code {result.returncode}"
+        elif "auth.login_required" in raw or "OAuth provider credentials were rejected" in raw:
+            success = False
+            error = "Kimi CLI authentication failed"
 
         return ActorResult(
-            success=True,
+            success=success,
             raw_output=raw,
-            files_written=len(new_files),
+            files_written=files_changed,
             elapsed_s=elapsed,
+            error=error,
         )
