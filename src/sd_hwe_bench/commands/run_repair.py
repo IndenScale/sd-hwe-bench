@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional, cast
 
 import typer
 
@@ -68,6 +68,11 @@ def register(app: typer.Typer) -> None:
             "--no-repair",
             help="Baseline mode: run a single turn without ESA feedback or repair loop.",
         ),
+        context_mode: str = typer.Option(
+            "full",
+            "--context-mode",
+            help="Experimental context condition: full, docs-only, or nl-only.",
+        ),
         run_dir: Path = typer.Option(
             settings.RUN_DIR, "--run-dir", help="Directory to store rollout archives."
         ),
@@ -100,6 +105,10 @@ def register(app: typer.Typer) -> None:
         with reason `budget_exceeded` after MAX_REPAIR rounds.
         """
         setup_logging(verbose)
+        if context_mode not in {"full", "docs-only", "nl-only"}:
+            console.print("[red]--context-mode must be one of: full, docs-only, nl-only[/red]")
+            raise typer.Exit(code=1)
+        prompt_context_mode = cast(Literal["full", "docs-only", "nl-only"], context_mode)
 
         ds = Dataset(dataset)
         task_ids = resolve_task_ids(ds, task_id)
@@ -127,6 +136,8 @@ def register(app: typer.Typer) -> None:
                     actor_name=actor.split(":")[0],
                     model=actor,
                     scaffold_dir=task.scaffold_dir,
+                    attempt=attempt,
+                    scaffold_excludes=["docs"] if context_mode == "nl-only" else None,
                 )
 
                 act = create_actor(actor, timeout=timeout)
@@ -137,7 +148,7 @@ def register(app: typer.Typer) -> None:
                     require_generator=True,
                     repair_mode=not no_repair,
                     baseline_mode=no_repair,
-
+                    context_mode=prompt_context_mode,
                 )
                 ws.write_prompt(initial_prompt)
 
@@ -281,6 +292,8 @@ def register(app: typer.Typer) -> None:
                         },
                         "deliverables": final_score.deliverable_scores,
                         "termination_reason": termination_reason,
+                        "context_mode": context_mode,
+                        "repair_mode": not no_repair,
                         "agent_declared_reason": agent_declared_reason,
                         "repair_rounds_used": len(turn_scores) - 1,
                         "max_repair": max_repair,

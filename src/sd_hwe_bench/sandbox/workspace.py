@@ -52,6 +52,7 @@ class Workspace:
         model: str | None = None,
         scaffold_dir: Path | None = None,
         attempt: int | None = None,
+        scaffold_excludes: list[str] | None = None,
     ) -> Workspace:
         """Create a new workspace directory.
 
@@ -63,6 +64,7 @@ class Workspace:
             scaffold_dir: Optional scaffold directory to copy into workspace.
             attempt: Optional attempt index to make the directory name unique
                 when multiple rollouts run in parallel.
+            scaffold_excludes: Optional top-level scaffold entries to omit.
         """
         run_root = Path(run_root)
         run_root.mkdir(parents=True, exist_ok=True)
@@ -85,7 +87,7 @@ class Workspace:
         ws = cls(run_dir=run_dir, task_id=task_id, actor_name=actor_name, model=model)
 
         if scaffold_dir is not None and scaffold_dir.exists():
-            ws.copy_scaffold(scaffold_dir)
+            ws.copy_scaffold(scaffold_dir, excludes=scaffold_excludes)
 
         ws.write_manifest(
             {
@@ -100,12 +102,15 @@ class Workspace:
 
         return ws
 
-    def copy_scaffold(self, scaffold_dir: Path) -> None:
+    def copy_scaffold(self, scaffold_dir: Path, excludes: list[str] | None = None) -> None:
         """Copy scaffold files into the workspace project directory."""
         scaffold_dir = Path(scaffold_dir)
         if not scaffold_dir.exists():
             return
+        excluded = set(excludes or [])
         for item in scaffold_dir.iterdir():
+            if item.name in excluded:
+                continue
             if item.name.startswith(".") and item.name != ".gitignore":
                 continue
             if item.name == "__pycache__":

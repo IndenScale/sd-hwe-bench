@@ -55,11 +55,9 @@ class ArchiveManager:
         if not self.run_root.exists():
             return entries
 
-        for run_dir in sorted(self.run_root.iterdir()):
-            if not run_dir.is_dir():
-                continue
-            manifest_path = run_dir / "manifest.json"
-            if not manifest_path.exists():
+        for manifest_path in sorted(self.run_root.rglob("manifest.json")):
+            run_dir = manifest_path.parent
+            if not (run_dir / "workspace").is_dir():
                 continue
             try:
                 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))

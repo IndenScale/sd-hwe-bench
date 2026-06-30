@@ -591,6 +591,7 @@ class PromptBuilder:
         output_mode: Literal["cli", "api"] = "cli",
         repair_mode: bool = False,
         baseline_mode: bool = False,
+        context_mode: Literal["full", "docs-only", "nl-only"] = "full",
     ) -> str:
         """Build the full prompt injected into the actor.
 
@@ -602,6 +603,7 @@ class PromptBuilder:
                 directly; "api" for agents that return YAML code blocks.
             repair_mode: Include repair-loop instructions and termination markers.
             baseline_mode: Baseline prompt with no ESA feedback / no markers.
+            context_mode: Experimental context condition for gap studies.
         """
         parts: list[str] = []
 
@@ -619,12 +621,13 @@ class PromptBuilder:
             f"**Plugins**: {', '.join(plugins)}"
         )
 
-        parts.append(_ADL_PIKI_CONVENTION)
+        if context_mode != "nl-only":
+            parts.append(_ADL_PIKI_CONVENTION)
 
         # Project design specification: agents must consult engineering standards
         # before making design decisions. For CLI agents this is a file in the
         # workspace; for API agents we inline the spec so it is actually visible.
-        design_spec = self._load_design_spec(scaffold_dir)
+        design_spec = None if context_mode == "nl-only" else self._load_design_spec(scaffold_dir)
         if design_spec:
             parts.append("## 项目设计规范\n")
             parts.append(
@@ -640,27 +643,42 @@ class PromptBuilder:
                 )
 
         # Optional full piki reference
-        if self.piki_ref_path and self.piki_ref_path.exists():
+        if context_mode == "nl-only":
+            parts.append(
+                "## 上下文条件\n\n"
+                "本次实验为 NL-only 条件：请仅根据任务自然语言需求完成设计；"
+                "不要依赖项目规范文档、提交前自动检查或外部验证反馈。\n"
+            )
+        elif context_mode == "docs-only":
+            parts.append(
+                "## 上下文条件\n\n"
+                "本次实验为 Docs-only 条件：可以阅读 workspace 中的规范文档和 scaffold，"
+                "但不要运行提交前自动检查或根据系统诊断进行修复。\n"
+            )
+
+        if self.piki_ref_path and self.piki_ref_path.exists() and context_mode != "nl-only":
             parts.append("## Piki 完整参考\n")
             parts.append(self.piki_ref_path.read_text(encoding="utf-8"))
 
         # Scaffold info
-        parts.append("## Scaffold 中已有的文件（只读，请勿修改）\n")
-        if scaffold_dir.exists():
-            for f in sorted(scaffold_dir.rglob("*")):
-                if f.is_file():
-                    rel = f.relative_to(scaffold_dir)
-                    parts.append(f"- `{rel}`")
-                    # Include small scaffold files inline for context
-                    if (
-                        f.suffix in (".yaml", ".yml", ".toml")
-                        and f.stat().st_size < settings.SCAFFOLD_INLINE_MAX_BYTES
-                    ):
-                        parts.append(f"\n`{rel}`:\n```yaml")
-                        parts.append(f.read_text(encoding="utf-8"))
-                        parts.append("```\n")
-        else:
-            parts.append("- (无 scaffold)")
+        if context_mode != "nl-only":
+            parts.append("## Scaffold 中已有的文件（只读，请勿修改）\n")
+            if scaffold_dir.exists():
+                for f in sorted(scaffold_dir.rglob("*")):
+                    if f.is_file():
+                        rel = f.relative_to(scaffold_dir)
+                        parts.append(f"- `{rel}`")
+                        # Include small scaffold files inline for context.
+                        if (
+                            context_mode == "full"
+                            and f.suffix in (".yaml", ".yml", ".toml")
+                            and f.stat().st_size < settings.SCAFFOLD_INLINE_MAX_BYTES
+                        ):
+                            parts.append(f"\n`{rel}`:\n```yaml")
+                            parts.append(f.read_text(encoding="utf-8"))
+                            parts.append("```\n")
+            else:
+                parts.append("- (无 scaffold)")
 
         # Requirement
         requirement = task_metadata.get("requirement", "")

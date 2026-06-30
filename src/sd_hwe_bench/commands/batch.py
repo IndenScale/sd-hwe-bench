@@ -12,6 +12,16 @@ Matrix YAML schema::
     sandbox: none                    # auto/none/docker/podman
     timeout: 600                     # actor timeout (s)
     max_workers: 4                   # concurrent (model, task) rollouts
+    self_check: false                # append --no-self-check when false
+    command: run                     # run or run-repair
+    context_mode: full               # full, docs-only, nl-only (run-repair only)
+    no_repair: false                 # pass --no-repair to run-repair
+    max_repair: 5                    # repair rounds for run-repair
+    conditions:                      # optional per-condition overrides
+      - name: executable
+        command: run-repair
+        context_mode: full
+        no_repair: false
     models:                          # name -> actor spec
       kimi: kimi
       deepseek-v4-flash: claude:deepseek-v4-flash
@@ -38,6 +48,9 @@ from sd_hwe_bench.cli_common import resolve_task_ids, setup_logging
 from sd_hwe_bench.console import console
 from sd_hwe_bench.dataset import Dataset
 from sd_hwe_bench.settings import settings
+
+_BATCH_COMMANDS = {"run", "run-repair"}
+_CONTEXT_MODES = {"full", "docs-only", "nl-only"}
 
 
 def load_matrix(path: Path) -> dict[str, Any]:
@@ -67,6 +80,42 @@ def expand_tasks(ds: Dataset, entries: list[str]) -> list[str]:
     return resolved
 
 
+def load_conditions(data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return normalized condition entries for a matrix."""
+    raw_conditions = data.get("conditions")
+    if raw_conditions is None:
+        raw_conditions = [{"name": data.get("condition", "default")}]
+    if not isinstance(raw_conditions, list) or not raw_conditions:
+        raise ValueError("matrix 'conditions' must be a non-empty list when provided")
+
+    conditions: list[dict[str, Any]] = []
+    for idx, raw in enumerate(raw_conditions):
+        if not isinstance(raw, dict):
+            raise ValueError("each condition must be a YAML mapping")
+        name = str(raw.get("name", f"condition-{idx + 1}"))
+        command = str(raw.get("command", data.get("command", "run")))
+        context_mode = str(raw.get("context_mode", data.get("context_mode", "full")))
+        if command not in _BATCH_COMMANDS:
+            raise ValueError(f"unsupported batch command: {command}")
+        if context_mode not in _CONTEXT_MODES:
+            raise ValueError(f"unsupported context_mode: {context_mode}")
+        conditions.append(
+            {
+                "name": name,
+                "command": command,
+                "context_mode": context_mode,
+                "no_repair": bool(raw.get("no_repair", data.get("no_repair", False))),
+                "max_repair": int(raw.get("max_repair", data.get("max_repair", settings.DEFAULT_MAX_REPAIR))),
+            }
+        )
+    return conditions
+
+
+def _safe_condition_name(name: str) -> str:
+    """Make a condition name safe for a run subdirectory."""
+    return "".join(ch if ch.isalnum() or ch in ("-", "_") else "_" for ch in name)
+
+
 def register(app: typer.Typer) -> None:
     @app.command("batch")
     def batch_command(
@@ -85,6 +134,7 @@ def register(app: typer.Typer) -> None:
 
         data = load_matrix(matrix)
         models: dict[str, str] = dict(data["models"])
+        conditions = load_conditions(data)
         ds = Dataset(dataset)
         task_ids = expand_tasks(ds, list(data["tasks"]))
         if not task_ids:
@@ -96,42 +146,71 @@ def register(app: typer.Typer) -> None:
         timeout = int(data.get("timeout", settings.DEFAULT_ACTOR_TIMEOUT_S))
         run_dir = str(data.get("run_dir", settings.RUN_DIR))
         workers = int(data.get("max_workers", max_workers))
+        self_check = bool(data.get("self_check", True))
 
-        plan = [(name, spec, tid) for name, spec in models.items() for tid in task_ids]
+        plan = [
+            (condition, name, spec, tid)
+            for condition in conditions
+            for name, spec in models.items()
+            for tid in task_ids
+        ]
 
+        total_attempts = len(plan) * passes
         console.print(
-            f"[bold]Batch plan:[/bold] {len(models)} models × {len(task_ids)} tasks "
-            f"= {len(plan)} rollouts | passes={passes} | sandbox={sandbox} | run_dir={run_dir}"
+            f"[bold]Batch plan:[/bold] {len(conditions)} conditions × "
+            f"{len(models)} models × {len(task_ids)} tasks "
+            f"= {len(plan)} task-model entries | attempts={total_attempts} "
+            f"| passes={passes} | sandbox={sandbox} | self_check={self_check} "
+            f"| run_dir={run_dir}"
         )
-        for name, spec, tid in plan:
-            console.print(f"  - {name} ({spec})  {tid}")
+        for condition, name, spec, tid in plan:
+            console.print(
+                f"  - {condition['name']}:{condition['command']} "
+                f"{name} ({spec})  {tid}"
+            )
 
         if dry_run:
             return
 
-        def _one(model_name: str, actor_spec: str, task_id: str) -> tuple[str, str, int]:
+        def _one(
+            condition: dict[str, Any], model_name: str, actor_spec: str, task_id: str
+        ) -> tuple[str, str, str, int]:
+            condition_run_dir = str(Path(run_dir) / _safe_condition_name(condition["name"]))
             cmd = [
-                sys.executable, "-m", "sd_hwe_bench.cli", "run", task_id,
+                sys.executable, "-m", "sd_hwe_bench.cli", condition["command"], task_id,
                 "--actor", actor_spec,
                 "--passes", str(passes),
-                "--run-dir", run_dir,
+                "--run-dir", condition_run_dir,
                 "--sandbox", sandbox,
                 "--timeout", str(timeout),
                 "--dataset", str(dataset),
             ]
+            if condition["command"] == "run" and not self_check:
+                cmd.append("--no-self-check")
+            if condition["command"] == "run-repair":
+                cmd.extend(["--max-repair", str(condition["max_repair"])])
+                cmd.extend(["--context-mode", condition["context_mode"]])
+                if condition["no_repair"]:
+                    cmd.append("--no-repair")
             proc = subprocess.run(cmd, capture_output=True, text=True)
-            return model_name, task_id, proc.returncode
+            return condition["name"], model_name, task_id, proc.returncode
 
         failures = 0
         with ThreadPoolExecutor(max_workers=workers) as ex:
-            futures = {ex.submit(_one, n, s, t): (n, t) for (n, s, t) in plan}
+            futures = {
+                ex.submit(_one, c, n, s, t): (c["name"], n, t)
+                for (c, n, s, t) in plan
+            }
             for fut in as_completed(futures):
-                name, tid, rc = fut.result()
+                condition_name, name, tid, rc = fut.result()
                 ok = rc == 0
                 if not ok:
                     failures += 1
                 color = "green" if ok else "red"
-                console.print(f"  [{color}]{'ok' if ok else 'FAIL'}[/{color}] {name} {tid} (rc={rc})")
+                console.print(
+                    f"  [{color}]{'ok' if ok else 'FAIL'}[/{color}] "
+                    f"{condition_name} {name} {tid} (rc={rc})"
+                )
 
         # Aggregate leaderboard from the shared run_dir manifests.
         manager = ArchiveManager(Path(run_dir))

@@ -1,0 +1,36 @@
+# P0 constraint-gap experiment matrix.
+# Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-p0.yaml
+# Preview:   uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-p0.yaml --dry-run
+#
+# Compares natural-language-only, docs-only, and executable repair conditions
+# on hard/coupled tasks. Start with one stable model before broadening.
+run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-p0-20260630
+passes: 3
+sandbox: none
+timeout: 1800
+max_workers: 1
+self_check: false
+models:
+  deepseek-v4-flash-claude-code: claude:deepseek-v4-flash
+conditions:
+  - name: nl-only
+    command: run-repair
+    context_mode: nl-only
+    no_repair: true
+    max_repair: 0
+  - name: docs-only
+    command: run-repair
+    context_mode: docs-only
+    no_repair: true
+    max_repair: 0
+  - name: executable
+    command: run-repair
+    context_mode: full
+    no_repair: false
+    max_repair: 5
+tasks:
+  - telecom/telecom-cross-001
+  - telecom/telecom-cross-002
+  - telecom/telecom-emergent-001
+  - telecom/aidc-60mw-002
+  - telecom/aidc-60mw-003
