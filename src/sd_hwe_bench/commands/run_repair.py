@@ -10,6 +10,13 @@ import typer
 from sd_hwe_bench.actors import create_actor
 from sd_hwe_bench.cli_common import resolve_task_ids, setup_logging
 from sd_hwe_bench.console import console, print_score
+from sd_hwe_bench.constraints import (
+    build_constraint_catalog,
+    collect_score_diagnostics,
+    parse_constraint_selectors,
+    render_diagnostics,
+    summarize_diagnostics,
+)
 from sd_hwe_bench.dataset import Dataset
 from sd_hwe_bench.prompts import REPAIR_MARKERS, PromptBuilder
 from sd_hwe_bench.sandbox.runner import SandboxBackend, SandboxRunner
@@ -39,6 +46,10 @@ def _score_to_dict(score: TaskScore) -> dict:
         },
         "deliverables": score.deliverable_scores,
     }
+
+
+def _constraint_ids(items: list) -> set[str]:
+    return {str(item.id) for item in items}
 
 
 def register(app: typer.Typer) -> None:
@@ -72,6 +83,36 @@ def register(app: typer.Typer) -> None:
             "full",
             "--context-mode",
             help="Experimental context condition: full, docs-only, or nl-only.",
+        ),
+        constraint_coverage_mode: str = typer.Option(
+            "full",
+            "--constraint-coverage-mode",
+            help="Constraint visibility mode for experiments: full, explicit-mute, random-mute.",
+        ),
+        prompt_mute: str = typer.Option(
+            "",
+            "--prompt-mute",
+            help="Comma-separated constraint selectors hidden from the prompt, e.g. id:X,family:layout,layer:L3.",
+        ),
+        feedback_mute: str = typer.Option(
+            "",
+            "--feedback-mute",
+            help="Comma-separated constraint selectors hidden from repair feedback.",
+        ),
+        mute_ratio: float = typer.Option(
+            0.0,
+            "--mute-ratio",
+            help="Random mute ratio used when --constraint-coverage-mode=random-mute.",
+        ),
+        mute_seed: Optional[int] = typer.Option(
+            None,
+            "--mute-seed",
+            help="Random seed for random constraint mute conditions.",
+        ),
+        diagnostic_verbosity: str = typer.Option(
+            "localized",
+            "--diagnostic-verbosity",
+            help="Repair diagnostic renderer: none, coarse, attributed, localized.",
         ),
         run_dir: Path = typer.Option(
             settings.RUN_DIR, "--run-dir", help="Directory to store rollout archives."
@@ -120,7 +161,20 @@ def register(app: typer.Typer) -> None:
         if context_mode not in {"full", "docs-only", "nl-only"}:
             console.print("[red]--context-mode must be one of: full, docs-only, nl-only[/red]")
             raise typer.Exit(code=1)
+        if constraint_coverage_mode not in {"full", "explicit-mute", "random-mute"}:
+            console.print(
+                "[red]--constraint-coverage-mode must be one of: full, explicit-mute, random-mute[/red]"
+            )
+            raise typer.Exit(code=1)
+        if diagnostic_verbosity not in {"none", "coarse", "attributed", "localized"}:
+            console.print(
+                "[red]--diagnostic-verbosity must be one of: none, coarse, attributed, localized[/red]"
+            )
+            raise typer.Exit(code=1)
         prompt_context_mode = cast(Literal["full", "docs-only", "nl-only"], context_mode)
+        repair_diagnostic_verbosity = cast(
+            Literal["none", "coarse", "attributed", "localized"], diagnostic_verbosity
+        )
         object.__setattr__(settings, "ACTOR_SANDBOX", actor_sandbox)
 
         ds = Dataset(dataset)
@@ -136,6 +190,35 @@ def register(app: typer.Typer) -> None:
 
         for tid in task_ids:
             task = ds.load_task(tid)
+            catalog = build_constraint_catalog(task)
+            try:
+                prompt_selectors = parse_constraint_selectors(prompt_mute)
+                feedback_selectors = parse_constraint_selectors(feedback_mute)
+            except ValueError as exc:
+                console.print(f"[red]{exc}[/red]")
+                raise typer.Exit(code=1) from exc
+
+            random_muted = (
+                catalog.randomized(mute_ratio, mute_seed)
+                if constraint_coverage_mode == "random-mute"
+                else []
+            )
+            prompt_muted = catalog.selected(prompt_selectors)
+            feedback_muted = catalog.selected(feedback_selectors)
+            if random_muted:
+                prompt_muted = sorted(
+                    {spec.id: spec for spec in [*prompt_muted, *random_muted]}.values(),
+                    key=lambda s: s.id,
+                )
+                feedback_muted = sorted(
+                    {spec.id: spec for spec in [*feedback_muted, *random_muted]}.values(),
+                    key=lambda s: s.id,
+                )
+            prompt_muted_ids = _constraint_ids(prompt_muted)
+            feedback_muted_ids = _constraint_ids(feedback_muted)
+            visible_constraints = [
+                spec.to_dict() for spec in catalog.constraints if spec.id not in prompt_muted_ids
+            ]
             task_scores: list[TaskScore] = []
 
             for attempt in range(passes):
@@ -164,6 +247,7 @@ def register(app: typer.Typer) -> None:
                     repair_mode=not no_repair,
                     baseline_mode=no_repair,
                     context_mode=prompt_context_mode,
+                    visible_constraints=visible_constraints,
                 )
                 ws.write_prompt(initial_prompt)
 
@@ -206,11 +290,33 @@ def register(app: typer.Typer) -> None:
                         runner=runner,
                         task=task,
                     )
+                    full_diagnostics = collect_score_diagnostics(score, catalog)
+                    visible_feedback_diagnostics = [
+                        diag for diag in full_diagnostics if diag.constraint_id not in feedback_muted_ids
+                    ]
+                    diagnostics_summary = summarize_diagnostics(
+                        full_diagnostics,
+                        catalog,
+                        muted_constraint_ids=feedback_muted_ids,
+                    )
+                    ws.log_trajectory(
+                        {
+                            "event": "diagnostics",
+                            "turn": turn,
+                            "diagnostic_verbosity": diagnostic_verbosity,
+                            "summary": diagnostics_summary,
+                            "diagnostics": [diag.to_dict() for diag in full_diagnostics],
+                            "feedback_diagnostics": [
+                                diag.to_dict() for diag in visible_feedback_diagnostics
+                            ],
+                        }
+                    )
                     turn_scores.append(
                         {
                             "turn": turn,
                             **_score_to_dict(score),
                             "actor_elapsed_s": result.elapsed_s,
+                            "diagnostics": diagnostics_summary,
                         }
                     )
                     final_score = score
@@ -250,34 +356,12 @@ def register(app: typer.Typer) -> None:
                         )
                         break
 
-                    # Extract clean diagnostics from the Piki critic for the repair prompt
-                    piki_result = next(
-                        (cr for cr in score.critic_results if cr.name == "piki"), None
-                    )
-                    diagnostics: list[dict] = []
-                    if piki_result and piki_result.artifacts.get("parsed"):
-                        for rule in piki_result.artifacts["parsed"].get("results", []):
-                            if not rule.get("passed"):
-                                diagnostics.append(
-                                    {
-                                        "rule_id": rule.get("rule_id", ""),
-                                        "name": rule.get("name", ""),
-                                        "message": rule.get("message", ""),
-                                        "file": rule.get("file", ""),
-                                    }
-                                )
-                        for diag in piki_result.artifacts["parsed"].get("diagnostics", []):
-                            if str(diag.get("severity", "")).upper() in ("ERROR", "FATAL"):
-                                diagnostics.append(
-                                    {
-                                        "rule_id": diag.get("code", ""),
-                                        "name": diag.get("code", ""),
-                                        "message": diag.get("message", ""),
-                                        "file": diag.get("file", ""),
-                                    }
-                                )
-
                     # Build repair prompt for next turn
+                    diagnostics = render_diagnostics(
+                        visible_feedback_diagnostics,
+                        verbosity=diagnostic_verbosity,
+                        max_items=settings.REPAIR_PROMPT_MAX_DIAGNOSTICS,
+                    )
                     current_prompt = builder.build_repair_turn(
                         task_metadata=task.metadata.model_dump(),
                         project_dir=ws.project_dir,
@@ -285,6 +369,7 @@ def register(app: typer.Typer) -> None:
                         turn=turn + 1,
                         max_repair=max_repair,
                         diagnostics=diagnostics,
+                        diagnostic_verbosity=repair_diagnostic_verbosity,
                     )
                     ws.log_trajectory(
                         {
@@ -315,6 +400,20 @@ def register(app: typer.Typer) -> None:
                         "termination_reason": termination_reason,
                         "context_mode": context_mode,
                         "repair_mode": not no_repair,
+                        "constraint_coverage_mode": constraint_coverage_mode,
+                        "constraint_catalog": catalog.to_dicts(),
+                        "constraint_coverage": catalog.coverage_summary(),
+                        "enabled_constraints": [
+                            spec.id for spec in catalog.constraints if spec.id not in prompt_muted_ids
+                        ],
+                        "prompt_muted_constraints": [spec.to_dict() for spec in prompt_muted],
+                        "feedback_muted_constraints": [spec.to_dict() for spec in feedback_muted],
+                        "offline_constraints": [
+                            spec.to_dict() for spec in catalog.constraints if not spec.executable
+                        ],
+                        "diagnostic_verbosity": diagnostic_verbosity,
+                        "mute_seed": mute_seed,
+                        "mute_ratio": mute_ratio,
                         "agent_declared_reason": agent_declared_reason,
                         "repair_rounds_used": len(turn_scores) - 1,
                         "max_repair": max_repair,

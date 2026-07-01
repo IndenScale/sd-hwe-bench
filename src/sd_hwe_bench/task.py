@@ -97,6 +97,24 @@ class EvaluationSpec(BaseModel):
     params: dict = Field(default_factory=dict, description="Critic-specific parameters")
 
 
+class ConstraintMetadata(BaseModel):
+    """An explicit applicable constraint for constraint-gap experiments."""
+
+    id: str = Field(description="Stable constraint id")
+    family: str = Field(
+        default="unspecified",
+        description="Constraint family, e.g. schema, reference, electrical, thermal",
+    )
+    layer: str = Field(default="unknown", description="Scoring layer, e.g. L1-L5")
+    executable: bool = Field(default=True, description="Whether a deterministic critic checks it")
+    critic: str = Field(default="", description="Critic or rule that checks this constraint")
+    localization: str = Field(
+        default="task-level",
+        description="Best diagnostic localization supported by the critic",
+    )
+    description: str = Field(default="", description="Human-readable constraint text")
+
+
 class TaskMetadata(BaseModel):
     """Metadata for a single benchmark task."""
 
@@ -137,6 +155,27 @@ class TaskMetadata(BaseModel):
     evaluation: list[EvaluationSpec] = Field(
         default_factory=list,
         description="Optional explicit analysis-critic specs; overrides task_type-derived defaults",
+    )
+    constraints: list[ConstraintMetadata] = Field(
+        default_factory=list,
+        description="Explicit constraint catalog entries for gap experiments",
+    )
+    scale_level: str = Field(
+        default="unknown",
+        description="Task scale for experiment stratification: low, medium, high",
+    )
+    coupling_level: str = Field(
+        default="unknown",
+        description="Constraint coupling level for stratified reporting",
+    )
+    task_family: str = Field(default="", description="Experiment family label")
+    constraint_families: list[str] = Field(
+        default_factory=list,
+        description="Constraint families expected to appear in this task",
+    )
+    expected_saturation: bool = Field(
+        default=False,
+        description="Whether this is expected to be a low-coupling saturated task",
     )
 
 

@@ -2,8 +2,8 @@
 # Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-p0.yaml
 # Preview:   uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-p0.yaml --dry-run
 #
-# Compares natural-language-only, docs-only, and executable repair conditions
-# on hard/coupled tasks. Start with one stable model before broadening.
+# Compares context, executable coverage, and diagnostic verbosity conditions on
+# hard/coupled tasks. Start with one stable model before broadening.
 run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-p0-20260630
 passes: 3
 sandbox: none
@@ -26,6 +26,23 @@ conditions:
   - name: executable
     command: run-repair
     context_mode: full
+    constraint_coverage_mode: full
+    diagnostic_verbosity: localized
+    no_repair: false
+    max_repair: 5
+  - name: partial-executable-l3-muted
+    command: run-repair
+    context_mode: full
+    constraint_coverage_mode: explicit-mute
+    feedback_mute: layer:L3
+    diagnostic_verbosity: localized
+    no_repair: false
+    max_repair: 5
+  - name: executable-coarse-diagnostic
+    command: run-repair
+    context_mode: full
+    constraint_coverage_mode: full
+    diagnostic_verbosity: coarse
     no_repair: false
     max_repair: 5
 tasks:

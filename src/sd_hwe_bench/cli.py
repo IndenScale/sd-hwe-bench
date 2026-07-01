@@ -4,7 +4,16 @@ from __future__ import annotations
 
 import typer
 
-from sd_hwe_bench.commands import archive, batch, leaderboard, list, run, run_repair, score
+from sd_hwe_bench.commands import (
+    archive,
+    batch,
+    constraints,
+    leaderboard,
+    list,
+    run,
+    run_repair,
+    score,
+)
 
 app = typer.Typer(
     name="sd-hwe-bench",
@@ -20,6 +29,7 @@ score.register(app)
 archive.register(app)
 leaderboard.register(app)
 batch.register(app)
+constraints.register(app)
 
 
 def main() -> None:

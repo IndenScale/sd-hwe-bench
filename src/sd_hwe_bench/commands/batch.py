@@ -15,6 +15,12 @@ Matrix YAML schema::
     self_check: false                # append --no-self-check when false
     command: run                     # run or run-repair
     context_mode: full               # full, docs-only, nl-only (run-repair only)
+    diagnostic_verbosity: localized  # none, coarse, attributed, localized (run-repair only)
+    constraint_coverage_mode: full    # full, explicit-mute, random-mute (run-repair only)
+    prompt_mute: family:layout        # optional selector list/string
+    feedback_mute: layer:L5           # optional selector list/string
+    mute_ratio: 0.25                  # for random-mute
+    mute_seed: 42                     # for random-mute
     no_repair: false                 # pass --no-repair to run-repair
     max_repair: 5                    # repair rounds for run-repair
     conditions:                      # optional per-condition overrides
@@ -51,6 +57,8 @@ from sd_hwe_bench.settings import settings
 
 _BATCH_COMMANDS = {"run", "run-repair"}
 _CONTEXT_MODES = {"full", "docs-only", "nl-only"}
+_DIAGNOSTIC_VERBOSITIES = {"none", "coarse", "attributed", "localized"}
+_CONSTRAINT_COVERAGE_MODES = {"full", "explicit-mute", "random-mute"}
 
 
 def load_matrix(path: Path) -> dict[str, Any]:
@@ -95,15 +103,31 @@ def load_conditions(data: dict[str, Any]) -> list[dict[str, Any]]:
         name = str(raw.get("name", f"condition-{idx + 1}"))
         command = str(raw.get("command", data.get("command", "run")))
         context_mode = str(raw.get("context_mode", data.get("context_mode", "full")))
+        diagnostic_verbosity = str(
+            raw.get("diagnostic_verbosity", data.get("diagnostic_verbosity", "localized"))
+        )
+        constraint_coverage_mode = str(
+            raw.get("constraint_coverage_mode", data.get("constraint_coverage_mode", "full"))
+        )
         if command not in _BATCH_COMMANDS:
             raise ValueError(f"unsupported batch command: {command}")
         if context_mode not in _CONTEXT_MODES:
             raise ValueError(f"unsupported context_mode: {context_mode}")
+        if diagnostic_verbosity not in _DIAGNOSTIC_VERBOSITIES:
+            raise ValueError(f"unsupported diagnostic_verbosity: {diagnostic_verbosity}")
+        if constraint_coverage_mode not in _CONSTRAINT_COVERAGE_MODES:
+            raise ValueError(f"unsupported constraint_coverage_mode: {constraint_coverage_mode}")
         conditions.append(
             {
                 "name": name,
                 "command": command,
                 "context_mode": context_mode,
+                "diagnostic_verbosity": diagnostic_verbosity,
+                "constraint_coverage_mode": constraint_coverage_mode,
+                "prompt_mute": raw.get("prompt_mute", data.get("prompt_mute", "")),
+                "feedback_mute": raw.get("feedback_mute", data.get("feedback_mute", "")),
+                "mute_ratio": float(raw.get("mute_ratio", data.get("mute_ratio", 0.0))),
+                "mute_seed": raw.get("mute_seed", data.get("mute_seed")),
                 "no_repair": bool(raw.get("no_repair", data.get("no_repair", False))),
                 "max_repair": int(raw.get("max_repair", data.get("max_repair", settings.DEFAULT_MAX_REPAIR))),
             }
@@ -114,6 +138,15 @@ def load_conditions(data: dict[str, Any]) -> list[dict[str, Any]]:
 def _safe_condition_name(name: str) -> str:
     """Make a condition name safe for a run subdirectory."""
     return "".join(ch if ch.isalnum() or ch in ("-", "_") else "_" for ch in name)
+
+
+def _selector_arg(value: Any) -> str:
+    """Normalize selector strings/lists from YAML for CLI forwarding."""
+    if value is None:
+        return ""
+    if isinstance(value, list):
+        return ",".join(str(v) for v in value)
+    return str(value)
 
 
 def register(app: typer.Typer) -> None:
@@ -190,6 +223,16 @@ def register(app: typer.Typer) -> None:
             if condition["command"] == "run-repair":
                 cmd.extend(["--max-repair", str(condition["max_repair"])])
                 cmd.extend(["--context-mode", condition["context_mode"]])
+                cmd.extend(["--diagnostic-verbosity", condition["diagnostic_verbosity"]])
+                cmd.extend(["--constraint-coverage-mode", condition["constraint_coverage_mode"]])
+                if condition.get("prompt_mute"):
+                    cmd.extend(["--prompt-mute", _selector_arg(condition["prompt_mute"])])
+                if condition.get("feedback_mute"):
+                    cmd.extend(["--feedback-mute", _selector_arg(condition["feedback_mute"])])
+                if condition.get("mute_ratio"):
+                    cmd.extend(["--mute-ratio", str(condition["mute_ratio"])])
+                if condition.get("mute_seed") is not None:
+                    cmd.extend(["--mute-seed", str(condition["mute_seed"])])
                 if condition["no_repair"]:
                     cmd.append("--no-repair")
             proc = subprocess.run(cmd, capture_output=True, text=True)

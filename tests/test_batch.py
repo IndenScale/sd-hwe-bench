@@ -36,6 +36,12 @@ def test_load_conditions_defaults_and_validates():
             "name": "default",
             "command": "run",
             "context_mode": "full",
+            "diagnostic_verbosity": "localized",
+            "constraint_coverage_mode": "full",
+            "prompt_mute": "",
+            "feedback_mute": "",
+            "mute_ratio": 0.0,
+            "mute_seed": None,
             "no_repair": False,
             "max_repair": settings.DEFAULT_MAX_REPAIR,
         }
@@ -55,6 +61,30 @@ def test_load_conditions_defaults_and_validates():
     assert conditions[0]["command"] == "run-repair"
     assert conditions[0]["no_repair"] is True
     assert conditions[1]["max_repair"] == 5
+
+
+def test_load_conditions_constraint_gap_fields():
+    conditions = load_conditions(
+        {
+            "command": "run-repair",
+            "conditions": [
+                {
+                    "name": "partial",
+                    "constraint_coverage_mode": "explicit-mute",
+                    "feedback_mute": ["layer:L3", "family:layout"],
+                    "diagnostic_verbosity": "coarse",
+                    "mute_ratio": 0.25,
+                    "mute_seed": 42,
+                }
+            ],
+        }
+    )
+    condition = conditions[0]
+    assert condition["constraint_coverage_mode"] == "explicit-mute"
+    assert condition["feedback_mute"] == ["layer:L3", "family:layout"]
+    assert condition["diagnostic_verbosity"] == "coarse"
+    assert condition["mute_ratio"] == 0.25
+    assert condition["mute_seed"] == 42
 
 
 def test_expand_tasks_glob_and_prefix():

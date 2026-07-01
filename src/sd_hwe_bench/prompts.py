@@ -592,6 +592,7 @@ class PromptBuilder:
         repair_mode: bool = False,
         baseline_mode: bool = False,
         context_mode: Literal["full", "docs-only", "nl-only"] = "full",
+        visible_constraints: list[dict[str, Any]] | None = None,
     ) -> str:
         """Build the full prompt injected into the actor.
 
@@ -604,6 +605,7 @@ class PromptBuilder:
             repair_mode: Include repair-loop instructions and termination markers.
             baseline_mode: Baseline prompt with no ESA feedback / no markers.
             context_mode: Experimental context condition for gap studies.
+            visible_constraints: Constraint catalog entries visible in the prompt.
         """
         parts: list[str] = []
 
@@ -683,6 +685,21 @@ class PromptBuilder:
         # Requirement
         requirement = task_metadata.get("requirement", "")
         parts.append(f"\n## 设计需求\n\n{requirement}")
+
+        if visible_constraints is not None:
+            parts.append("\n## 可见约束目录\n")
+            if visible_constraints:
+                for spec in visible_constraints:
+                    cid = spec.get("id", "")
+                    family = spec.get("family", "")
+                    layer = spec.get("layer", "")
+                    desc = spec.get("description", "")
+                    text = f"- `{cid}` [{layer}/{family}]"
+                    if desc:
+                        text += f": {desc}"
+                    parts.append(text)
+            else:
+                parts.append("- (本实验条件未显式暴露约束目录)")
 
         # Expected outputs
         expected = task_metadata.get("expected_files", [])
@@ -774,6 +791,7 @@ class PromptBuilder:
         turn: int,
         max_repair: int,
         diagnostics: list[dict] | None = None,
+        diagnostic_verbosity: Literal["none", "coarse", "attributed", "localized"] = "localized",
     ) -> str:
         """Build a self-contained repair prompt for turn N of a repair loop.
 
@@ -814,14 +832,27 @@ class PromptBuilder:
         # Format diagnostics from the last score
         parts.append("\n## 上次 `piki check` 的诊断\n")
         has_errors = False
-        if diagnostics:
+        if diagnostic_verbosity == "none":
+            if not score.success:
+                has_errors = True
+                parts.append("- 检查失败。当前实验条件不提供具体诊断。")
+        elif diagnostics:
             for d in diagnostics[: settings.REPAIR_PROMPT_MAX_DIAGNOSTICS]:
                 has_errors = True
                 rule = d.get("rule_id", "")
                 name = d.get("name", "")
                 msg = str(d.get("message", "")).splitlines()[0]
                 file = d.get("file", "")
-                parts.append(f"- `{rule}` {name}: {msg}" + (f" (文件: {file})" if file else ""))
+                obj = d.get("object_id", "")
+                field = d.get("field", "")
+                suffix = ""
+                if file:
+                    suffix += f" (文件: {file})"
+                if obj:
+                    suffix += f" (对象: {obj})"
+                if field:
+                    suffix += f" (字段: {field})"
+                parts.append(f"- `{rule}` {name}: {msg}" + suffix)
         else:
             for layer in ("L0", "L1", "L2", "L3", "L4", "L5"):
                 ls = score.layers.get(layer)
