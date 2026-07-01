@@ -115,7 +115,7 @@ def main() -> None:
     output_path = DIST_DIR / "draft-full.zh.md"
     output_text = template.render(
         meta=meta,
-        stage="中文创作版 · 当前阶段：论述冻结与结果占位稿",
+        stage="中文创作版 · 当前阶段：约束实验 frozen 数据导入稿",
         keywords=", ".join(meta.get("keywords", [])),
         data=data,
         sections=sections,

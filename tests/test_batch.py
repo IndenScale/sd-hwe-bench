@@ -2,13 +2,23 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
 from typer.testing import CliRunner
 
 from sd_hwe_bench.cli import app
-from sd_hwe_bench.commands.batch import expand_tasks, load_conditions, load_matrix
+from sd_hwe_bench.commands.batch import (
+    _complete_manifest,
+    _interleave_plan_by_provider,
+    _load_provider_max_workers,
+    _provider_for_actor_spec,
+    expand_tasks,
+    load_conditions,
+    load_matrix,
+)
+from sd_hwe_bench.commands.batch_status import summarize_batch_status
 from sd_hwe_bench.dataset import Dataset
 from sd_hwe_bench.settings import settings
 
@@ -87,6 +97,39 @@ def test_load_conditions_constraint_gap_fields():
     assert condition["mute_seed"] == 42
 
 
+def test_provider_helpers_for_cross_provider_scheduling():
+    assert _provider_for_actor_spec("claude:deepseek-v4-flash") == "deepseek"
+    assert _provider_for_actor_spec("kimi") == "kimi"
+    assert _provider_for_actor_spec("codex:gpt-5.5") == "codex"
+    assert _load_provider_max_workers({"deepseek": 1, "kimi": "2"}) == {
+        "deepseek": 1,
+        "kimi": 2,
+    }
+
+
+def test_interleave_plan_by_provider_round_robins_models():
+    condition = {"name": "default"}
+    plan = [
+        (condition, "deepseek", "claude:deepseek-v4-flash", "task-a", 1, 0),
+        (condition, "deepseek", "claude:deepseek-v4-flash", "task-b", 1, 0),
+        (condition, "kimi", "kimi", "task-a", 1, 0),
+        (condition, "kimi", "kimi", "task-b", 1, 0),
+        (condition, "codex", "codex:gpt-5.5", "task-a", 1, 0),
+        (condition, "codex", "codex:gpt-5.5", "task-b", 1, 0),
+    ]
+
+    interleaved = _interleave_plan_by_provider(plan)
+
+    assert [item[1] for item in interleaved] == [
+        "deepseek",
+        "kimi",
+        "codex",
+        "deepseek",
+        "kimi",
+        "codex",
+    ]
+
+
 def test_expand_tasks_glob_and_prefix():
     ds = Dataset(REPO_ROOT)
     ids = expand_tasks(ds, ["telecom/aidc-*"])
@@ -115,6 +158,35 @@ def test_dry_run_plan_count(tmp_path):
     assert f"attempts={2 * n_tasks}" in result.output
     # Plan lists each (model, task) line; no actor is invoked.
     assert result.output.count("telecom/aidc-") >= 2 * n_tasks
+
+
+def test_dry_run_reports_provider_caps(tmp_path):
+    matrix = _write_matrix(
+        tmp_path,
+        """
+max_workers: 3
+provider_max_workers:
+  deepseek: 1
+  kimi: 1
+  codex: 1
+models:
+  deepseek: claude:deepseek-v4-flash
+  kimi: kimi
+  codex: codex:gpt-5.5
+tasks:
+  - telecom/aidc-60mw-003
+""",
+    )
+
+    result = runner.invoke(
+        app,
+        ["batch", "--matrix", str(matrix), "--dataset", str(REPO_ROOT), "--dry-run"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "provider_max_workers=codex:1, deepseek:1, kimi:1" in result.output
+    assert "3 conditions" not in result.output
+    assert "1 conditions × 3 models × 1 tasks" in result.output
 
 
 def test_dry_run_expands_conditions(tmp_path):
@@ -154,3 +226,258 @@ conditions:
     assert "nl-only:run-repair" in result.output
     assert "docs-only:run-repair" in result.output
     assert "executable:run-repair" in result.output
+
+
+def test_dry_run_resume_counts_remaining_attempts(tmp_path):
+    run_dir = tmp_path / "runs"
+    existing = run_dir / "nl-only" / "complete-a"
+    existing.mkdir(parents=True)
+    (existing / "workspace").mkdir()
+    (existing / "manifest.json").write_text(
+        json.dumps(
+            {
+                "task_id": "telecom/aidc-60mw-003",
+                "model": "claude:test",
+                "success": False,
+                "turn_scores": [{"success": False}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    incomplete = run_dir / "nl-only" / "incomplete-a"
+    incomplete.mkdir(parents=True)
+    (incomplete / "workspace").mkdir()
+    (incomplete / "manifest.json").write_text(
+        json.dumps(
+            {
+                "task_id": "telecom/aidc-60mw-003",
+                "model": "claude:test",
+                "work_dir": "/tmp/in-flight",
+            }
+        ),
+        encoding="utf-8",
+    )
+    matrix = _write_matrix(
+        tmp_path,
+        f"""
+run_dir: {run_dir}
+passes: 3
+models:
+  a: claude:test
+tasks:
+  - telecom/aidc-60mw-003
+conditions:
+  - name: nl-only
+    command: run-repair
+    context_mode: nl-only
+    no_repair: true
+    max_repair: 0
+""",
+    )
+
+    result = runner.invoke(
+        app,
+        ["batch", "--matrix", str(matrix), "--dataset", str(REPO_ROOT), "--dry-run", "--resume"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "attempts=2" in result.output
+    assert "remaining=2" in result.output
+    assert "complete=1/3" in result.output
+
+
+def test_resume_complete_manifest_excludes_actor_errors():
+    assert not _complete_manifest(
+        {
+            "success": False,
+            "termination_reason": "actor_error",
+            "overall_score": 0.0,
+            "layers": {},
+            "turn_scores": [],
+        }
+    )
+    assert not _complete_manifest(
+        {
+            "success": False,
+            "overall_score": 0.0,
+            "layers": {},
+            "turn_scores": [],
+        }
+    )
+    assert _complete_manifest(
+        {
+            "success": False,
+            "turn_scores": [{"success": False}],
+        }
+    )
+
+
+def test_batch_status_summarizes_complete_inflight_and_actor_error(tmp_path, monkeypatch):
+    run_dir = tmp_path / "runs"
+    condition_dir = run_dir / "executable"
+
+    complete = condition_dir / "complete-a"
+    complete.mkdir(parents=True)
+    (complete / "manifest.json").write_text(
+        json.dumps(
+            {
+                "task_id": "telecom/aidc-60mw-003",
+                "model": "claude:test",
+                "success": False,
+                "turn_scores": [{"success": False}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    in_flight = condition_dir / "in-flight-a"
+    in_flight.mkdir(parents=True)
+    (in_flight / "manifest.json").write_text(
+        json.dumps(
+            {
+                "task_id": "telecom/aidc-60mw-003",
+                "model": "claude:test",
+                "work_dir": "/tmp/live",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (in_flight / "actor_output.log").write_text("\nworking\n", encoding="utf-8")
+
+    actor_error = condition_dir / "actor-error-a"
+    actor_error.mkdir(parents=True)
+    (actor_error / "manifest.json").write_text(
+        json.dumps(
+            {
+                "task_id": "telecom/aidc-60mw-003",
+                "model": "claude:test",
+                "success": False,
+                "termination_reason": "actor_error",
+                "turn_scores": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    matrix = _write_matrix(
+        tmp_path,
+        f"""
+run_dir: {run_dir}
+passes: 3
+models:
+  a: claude:test
+tasks:
+  - telecom/aidc-60mw-003
+conditions:
+  - name: executable
+    command: run-repair
+""",
+    )
+    monkeypatch.setattr(
+        "sd_hwe_bench.commands.batch_status._live_process_commands",
+        lambda: [str(condition_dir)],
+    )
+
+    summary = summarize_batch_status(matrix, REPO_ROOT)
+
+    assert summary["totals"]["attempts"] == 3
+    assert summary["totals"]["complete"] == 1
+    assert summary["totals"]["in_flight"] == 1
+    assert summary["totals"]["actor_error"] == 1
+    assert summary["totals"]["remaining"] == 2
+    assert summary["entries"][0]["status"] == "running"
+    assert summary["entries"][0]["latest_log"] == "working"
+
+
+def test_batch_status_marks_unowned_stub_as_stale(tmp_path, monkeypatch):
+    run_dir = tmp_path / "runs"
+    condition_dir = run_dir / "executable"
+    stale = condition_dir / "stale-a"
+    stale.mkdir(parents=True)
+    (stale / "manifest.json").write_text(
+        json.dumps(
+            {
+                "task_id": "telecom/aidc-60mw-003",
+                "model": "claude:test",
+                "work_dir": "/tmp/no-longer-live",
+            }
+        ),
+        encoding="utf-8",
+    )
+    matrix = _write_matrix(
+        tmp_path,
+        f"""
+run_dir: {run_dir}
+passes: 1
+models:
+  a: claude:test
+tasks:
+  - telecom/aidc-60mw-003
+conditions:
+  - name: executable
+    command: run-repair
+""",
+    )
+    monkeypatch.setattr("sd_hwe_bench.commands.batch_status._live_process_commands", lambda: [])
+
+    summary = summarize_batch_status(matrix, REPO_ROOT)
+
+    assert summary["totals"]["in_flight"] == 0
+    assert summary["totals"]["stale"] == 1
+    assert summary["entries"][0]["status"] == "stale"
+
+
+def test_batch_status_command_json(tmp_path):
+    run_dir = tmp_path / "runs"
+    matrix = _write_matrix(
+        tmp_path,
+        f"""
+run_dir: {run_dir}
+passes: 2
+models:
+  a: claude:test
+tasks:
+  - telecom/aidc-60mw-003
+""",
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "batch-status",
+            "--matrix",
+            str(matrix),
+            "--dataset",
+            str(REPO_ROOT),
+            "--format",
+            "json",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert '"attempts": 2' in result.output
+    assert '"remaining": 2' in result.output
+
+
+def test_batch_status_command_text_default(tmp_path):
+    run_dir = tmp_path / "runs"
+    matrix = _write_matrix(
+        tmp_path,
+        f"""
+run_dir: {run_dir}
+passes: 2
+models:
+  a: claude:test
+tasks:
+  - telecom/aidc-60mw-003
+""",
+    )
+
+    result = runner.invoke(
+        app,
+        ["batch-status", "--matrix", str(matrix), "--dataset", str(REPO_ROOT)],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "Batch status: complete=0/2" in result.output
+    assert "telecom/aidc-60mw-003 claude:test: pending" in result.output

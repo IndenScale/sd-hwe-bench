@@ -61,7 +61,8 @@ def collect_score_diagnostics(score: Any, catalog: ConstraintCatalog) -> list[Di
 
     for layer, layer_score in getattr(score, "layers", {}).items():
         for err in getattr(layer_score, "errors", []) or []:
-            diagnostics.append(_diagnostic_from_message(str(err), layer, "layer", catalog))
+            if _is_failure_comment(str(err)):
+                diagnostics.append(_diagnostic_from_message(str(err), layer, "layer", catalog))
 
     by_constraint: dict[str, Diagnostic] = {}
     for diag in diagnostics:
@@ -205,8 +206,22 @@ def _from_comments(
     return [
         _diagnostic_from_message(str(comment), layer=layer, critic=critic, catalog=catalog)
         for comment in comments
-        if str(comment).strip()
+        if _is_failure_comment(str(comment))
     ]
+
+
+def _is_failure_comment(comment: str) -> bool:
+    text = comment.strip()
+    if not text:
+        return False
+    lower = text.lower()
+    if text.startswith(("✓", "✅")):
+        return False
+    if lower.startswith("no deliverables required"):
+        return False
+    if lower.startswith("l0 passed:"):
+        return False
+    return True
 
 
 def _diagnostic_from_message(

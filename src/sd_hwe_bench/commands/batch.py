@@ -12,6 +12,10 @@ Matrix YAML schema::
     sandbox: none                    # auto/none/docker/podman
     timeout: 600                     # actor timeout (s)
     max_workers: 4                   # concurrent (model, task) rollouts
+    provider_max_workers:            # optional provider-level concurrency caps
+      deepseek: 1
+      kimi: 1
+      codex: 1
     self_check: false                # append --no-self-check when false
     command: run                     # run or run-repair
     context_mode: full               # full, docs-only, nl-only (run-repair only)
@@ -39,9 +43,12 @@ Matrix YAML schema::
 from __future__ import annotations
 
 import fnmatch
+import json
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
+from collections import defaultdict, deque
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from pathlib import Path
 from typing import Any
 
@@ -149,6 +156,93 @@ def _selector_arg(value: Any) -> str:
     return str(value)
 
 
+def _complete_manifest(manifest: dict[str, Any]) -> bool:
+    """A complete run has passed through scoring/final manifest update."""
+    if manifest.get("termination_reason") == "actor_error":
+        return False
+    if "success" not in manifest:
+        return False
+    turn_scores = manifest.get("turn_scores")
+    if isinstance(turn_scores, list) and turn_scores:
+        return True
+    layers = manifest.get("layers")
+    if isinstance(layers, dict) and layers:
+        return True
+    deliverables = manifest.get("deliverables")
+    return isinstance(deliverables, dict) and bool(deliverables)
+
+
+def _completed_attempts(run_dir: Path, condition_name: str, actor_spec: str, task_id: str) -> int:
+    """Count complete attempts already present for a condition/model/task."""
+    condition_dir = run_dir / _safe_condition_name(condition_name)
+    if not condition_dir.exists():
+        return 0
+
+    completed = 0
+    for path in condition_dir.rglob("manifest.json"):
+        try:
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if not _complete_manifest(manifest):
+            continue
+        if manifest.get("task_id") != task_id:
+            continue
+        if manifest.get("model") != actor_spec:
+            continue
+        completed += 1
+    return completed
+
+
+def _provider_for_actor_spec(actor_spec: str) -> str:
+    """Return the rate-limit/provider bucket for an actor spec."""
+    driver, _, model = actor_spec.partition(":")
+    driver = driver.lower()
+    model = model.lower()
+    if driver == "claude" and model.startswith("deepseek"):
+        return "deepseek"
+    return driver
+
+
+def _load_provider_max_workers(raw: Any) -> dict[str, int]:
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        raise ValueError("provider_max_workers must be a YAML mapping")
+    caps: dict[str, int] = {}
+    for provider, value in raw.items():
+        cap = int(value)
+        if cap <= 0:
+            raise ValueError("provider_max_workers values must be positive integers")
+        caps[str(provider).lower()] = cap
+    return caps
+
+
+def _interleave_plan_by_provider(
+    plan: list[tuple[dict[str, Any], str, str, str, int, int]],
+) -> list[tuple[dict[str, Any], str, str, str, int, int]]:
+    """Round-robin the plan across provider buckets.
+
+    The raw matrix order groups all tasks for one model before the next model.
+    Interleaving prevents a global worker pool from initially filling with a
+    single provider when independent providers could run concurrently.
+    """
+    buckets: dict[str, deque[tuple[dict[str, Any], str, str, str, int, int]]] = defaultdict(deque)
+    provider_order: list[str] = []
+    for item in plan:
+        provider = _provider_for_actor_spec(item[2])
+        if provider not in buckets:
+            provider_order.append(provider)
+        buckets[provider].append(item)
+
+    interleaved: list[tuple[dict[str, Any], str, str, str, int, int]] = []
+    while any(buckets.values()):
+        for provider in provider_order:
+            if buckets[provider]:
+                interleaved.append(buckets[provider].popleft())
+    return interleaved
+
+
 def register(app: typer.Typer) -> None:
     @app.command("batch")
     def batch_command(
@@ -156,6 +250,11 @@ def register(app: typer.Typer) -> None:
         dataset: Path = typer.Option(Path("."), "--dataset", help="Path to dataset root."),
         dry_run: bool = typer.Option(
             False, "--dry-run", help="Print the (model, task) plan and exit; do not run actors."
+        ),
+        resume: bool = typer.Option(
+            False,
+            "--resume",
+            help="Skip complete existing attempts and run only missing passes.",
         ),
         max_workers: int = typer.Option(
             settings.MAX_AUTO_JOBS, "--max-workers", help="Concurrent (model, task) rollouts."
@@ -179,40 +278,64 @@ def register(app: typer.Typer) -> None:
         timeout = int(data.get("timeout", settings.DEFAULT_ACTOR_TIMEOUT_S))
         run_dir = str(data.get("run_dir", settings.RUN_DIR))
         workers = int(data.get("max_workers", max_workers))
+        provider_caps = _load_provider_max_workers(data.get("provider_max_workers"))
         self_check = bool(data.get("self_check", True))
 
-        plan = [
+        raw_plan = [
             (condition, name, spec, tid)
             for condition in conditions
             for name, spec in models.items()
             for tid in task_ids
         ]
+        plan: list[tuple[dict[str, Any], str, str, str, int, int]] = []
+        skipped_entries = 0
+        for condition, name, spec, tid in raw_plan:
+            completed = (
+                _completed_attempts(Path(run_dir), condition["name"], spec, tid) if resume else 0
+            )
+            remaining = max(0, passes - completed)
+            if remaining == 0:
+                skipped_entries += 1
+                continue
+            plan.append((condition, name, spec, tid, remaining, completed))
+        plan = _interleave_plan_by_provider(plan)
 
-        total_attempts = len(plan) * passes
+        total_attempts = sum(remaining for *_prefix, remaining, _completed in plan)
+        provider_summary = (
+            " | provider_max_workers="
+            + ", ".join(f"{k}:{v}" for k, v in sorted(provider_caps.items()))
+            if provider_caps
+            else ""
+        )
         console.print(
             f"[bold]Batch plan:[/bold] {len(conditions)} conditions × "
             f"{len(models)} models × {len(task_ids)} tasks "
             f"= {len(plan)} task-model entries | attempts={total_attempts} "
             f"| passes={passes} | sandbox={sandbox} | self_check={self_check} "
-            f"| run_dir={run_dir}"
+            f"| resume={resume} | skipped={skipped_entries}{provider_summary} | run_dir={run_dir}"
         )
-        for condition, name, spec, tid in plan:
+        for condition, name, spec, tid, remaining, completed in plan:
             console.print(
                 f"  - {condition['name']}:{condition['command']} "
                 f"{name} ({spec})  {tid}"
+                f" remaining={remaining}, complete={completed}/{passes}"
             )
 
         if dry_run:
             return
 
         def _one(
-            condition: dict[str, Any], model_name: str, actor_spec: str, task_id: str
+            condition: dict[str, Any],
+            model_name: str,
+            actor_spec: str,
+            task_id: str,
+            pass_count: int,
         ) -> tuple[str, str, str, int]:
             condition_run_dir = str(Path(run_dir) / _safe_condition_name(condition["name"]))
             cmd = [
                 sys.executable, "-m", "sd_hwe_bench.cli", condition["command"], task_id,
                 "--actor", actor_spec,
-                "--passes", str(passes),
+                "--passes", str(pass_count),
                 "--run-dir", condition_run_dir,
                 "--sandbox", sandbox,
                 "--timeout", str(timeout),
@@ -239,21 +362,47 @@ def register(app: typer.Typer) -> None:
             return condition["name"], model_name, task_id, proc.returncode
 
         failures = 0
+        provider_running: dict[str, int] = defaultdict(int)
+        pending = deque(plan)
+        futures: dict[Any, tuple[str, str, str, str]] = {}
+        lock = threading.Lock()
+
+        def _submit_ready(ex: ThreadPoolExecutor) -> None:
+            made_progress = True
+            while pending and len(futures) < workers and made_progress:
+                made_progress = False
+                for _ in range(len(pending)):
+                    condition, name, spec, tid, remaining, _completed = pending[0]
+                    provider = _provider_for_actor_spec(spec)
+                    cap = provider_caps.get(provider)
+                    if cap is not None and provider_running[provider] >= cap:
+                        pending.rotate(-1)
+                        continue
+                    pending.popleft()
+                    provider_running[provider] += 1
+                    fut = ex.submit(_one, condition, name, spec, tid, remaining)
+                    futures[fut] = (condition["name"], name, tid, provider)
+                    made_progress = True
+                    break
+
         with ThreadPoolExecutor(max_workers=workers) as ex:
-            futures = {
-                ex.submit(_one, c, n, s, t): (c["name"], n, t)
-                for (c, n, s, t) in plan
-            }
-            for fut in as_completed(futures):
-                condition_name, name, tid, rc = fut.result()
-                ok = rc == 0
-                if not ok:
-                    failures += 1
-                color = "green" if ok else "red"
-                console.print(
-                    f"  [{color}]{'ok' if ok else 'FAIL'}[/{color}] "
-                    f"{condition_name} {name} {tid} (rc={rc})"
-                )
+            _submit_ready(ex)
+            while futures:
+                done_futures, _pending_futures = wait(futures, return_when=FIRST_COMPLETED)
+                for fut in done_futures:
+                    condition_name, name, tid, provider = futures.pop(fut)
+                    with lock:
+                        provider_running[provider] -= 1
+                    condition_name, name, tid, rc = fut.result()
+                    ok = rc == 0
+                    if not ok:
+                        failures += 1
+                    color = "green" if ok else "red"
+                    console.print(
+                        f"  [{color}]{'ok' if ok else 'FAIL'}[/{color}] "
+                        f"{condition_name} {name} {tid} (rc={rc})"
+                    )
+                _submit_ready(ex)
 
         # Aggregate leaderboard from the shared run_dir manifests.
         manager = ArchiveManager(Path(run_dir))

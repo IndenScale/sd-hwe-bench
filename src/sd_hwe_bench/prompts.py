@@ -557,12 +557,14 @@ REPAIR_MARKERS = {
 }
 
 _REPAIR_MARKER_INSTRUCTIONS = """\
-## 主动终止标记
+## 提交标记
 
-本轮任务允许你在以下情况主动创建标记文件，系统会立即停止并记录原因：
+本任务采用编译器式提交循环：你每次提交文件后，系统都会评分并返回诊断。提交次数有上限；每次提交都会被保留用于后续分析。
 
-- `.sdhwe.done` — 你认为任务已完成（系统仍会验证）。
-- `.sdhwe.give_up` — 你确认当前能力不足以完成该任务。
+你可以在以下情况创建标记文件：
+
+- `.sdhwe.done` — 你认为任务已完成；系统会验证。只有验证通过时才停止成功；验证失败且仍有提交预算时，会继续返回诊断。
+- `.sdhwe.give_up` — 你确认当前能力不足以完成该任务，系统会记录放弃原因。
 - `.sdhwe.info_gap` — 任务描述或 scaffold 缺少关键信息，无法继续。
 - `.sdhwe.no_solution` — 需求本身相互矛盾，不存在合法设计解（例如提供的构件无法同时满足强度和重量约束）。
 
@@ -755,7 +757,8 @@ class PromptBuilder:
                 "2. 务必把设备实例放在 `instances/devices/`，不要放在 `instances/` 根目录。\n"
                 "3. 不要修改 scaffold 中的 `models/` 和 `piki.toml`。\n"
                 "4. 系统会在你每次提交文件后运行 `piki check` 并返回诊断；"
-                "你可以根据诊断继续修改，也可以主动报告完成或失败。\n"
+                "每次提交都会消耗提交预算并被保留用于分析；"
+                "验证失败且仍有预算时，你会收到诊断并继续修改。\n"
                 "5. 只产出与任务相关的文件，不要额外发挥。\n"
                 "\n请开始完成这个工程设计任务。"
             )
@@ -870,13 +873,18 @@ class PromptBuilder:
             parts.append("所有检查已通过。如果交付物尚未生成，请运行 `piki generate`.")
 
         remaining = max_repair - turn + 1
-        parts.append(f"\n## 剩余轮次\n\n当前是第 {turn} 轮修复，最多还有 {remaining} 轮。")
+        parts.append(
+            f"\n## 提交预算\n\n"
+            f"当前将进行第 {turn + 1} 次提交；包含本次在内还剩 {remaining} 次提交机会。"
+            "如果本次提交后剩余次数为 0，系统会进行最终记分。"
+        )
 
         parts.append(
             "\n## 操作要求\n\n"
             "1. 直接修改 workspace 中的 YAML 文件以修复上述错误。\n"
             "2. 不要修改 scaffold 中的 `models/` 和 `piki.toml`。\n"
-            "3. 如果你认为任务已经完成，创建 `.sdhwe.done`。\n"
+            "3. 如果你认为任务已经完成，可以创建 `.sdhwe.done`；"
+            "只有验证通过时才会停止成功，失败时会继续反馈直到预算耗尽。\n"
             "4. 如果你确认无法完成，创建 `.sdhwe.give_up`、`.sdhwe.info_gap` 或 `.sdhwe.no_solution`。\n"
             "5. 只产出与任务相关的文件，不要额外发挥。"
         )

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import traceback
 from typing import Literal, Optional, cast
 
 import typer
@@ -33,6 +34,34 @@ def _detect_marker(project_dir: Path) -> tuple[Optional[str], str]:
             rationale = path.read_text(encoding="utf-8").strip() if path.stat().st_size > 0 else ""
             return key, rationale
     return None, ""
+
+
+def _clear_repair_markers(project_dir: Path) -> None:
+    """Remove stale marker files before handing the workspace back to the actor."""
+    for filename in REPAIR_MARKERS.values():
+        path = project_dir / filename
+        if path.exists():
+            path.unlink()
+
+
+def _submission_decision(
+    *,
+    score_success: bool,
+    marker: Optional[str],
+    no_repair: bool,
+    turn: int,
+    max_repair: int,
+) -> tuple[bool, Optional[str]]:
+    """Return (should_stop, termination_reason) after a scored submission."""
+    if score_success:
+        return True, "success"
+    if marker and marker != "done":
+        return True, marker
+    if no_repair:
+        return True, "baseline"
+    if turn >= max_repair:
+        return True, "budget_exceeded"
+    return False, None
 
 
 def _score_to_dict(score: TaskScore) -> dict:
@@ -72,7 +101,10 @@ def register(app: typer.Typer) -> None:
             settings.DEFAULT_MAX_REPAIR,
             "--max-repair",
             "-r",
-            help="Maximum number of repair rounds (excluding initial generation).",
+            help=(
+                "Maximum number of feedback submissions after the initial submission. "
+                "Total submission budget is max_repair + 1."
+            ),
         ),
         no_repair: bool = typer.Option(
             False,
@@ -150,13 +182,7 @@ def register(app: typer.Typer) -> None:
         ),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging."),
     ) -> None:
-        """Run an Actor through a multi-turn repair loop.
-
-        The Actor may report completion via `.sdhwe.done`, or failure via
-        `.sdhwe.give_up`, `.sdhwe.info_gap`, or `.sdhwe.no_solution`.
-        If none of these occur and the design does not pass, the loop terminates
-        with reason `budget_exceeded` after MAX_REPAIR rounds.
-        """
+        """Run an Actor through a compiler-style submission and feedback loop."""
         setup_logging(verbose)
         if context_mode not in {"full", "docs-only", "nl-only"}:
             console.print("[red]--context-mode must be one of: full, docs-only, nl-only[/red]")
@@ -219,6 +245,7 @@ def register(app: typer.Typer) -> None:
             visible_constraints = [
                 spec.to_dict() for spec in catalog.constraints if spec.id not in prompt_muted_ids
             ]
+            prompt_visible_constraints = visible_constraints if not no_repair else None
             task_scores: list[TaskScore] = []
 
             for attempt in range(passes):
@@ -247,7 +274,7 @@ def register(app: typer.Typer) -> None:
                     repair_mode=not no_repair,
                     baseline_mode=no_repair,
                     context_mode=prompt_context_mode,
-                    visible_constraints=visible_constraints,
+                    visible_constraints=prompt_visible_constraints,
                 )
                 ws.write_prompt(initial_prompt)
 
@@ -258,7 +285,11 @@ def register(app: typer.Typer) -> None:
                 current_prompt = initial_prompt
 
                 for turn in range(max_repair + 1):
-                    console.print(f"  [dim]Turn {turn}/{max_repair}...[/dim]")
+                    remaining_after_this = max_repair - turn
+                    console.print(
+                        f"  [dim]Submission {turn + 1}/{max_repair + 1} "
+                        f"(remaining after this: {remaining_after_this})...[/dim]"
+                    )
 
                     result = act.run(current_prompt, ws.project_dir)
                     ws.append_actor_log(f"turn_{turn}", result.raw_output)
@@ -281,16 +312,55 @@ def register(app: typer.Typer) -> None:
                         termination_reason = "actor_error"
                         break
 
-                    score = score_task(
-                        task_id=tid,
-                        agent_output_dir=ws.project_dir,
-                        expected_deliverables=task.metadata.expected_deliverables,
-                        rubric_sets=None,
-                        requirement=task.metadata.requirement,
-                        runner=runner,
-                        task=task,
-                    )
-                    full_diagnostics = collect_score_diagnostics(score, catalog)
+                    try:
+                        score = score_task(
+                            task_id=tid,
+                            agent_output_dir=ws.project_dir,
+                            expected_deliverables=task.metadata.expected_deliverables,
+                            rubric_sets=None,
+                            requirement=task.metadata.requirement,
+                            runner=runner,
+                            task=task,
+                        )
+                    except Exception as exc:  # noqa: BLE001 - preserve failed rollout evidence.
+                        error = "".join(
+                            traceback.format_exception_only(type(exc), exc)
+                        ).strip()
+                        console.print(f"[red]Score error on turn {turn}: {error}[/red]")
+                        ws.log_trajectory(
+                            {
+                                "event": "score_error",
+                                "turn": turn,
+                                "error": error,
+                            }
+                        )
+                        turn_scores.append(
+                            {
+                                "turn": turn,
+                                "submission": turn + 1,
+                                "success": False,
+                                "overall_score": 0.0,
+                                "layers": {},
+                                "deliverables": {},
+                                "actor_elapsed_s": result.elapsed_s,
+                                "diagnostics": {
+                                    "count": 1,
+                                    "unique_constraints_failed": 1,
+                                    "omission_density": 1.0,
+                                    "by_family": {"score_error": 1},
+                                    "by_layer": {"unknown": 1},
+                                    "by_localization": {"task-level": 1},
+                                },
+                                "marker": None,
+                                "marker_rationale": "",
+                                "remaining_submissions": remaining_after_this,
+                                "score_error": error,
+                            }
+                        )
+                        final_score = TaskScore(task_id=tid, success=False)
+                        termination_reason = "score_error"
+                        break
+                    full_diagnostics = [] if score.success else collect_score_diagnostics(score, catalog)
                     visible_feedback_diagnostics = [
                         diag for diag in full_diagnostics if diag.constraint_id not in feedback_muted_ids
                     ]
@@ -299,6 +369,7 @@ def register(app: typer.Typer) -> None:
                         catalog,
                         muted_constraint_ids=feedback_muted_ids,
                     )
+                    marker, rationale = _detect_marker(ws.project_dir)
                     ws.log_trajectory(
                         {
                             "event": "diagnostics",
@@ -309,14 +380,21 @@ def register(app: typer.Typer) -> None:
                             "feedback_diagnostics": [
                                 diag.to_dict() for diag in visible_feedback_diagnostics
                             ],
+                            "marker": marker,
+                            "marker_rationale": rationale,
+                            "remaining_submissions": remaining_after_this,
                         }
                     )
                     turn_scores.append(
                         {
                             "turn": turn,
+                            "submission": turn + 1,
                             **_score_to_dict(score),
                             "actor_elapsed_s": result.elapsed_s,
                             "diagnostics": diagnostics_summary,
+                            "marker": marker,
+                            "marker_rationale": rationale,
+                            "remaining_submissions": remaining_after_this,
                         }
                     )
                     final_score = score
@@ -324,39 +402,35 @@ def register(app: typer.Typer) -> None:
                         f"  [dim]Turn {turn} score: {score.overall_score:.0%} success={score.success}[/dim]"
                     )
 
-                    # Check for explicit termination markers
-                    marker, rationale = _detect_marker(ws.project_dir)
-                    if marker:
+                    if marker and not score.success:
                         agent_declared_reason = rationale
-                        if marker == "done" and score.success:
-                            termination_reason = "success"
-                        elif marker == "done":
-                            termination_reason = "done_but_failed"
-                        else:
-                            termination_reason = marker
                         console.print(
-                            f"  [yellow]Agent declared '{marker}': {rationale[:80]}[/yellow]"
+                            f"  [yellow]Agent declared '{marker}' but score failed: "
+                            f"{rationale[:80]}[/yellow]"
                         )
-                        break
 
-                    if score.success:
-                        termination_reason = "success"
-                        console.print(f"  [green]Task passed on turn {turn}[/green]")
-                        break
-
-                    if no_repair:
-                        termination_reason = "baseline"
-                        console.print("  [dim]Baseline turn complete (no repair)[/dim]")
-                        break
-
-                    if turn >= max_repair:
-                        termination_reason = "budget_exceeded"
-                        console.print(
-                            f"  [red]Budget exhausted after {max_repair} repair rounds[/red]"
-                        )
+                    should_stop, reason = _submission_decision(
+                        score_success=score.success,
+                        marker=marker,
+                        no_repair=no_repair,
+                        turn=turn,
+                        max_repair=max_repair,
+                    )
+                    if should_stop:
+                        termination_reason = reason
+                        if reason == "success":
+                            console.print(f"  [green]Task passed on turn {turn}[/green]")
+                        elif reason == "baseline":
+                            console.print("  [dim]Baseline turn complete (no repair)[/dim]")
+                        elif reason == "budget_exceeded":
+                            console.print(
+                                f"  [red]Submission budget exhausted after "
+                                f"{max_repair + 1} submissions[/red]"
+                            )
                         break
 
                     # Build repair prompt for next turn
+                    _clear_repair_markers(ws.project_dir)
                     diagnostics = render_diagnostics(
                         visible_feedback_diagnostics,
                         verbosity=diagnostic_verbosity,
@@ -375,6 +449,8 @@ def register(app: typer.Typer) -> None:
                         {
                             "event": "repair_prompt",
                             "turn": turn + 1,
+                            "submission": turn + 2,
+                            "remaining_submissions": max_repair - turn - 1,
                             "prompt": current_prompt,
                         }
                     )
@@ -417,6 +493,8 @@ def register(app: typer.Typer) -> None:
                         "agent_declared_reason": agent_declared_reason,
                         "repair_rounds_used": len(turn_scores) - 1,
                         "max_repair": max_repair,
+                        "max_submissions": max_repair + 1,
+                        "submissions_used": len(turn_scores),
                         "turn_scores": turn_scores,
                         "actor_elapsed_s": sum(t.get("actor_elapsed_s", 0.0) for t in turn_scores),
                     }

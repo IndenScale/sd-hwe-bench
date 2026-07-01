@@ -7,6 +7,7 @@ import typer
 from sd_hwe_bench.commands import (
     archive,
     batch,
+    batch_status,
     constraints,
     leaderboard,
     list,
@@ -29,6 +30,7 @@ score.register(app)
 archive.register(app)
 leaderboard.register(app)
 batch.register(app)
+batch_status.register(app)
 constraints.register(app)
 
 

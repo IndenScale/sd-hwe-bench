@@ -132,6 +132,63 @@ def test_collect_and_render_diagnostics_respects_verbosity():
     assert localized[0]["file"] == "layouts/layout.yaml"
 
 
+def test_collect_diagnostics_filters_positive_mixed_comments():
+    meta = TaskMetadata(
+        task_id="telecom/test",
+        domain=Domain.TELECOM,
+        task_type=TaskType.COMPREHENSIVE,
+        difficulty=Difficulty.MEDIUM,
+        requirement="Do the task.",
+        constraints=[
+            ConstraintMetadata(id="rack-face-panel-svg", family="deliverable", layer="Deliverable"),
+            ConstraintMetadata(id="telecom/test:L0", family="syntax", layer="L0", critic="syntax"),
+            ConstraintMetadata(id="numeric:file", family="static", layer="L3", critic="numeric"),
+        ],
+    )
+    catalog = build_constraint_catalog(_task_with_meta(meta))
+    score = TaskScore(
+        task_id="telecom/test",
+        success=False,
+        layers={"L0": LayerScore("L0", 1, 0, 1, ["L0 passed: 30 YAML files valid"])},
+        critic_results=[
+            CriticResult(
+                name="deliverable",
+                passed=False,
+                comments=[
+                    "✓ power-budget: power-budget.csv found",
+                    "rack-face-panel-svg: required deliverable not found",
+                ],
+            ),
+            CriticResult(
+                name="syntax",
+                passed=False,
+                comments=[
+                    "L0 passed: 30 YAML files valid",
+                    "models/bad.yaml: YAML parse error",
+                ],
+            ),
+            CriticResult(
+                name="numeric",
+                passed=False,
+                comments=[
+                    "✓ power.yaml -> capacity_kw: 10 approx 10 (delta=0, tol=1.0%)",
+                    "x cooling.yaml -> pue: expected <= 1.3",
+                ],
+            ),
+        ],
+    )
+
+    diagnostics = collect_score_diagnostics(score, catalog)
+    messages = [diag.message for diag in diagnostics]
+
+    assert "✓ power-budget: power-budget.csv found" not in messages
+    assert "L0 passed: 30 YAML files valid" not in messages
+    assert "✓ power.yaml -> capacity_kw: 10 approx 10 (delta=0, tol=1.0%)" not in messages
+    assert "rack-face-panel-svg: required deliverable not found" in messages
+    assert "models/bad.yaml: YAML parse error" in messages
+    assert "x cooling.yaml -> pue: expected <= 1.3" in messages
+
+
 def test_diagnostic_summary_reports_muted_violation_rate():
     meta = TaskMetadata(
         task_id="telecom/test",

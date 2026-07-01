@@ -1,0 +1,36 @@
+# AIDC diagnostic-contract rerun after CPML/constructability schema diagnostics.
+# Run with:
+#   uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-aidc-diagnostic-contract-rerun.yaml
+# Preview:
+#   uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-aidc-diagnostic-contract-rerun.yaml --dry-run
+#
+# This matrix intentionally reruns only feedback-bearing localized conditions.
+# NL-only and docs-only do not receive repair diagnostics, so schema-diagnostic
+# fixes are not a visible treatment for those conditions.
+run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-aidc-diagnostic-contract-rerun-20260701
+passes: 3
+sandbox: none
+timeout: 1800
+max_workers: 2
+self_check: false
+models:
+  deepseek-v4-flash-claude-code: claude:deepseek-v4-flash
+conditions:
+  - name: executable
+    command: run-repair
+    context_mode: full
+    constraint_coverage_mode: full
+    diagnostic_verbosity: localized
+    no_repair: false
+    max_repair: 5
+  - name: partial-executable-l3-muted
+    command: run-repair
+    context_mode: full
+    constraint_coverage_mode: explicit-mute
+    feedback_mute: layer:L3
+    diagnostic_verbosity: localized
+    no_repair: false
+    max_repair: 5
+tasks:
+  - telecom/aidc-60mw-002
+  - telecom/aidc-60mw-003

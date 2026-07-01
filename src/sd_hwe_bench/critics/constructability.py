@@ -38,6 +38,7 @@ class ConstructabilityCritic(Critic):
             workspace_root / "construction" / "hoisting-plan.yaml",
             "hoists",
             comments,
+            aliases=("hoisting_plan",),
         )
         rental = self._load_yaml(
             workspace_root / "construction" / "equipment-rental.yaml", comments
@@ -46,6 +47,7 @@ class ConstructabilityCritic(Critic):
             workspace_root / "construction" / "vdc-workface.yaml",
             "workfaces",
             comments,
+            aliases=("vdc_workfaces",),
         )
 
         # Index hoisting entries by equipment id and find the latest referenced day.
@@ -94,6 +96,18 @@ class ConstructabilityCritic(Critic):
         for path in sorted(facilities_dir.glob("*.yaml")):
             data = self._safe_load(path, comments)
             if data is None:
+                continue
+            if isinstance(data, list):
+                comments.append(f"{path.name}: expected mapping at root; found list")
+                for idx, item in enumerate(data):
+                    if not isinstance(item, dict):
+                        comments.append(f"{path.name}: entry {idx} is not a mapping")
+                        continue
+                    if item.get("model") in HEAVY_FACILITY_MODELS:
+                        heavy.append(item)
+                continue
+            if not isinstance(data, dict):
+                comments.append(f"{path.name}: expected mapping at root")
                 continue
             if data.get("model") in HEAVY_FACILITY_MODELS:
                 heavy.append(data)
@@ -159,7 +173,7 @@ class ConstructabilityCritic(Critic):
         model_path = workspace_root / "models" / "facilities" / f"{model}.yaml"
         if model_path.exists():
             model_data = self._safe_load(model_path, comments)
-            if model_data and "weight_kg" in model_data:
+            if isinstance(model_data, dict) and "weight_kg" in model_data:
                 return float(model_data["weight_kg"])
         return None
 
@@ -169,6 +183,11 @@ class ConstructabilityCritic(Critic):
         if rental is None:
             return
         equipment = rental.get("equipment", []) if isinstance(rental, dict) else []
+        if not equipment and isinstance(rental, dict) and "equipment_rental" in rental:
+            comments.append(
+                "equipment-rental.yaml: expected root key 'equipment' as a list; "
+                "found 'equipment_rental'"
+            )
         main_crane = next(
             (
                 e
@@ -177,6 +196,11 @@ class ConstructabilityCritic(Critic):
             ),
             None,
         )
+        if main_crane is None and isinstance(rental, dict) and "main-crane" in rental:
+            comments.append(
+                "equipment-rental.yaml: expected main crane as list item "
+                "under 'equipment' with type: main-crane; found root key 'main-crane'"
+            )
         if main_crane is None:
             comments.append("equipment-rental.yaml: missing main-crane entry")
             return
@@ -235,11 +259,20 @@ class ConstructabilityCritic(Critic):
         return data
 
     def _load_yaml_list(
-        self, path: Path, key: str, comments: list[str]
+        self,
+        path: Path,
+        key: str,
+        comments: list[str],
+        aliases: tuple[str, ...] = (),
     ) -> list[Any]:
         data = self._load_yaml(path, comments)
         if data is None:
             return []
+        for alias in aliases:
+            if key not in data and alias in data:
+                comments.append(
+                    f"{path.name}: expected root key '{key}' as a list; found '{alias}'"
+                )
         value = data.get(key, [])
         if not isinstance(value, list):
             comments.append(f"{path.name}: '{key}' must be a list")

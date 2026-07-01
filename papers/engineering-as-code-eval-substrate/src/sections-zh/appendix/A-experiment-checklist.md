@@ -1,6 +1,6 @@
 # 附录 A：实验与 Artifact Gate
 
-本附录用于把当前 **{{ data.eval_substrate.artifact.result_label }}** 替换为可复现结果。任何进入正式投稿版正文的数字，都必须能回溯到任务、模型、条件、run manifest、score artifact 和生成脚本。
+本附录用于把未完成实验轴补齐为可复现结果，并约束当前 **{{ data.eval_substrate.artifact.result_label }}** 的使用边界。任何进入正式投稿版正文的数字，都必须能回溯到任务、模型、条件、run manifest、score artifact 和生成脚本。
 
 ## A.1 通用复现要求
 
@@ -10,7 +10,7 @@
 - 每个实验条件记录 task id、model/actor spec、context mode、repair 设置、随机种子或 attempt id、timeout、sandbox 设置和 commit hash。
 - 每个样本归档 prompt、actor output、trajectory、workspace、score artifacts、manifest 和最终判定。
 - 结果表由脚本从 artifacts 生成；正文不得手工填写无法重建的数字。
-- 所有 synthetic stub 数据在投稿版前必须替换，或明确标注为后续工作而不是实验结果。
+- 所有待实验占位数据在投稿版前必须替换，或明确标注为后续工作而不是实验结果。
 - 若作为 dataset/benchmark artifact 提交，必须提供 task/data card、Croissant core metadata、Responsible AI metadata，以及公开参数与合成参数的边界说明。
 
 ## A.2 可闭环表征实验 Gate

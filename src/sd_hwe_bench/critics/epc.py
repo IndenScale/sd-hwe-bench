@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from sd_hwe_bench.construction.events import (
     generate_scenarios,
     generate_supply_delays,
@@ -37,6 +39,11 @@ class EPCCritic(Critic):
 
         comments: list[str] = []
 
+        schema_violations = self._schema_contract_violations(
+            schedule_path=schedule_path,
+            contingency_path=contingency_path,
+        )
+
         # 1. Parse files.
         try:
             schedule = parse_schedule(schedule_path)
@@ -48,6 +55,13 @@ class EPCCritic(Critic):
                 passed=False,
                 score=0.0,
                 comments=[f"Missing required CPML file: {exc.filename}"],
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            return CriticResult(
+                name=self.name,
+                passed=False,
+                score=0.0,
+                comments=[*schema_violations, f"CPML parse error: {exc}"],
             )
 
         # Read task config if available.
@@ -86,6 +100,7 @@ class EPCCritic(Critic):
                 hard_violations.append(violation)
 
         # Contingency policy must be non-empty and reference valid activities.
+        hard_violations.extend(schema_violations)
         if not contingency_policy.decisions:
             hard_violations.append("Contingency policy is empty")
         else:
@@ -150,3 +165,92 @@ class EPCCritic(Critic):
             comments=comments,
             artifacts=artifacts,
         )
+
+    def _schema_contract_violations(
+        self,
+        schedule_path: Path,
+        contingency_path: Path,
+    ) -> list[str]:
+        """Return field-level CPML schema diagnostics for common alias drift."""
+
+        violations: list[str] = []
+        schedule_data = self._safe_load_mapping(schedule_path, violations)
+        if schedule_data is not None:
+            activities = schedule_data.get("activities", [])
+            if isinstance(activities, list):
+                prerequisites_ids: list[str] = []
+                resource_requirement_ids: list[str] = []
+                weather_alias_ids: list[str] = []
+                for idx, item in enumerate(activities):
+                    if not isinstance(item, dict):
+                        continue
+                    activity_id = str(item.get("id", idx))
+                    if "predecessors" not in item and "prerequisites" in item:
+                        prerequisites_ids.append(activity_id)
+                    if "resources" not in item and "resource_requirements" in item:
+                        resource_requirement_ids.append(activity_id)
+                    if "weather_limits" not in item and (
+                        "max_wind_speed_m_s" in item
+                        or "max_precipitation_mm_per_h" in item
+                        or "weather_sensitive" in item
+                    ):
+                        weather_alias_ids.append(activity_id)
+                if prerequisites_ids:
+                    violations.append(
+                        "schedule.yaml: expected field 'predecessors'; found "
+                        f"'prerequisites' in activities {_format_ids(prerequisites_ids)} "
+                        "(ignored by CPML parser)"
+                    )
+                if resource_requirement_ids:
+                    violations.append(
+                        "schedule.yaml: expected field 'resources'; found "
+                        f"'resource_requirements' in activities {_format_ids(resource_requirement_ids)} "
+                        "(ignored by CPML parser)"
+                    )
+                if weather_alias_ids:
+                    violations.append(
+                        "schedule.yaml: expected field 'weather_limits' mapping for "
+                        f"weather thresholds in activities {_format_ids(weather_alias_ids)}"
+                    )
+
+        contingency_data = self._safe_load_mapping(contingency_path, violations)
+        if contingency_data is not None:
+            if "decisions" not in contingency_data and "contingency_policy" in contingency_data:
+                violations.append(
+                    "contingency-policy.yaml: expected root key 'decisions' as a list; "
+                    "found 'contingency_policy'"
+                )
+            decisions = contingency_data.get("decisions", [])
+            if isinstance(decisions, list):
+                for idx, item in enumerate(decisions):
+                    if not isinstance(item, dict):
+                        continue
+                    if "decision" not in item and "type" in item:
+                        activity_id = item.get("activity_id", idx)
+                        violations.append(
+                            f"contingency-policy.yaml decision {activity_id}: expected "
+                            "field 'decision'; found 'type'"
+                        )
+            elif decisions:
+                violations.append("contingency-policy.yaml: 'decisions' must be a list")
+        return violations
+
+    def _safe_load_mapping(self, path: Path, comments: list[str]) -> dict[str, Any] | None:
+        try:
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError as exc:
+            comments.append(f"{path.name}: YAML parse error - {exc}")
+            return None
+        except OSError as exc:
+            comments.append(f"{path.name}: read error - {exc}")
+            return None
+        if not isinstance(data, dict):
+            comments.append(f"{path.name}: expected mapping at root")
+            return None
+        return data
+
+
+def _format_ids(ids: list[str], limit: int = 5) -> str:
+    shown = ids[:limit]
+    suffix = f", ... +{len(ids) - limit} more" if len(ids) > limit else ""
+    return ", ".join(shown) + suffix
