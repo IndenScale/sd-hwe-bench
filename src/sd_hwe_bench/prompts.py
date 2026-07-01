@@ -700,10 +700,10 @@ class PromptBuilder:
 
         parts.append(
             "\n## 实验隔离要求\n\n"
-            "你只能使用当前 workspace 中的 scaffold、docs、models、piki.toml 和自己创建的文件。"
-            "不要读取、搜索或复制 benchmark 仓库中的 `tasks/**/solution`、`tasks/**/expected`、"
-            "`runs/`、`leaderboard/`、历史 rollout、参考答案或其他任务的解答。"
-            "如果你在文件系统中发现这些材料，也必须忽略；本任务要求你根据需求和当前 workspace 独立完成设计。\n"
+            "你当前的 workspace 是一个**隔离目录**，只包含本任务的 scaffold、docs、models、"
+            "piki.toml 和你自己创建的文件——这里不存在、也访问不到任何参考解。"
+            "请只基于设计需求和当前 workspace 独立完成设计，不要尝试搜索或读取任务参考答案、"
+            "`solution/`、`expected/`、其他任务的解答或历史 rollout。\n"
         )
 
         # Output instructions

@@ -95,6 +95,18 @@ def register(app: typer.Typer) -> None:
             "-t",
             help="Actor timeout in seconds per turn.",
         ),
+        isolate: bool = typer.Option(
+            settings.ACTOR_ISOLATE,
+            "--isolate/--no-isolate",
+            help="Run the actor in an out-of-repo workspace (only scaffold visible) "
+            "so it cannot read reference solutions. Strongly recommended for formal runs.",
+        ),
+        actor_sandbox: str = typer.Option(
+            settings.ACTOR_SANDBOX,
+            "--actor-sandbox",
+            help="Kernel-level actor isolation: auto|seatbelt|none "
+            "(auto = macOS sandbox-exec when available).",
+        ),
         verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose logging."),
     ) -> None:
         """Run an Actor through a multi-turn repair loop.
@@ -109,6 +121,7 @@ def register(app: typer.Typer) -> None:
             console.print("[red]--context-mode must be one of: full, docs-only, nl-only[/red]")
             raise typer.Exit(code=1)
         prompt_context_mode = cast(Literal["full", "docs-only", "nl-only"], context_mode)
+        object.__setattr__(settings, "ACTOR_SANDBOX", actor_sandbox)
 
         ds = Dataset(dataset)
         task_ids = resolve_task_ids(ds, task_id)
@@ -138,6 +151,8 @@ def register(app: typer.Typer) -> None:
                     scaffold_dir=task.scaffold_dir,
                     attempt=attempt,
                     scaffold_excludes=["docs"] if context_mode == "nl-only" else None,
+                    isolate=isolate,
+                    work_root=settings.ISOLATED_WORK_ROOT if isolate else None,
                 )
 
                 act = create_actor(actor, timeout=timeout)
@@ -162,6 +177,7 @@ def register(app: typer.Typer) -> None:
                     console.print(f"  [dim]Turn {turn}/{max_repair}...[/dim]")
 
                     result = act.run(current_prompt, ws.project_dir)
+                    ws.append_actor_log(f"turn_{turn}", result.raw_output)
 
                     ws.log_trajectory(
                         {
@@ -281,6 +297,11 @@ def register(app: typer.Typer) -> None:
                 # Ensure final_score is set even if actor errored on turn 0
                 if final_score is None:
                     final_score = TaskScore(task_id=tid, success=False)
+
+                # Archive the isolated (out-of-repo) working copy back into
+                # runs/<run>/workspace before writing the manifest.  No-op when
+                # not isolated.
+                ws.archive_project_dir(cleanup=settings.ISOLATED_WORK_CLEANUP)
 
                 ws.update_manifest(
                     {

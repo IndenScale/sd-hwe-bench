@@ -57,6 +57,8 @@ def _run_rollout(
     verbose: bool,
     env_vars: dict[str, str] | None = None,
     self_check: bool = True,
+    isolate: bool = True,
+    actor_sandbox: str = "auto",
 ) -> dict:
     """Execute a single rollout in a worker process.
 
@@ -68,6 +70,7 @@ def _run_rollout(
     # Apply self-check override (settings is frozen, use object.__setattr__)
     if not self_check:
         object.__setattr__(settings, "SELF_CHECK_ENABLED", False)
+    object.__setattr__(settings, "ACTOR_SANDBOX", actor_sandbox)
 
     ds = Dataset(dataset_path)
     task = ds.load_task(job.task_id)
@@ -82,6 +85,8 @@ def _run_rollout(
         model=actor_spec,
         scaffold_dir=task.scaffold_dir,
         attempt=job.attempt,
+        isolate=isolate,
+        work_root=settings.ISOLATED_WORK_ROOT if isolate else None,
     )
 
     prompt = builder.build(
@@ -101,6 +106,7 @@ def _run_rollout(
         }
     )
     result = act.run(prompt, ws.project_dir)
+    ws.append_actor_log("initial", result.raw_output)
 
     ws.log_trajectory(
         {
@@ -181,6 +187,7 @@ def _run_rollout(
             "round": self_check_rounds,
         })
         result = act.run(sc_prompt, ws.project_dir)
+        ws.append_actor_log(f"self_check_round_{self_check_rounds}", result.raw_output)
         ws.log_trajectory({
             "event": "self_check_finished",
             "round": self_check_rounds,
@@ -201,6 +208,10 @@ def _run_rollout(
         runner=runner,
         task=task,
     )
+
+    # Copy the isolated (out-of-repo) working copy back into runs/<run>/workspace
+    # so the archive is self-contained.  No-op when not isolated.
+    ws.archive_project_dir(cleanup=settings.ISOLATED_WORK_CLEANUP)
 
     rollout_success = result.success and score.success
     ws.update_manifest(
@@ -252,6 +263,8 @@ def _run_serial(
     rubrics_model: str | None,
     env_vars: dict[str, str] | None = None,
     self_check: bool = True,
+    isolate: bool = True,
+    actor_sandbox: str = "auto",
 ) -> list[list[TaskScore]]:
     """Run rollouts serially, preserving the original interactive output."""
     all_scores: list[list[TaskScore]] = []
@@ -264,6 +277,7 @@ def _run_serial(
     # Apply self-check override
     if not self_check:
         object.__setattr__(settings, "SELF_CHECK_ENABLED", False)
+    object.__setattr__(settings, "ACTOR_SANDBOX", actor_sandbox)
 
     for tid in task_ids:
         task = ds.load_task(tid)
@@ -281,6 +295,8 @@ def _run_serial(
                 model=actor,
                 scaffold_dir=task.scaffold_dir,
                 attempt=attempt,
+                isolate=isolate,
+                work_root=settings.ISOLATED_WORK_ROOT if isolate else None,
             )
 
             prompt = builder.build(
@@ -300,6 +316,7 @@ def _run_serial(
                 }
             )
             result = act.run(prompt, ws.project_dir)
+            ws.append_actor_log("initial", result.raw_output)
 
             ws.log_trajectory(
                 {
@@ -326,6 +343,8 @@ def _run_serial(
                 runner=runner,
                 task=task,
             )
+
+            ws.archive_project_dir(cleanup=settings.ISOLATED_WORK_CLEANUP)
 
             rollout_success = result.success and score.success
             ws.update_manifest(
@@ -370,6 +389,8 @@ def _run_parallel(
     verbose: bool,
     env_vars: dict[str, str] | None = None,
     self_check: bool = True,
+    isolate: bool = True,
+    actor_sandbox: str = "auto",
 ) -> list[list[TaskScore]]:
     """Run rollouts in parallel using a process pool."""
     jobs_list = [
@@ -400,6 +421,8 @@ def _run_parallel(
                 verbose,
                 env_vars,
                 self_check,
+                isolate,
+                actor_sandbox,
             ): job
             for job in jobs_list
         }
@@ -489,6 +512,18 @@ def register(app: typer.Typer) -> None:
             "--self-check/--no-self-check",
             help="Enable/disable the automatic piki check + repair hook after agent run.",
         ),
+        isolate: bool = typer.Option(
+            settings.ACTOR_ISOLATE,
+            "--isolate/--no-isolate",
+            help="Run the actor in an out-of-repo workspace (only scaffold visible) "
+            "so it cannot read reference solutions. Strongly recommended for formal runs.",
+        ),
+        actor_sandbox: str = typer.Option(
+            settings.ACTOR_SANDBOX,
+            "--actor-sandbox",
+            help="Kernel-level actor isolation: auto|seatbelt|none "
+            "(auto = macOS sandbox-exec when available).",
+        ),
         timeout: int = typer.Option(
             settings.DEFAULT_ACTOR_TIMEOUT_S, "--timeout", "-t", help="Actor timeout in seconds."
         ),
@@ -550,6 +585,8 @@ def register(app: typer.Typer) -> None:
                 rubrics=rubrics,
                 rubrics_model=rubrics_model,
                 env_vars=env_vars,
+                isolate=isolate,
+                actor_sandbox=actor_sandbox,
             )
         else:
             all_scores = _run_parallel(
@@ -568,6 +605,8 @@ def register(app: typer.Typer) -> None:
                 jobs=effective_jobs,
                 verbose=verbose,
                 env_vars=env_vars,
+                isolate=isolate,
+                actor_sandbox=actor_sandbox,
             )
 
         if len(all_scores) > 1 or passes > 1:

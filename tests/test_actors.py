@@ -10,8 +10,8 @@ from sd_hwe_bench.actors import (
     KimiActor,
     create_actor,
 )
+from sd_hwe_bench.actors.base import count_changed_yaml_files, snapshot_yaml_files, to_text
 from sd_hwe_bench.actors.claude import build_claude_env
-from sd_hwe_bench.actors.base import count_changed_yaml_files, snapshot_yaml_files
 
 
 class TestActorFactory:
@@ -70,20 +70,43 @@ def test_codex_actor_reports_nonzero_exit(monkeypatch, tmp_path):
 
 def test_kimi_actor_reports_auth_failure(monkeypatch, tmp_path):
     monkeypatch.setattr("sd_hwe_bench.actors.kimi.shutil.which", lambda _: "/bin/kimi")
+    # Disable seatbelt wrapping so the test does not depend on sandbox-exec.
+    monkeypatch.setattr("sd_hwe_bench.actors.kimi.maybe_wrap", lambda cmd, *a, **k: cmd)
 
-    def fake_run(*args, **kwargs):
-        return subprocess.CompletedProcess(
-            args=args[0],
-            returncode=0,
-            stdout="auth.login_required: OAuth provider credentials were rejected",
-            stderr="",
-        )
+    def fake_capture(self, cmd, cwd):
+        return 0, "auth.login_required: OAuth provider credentials were rejected", "", False
 
-    monkeypatch.setattr("sd_hwe_bench.actors.kimi.subprocess.run", fake_run)
+    monkeypatch.setattr(KimiActor, "_capture", fake_capture)
     result = KimiActor(kimi_bin="kimi").run("prompt", tmp_path)
 
     assert not result.success
     assert result.error == "Kimi CLI authentication failed"
+
+
+def test_to_text_coerces_bytes_and_none():
+    assert to_text(b"partial bytes \xff") == "partial bytes \ufffd"
+    assert to_text(None) == ""
+    assert to_text("already str") == "already str"
+
+
+def test_kimi_actor_timeout_keeps_partial_output(monkeypatch, tmp_path):
+    """A timeout must not crash and must surface the partial transcript."""
+    monkeypatch.setattr("sd_hwe_bench.actors.kimi.shutil.which", lambda _: "/bin/kimi")
+    monkeypatch.setattr("sd_hwe_bench.actors.kimi.maybe_wrap", lambda cmd, *a, **k: cmd)
+
+    def fake_capture(self, cmd, cwd):
+        # bytes already decoded by _capture via to_text; here we return the
+        # decoded partial output a real timeout would yield.
+        return -9, "partial stdout before kill", "partial stderr", True
+
+    monkeypatch.setattr(KimiActor, "_capture", fake_capture)
+    result = KimiActor(kimi_bin="kimi", timeout=1).run("prompt", tmp_path)
+
+    assert not result.success
+    assert result.error == "Timeout after 1s"
+    assert "[TIMEOUT]" in result.raw_output
+    assert "partial stdout before kill" in result.raw_output
+    assert "partial stderr" in result.raw_output
 
 
 def test_claude_actor_reports_nonzero_exit(monkeypatch, tmp_path):

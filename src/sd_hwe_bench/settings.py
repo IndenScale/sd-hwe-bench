@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -109,6 +110,31 @@ class Settings:
     LOG_PREVIEW_CHARS: int = field(
         default_factory=lambda: _env_int("SD_HWE_LOG_PREVIEW_CHARS", 2000)
     )
+
+    # ------------------------------------------------------------------
+    # Actor isolation (hard isolation against reference-solution leakage)
+    # ------------------------------------------------------------------
+    # When enabled, the actor's live working directory is created OUTSIDE the
+    # benchmark repo (under ISOLATED_WORK_ROOT) and contains only the scaffold,
+    # so the agent has no relative path to tasks/**/solution, canonical/, runs/,
+    # or leaderboard/.  After scoring, the produced files are copied back into
+    # runs/<run>/workspace for archival.
+    ACTOR_ISOLATE: bool = field(default_factory=lambda: _env_bool("SD_HWE_ACTOR_ISOLATE", True))
+    ISOLATED_WORK_ROOT: Path = field(
+        default_factory=lambda: Path(
+            _env_str(
+                "SD_HWE_ISOLATED_WORK_ROOT",
+                str(Path(tempfile.gettempdir()) / "sd-hwe-bench-work"),
+            )
+        )
+    )
+    # Remove the out-of-repo working copy after it is archived back into runs/.
+    ISOLATED_WORK_CLEANUP: bool = field(
+        default_factory=lambda: _env_bool("SD_HWE_ISOLATED_WORK_CLEANUP", False)
+    )
+    # Kernel-level hardening for the actor subprocess: auto | seatbelt | none.
+    # 'auto' uses macOS sandbox-exec (seatbelt) when available, else none.
+    ACTOR_SANDBOX: str = field(default_factory=lambda: _env_str("SD_HWE_ACTOR_SANDBOX", "auto"))
 
     # ------------------------------------------------------------------
     # Sandbox / container

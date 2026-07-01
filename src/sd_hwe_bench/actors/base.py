@@ -2,11 +2,27 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import hashlib
+from dataclasses import dataclass
 from pathlib import Path
 
 from sd_hwe_bench.settings import settings
+
+
+def to_text(stream: bytes | str | None) -> str:
+    """Coerce a subprocess stream to ``str``.
+
+    ``subprocess.TimeoutExpired.stdout``/``.stderr`` may be ``bytes`` even when
+    the process was started with ``text=True``, so concatenating them into a
+    transcript string can raise ``TypeError``.  This helper makes that path safe
+    by decoding ``bytes`` (replacing undecodable runs) and mapping ``None`` to
+    the empty string.
+    """
+    if stream is None:
+        return ""
+    if isinstance(stream, bytes):
+        return stream.decode("utf-8", "replace")
+    return stream
 
 
 @dataclass

@@ -1,20 +1,36 @@
 """Kimi CLI actor.
 
 Kimi Code runs in headless one-shot prompt mode (``kimi -p ...``).  In this
-mode Kimi auto-approves tool calls and mutates the working directory directly.
-The stdout/stderr transcript is kept for traceability, but the authoritative
-agent submission is the set of new YAML files it created on disk.
+mode it executes non-interactively and prints its response; it does **not**
+combine with ``-y/--yolo`` (``kimi`` rejects that with "Cannot combine
+--prompt with --yolo").  Tool-call approval and process-exit behavior therefore
+depend on the Kimi CLI's own configuration (``config.toml``), not on a flag we
+pass here.  The stdout/stderr transcript is kept for traceability, but the
+authoritative agent submission is the set of new YAML files it created on disk.
+
+The actor command is wrapped with macOS seatbelt (``sandbox-exec``) when actor
+isolation places the workspace outside the benchmark repo, so the agent cannot
+read reference solutions via shell tools.  See ``actors.sandbox_exec``.
 """
 
 from __future__ import annotations
 
 import logging
+import os
 import shutil
+import signal
 import subprocess
 import time
 from pathlib import Path
 
-from sd_hwe_bench.actors.base import Actor, ActorResult, count_changed_yaml_files, snapshot_yaml_files
+from sd_hwe_bench.actors.base import (
+    Actor,
+    ActorResult,
+    count_changed_yaml_files,
+    snapshot_yaml_files,
+    to_text,
+)
+from sd_hwe_bench.actors.sandbox_exec import maybe_wrap
 from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -33,6 +49,36 @@ class KimiActor(Actor):
     ):
         super().__init__(model=model or settings.DEFAULT_KIMI_MODEL, timeout=timeout)
         self.kimi_bin = kimi_bin if kimi_bin is not None else settings.KIMI_BIN
+
+    def _capture(self, cmd: list[str], cwd: Path) -> tuple[int, str, str, bool]:
+        """Run ``cmd`` streaming output to buffers; return (rc, stdout, stderr, timed_out).
+
+        Uses ``Popen`` + ``communicate`` so that on timeout we still recover the
+        output produced so far (decoded via :func:`to_text`).  The child is
+        started in its own session so we can kill the whole process group —
+        ``kimi`` spawns a Node runtime that would otherwise be orphaned.
+        """
+        proc = subprocess.Popen(
+            cmd,
+            cwd=str(cwd),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+        )
+        try:
+            out, err = proc.communicate(timeout=self.timeout)
+            return proc.returncode, to_text(out), to_text(err), False
+        except subprocess.TimeoutExpired:
+            try:
+                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            except (ProcessLookupError, PermissionError):
+                proc.kill()
+            try:
+                out, err = proc.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                out, err = "", ""
+            return proc.returncode, to_text(out), to_text(err), True
 
     def run(self, prompt: str, workspace_root: Path) -> ActorResult:
         workspace_root = Path(workspace_root)
@@ -56,25 +102,25 @@ class KimiActor(Actor):
             "-p",
             prompt,
         ]
+        cmd = maybe_wrap(cmd, workspace_root, settings.ACTOR_SANDBOX)
 
         before = snapshot_yaml_files(workspace_root)
 
         start = time.time()
         try:
-            result = subprocess.run(
-                cmd,
-                text=True,
-                capture_output=True,
-                timeout=self.timeout,
-                cwd=str(workspace_root),
+            returncode, stdout, stderr, timed_out = self._capture(cmd, workspace_root)
+        except Exception as exc:
+            return ActorResult(
+                success=False,
+                raw_output="",
+                files_written=0,
+                elapsed_s=time.time() - start,
+                error=str(exc),
             )
-            elapsed = time.time() - start
-            raw = result.stdout + "\n" + result.stderr
-        except subprocess.TimeoutExpired as exc:
-            elapsed = time.time() - start
-            files_changed = count_changed_yaml_files(before, workspace_root)
-            stdout = exc.stdout or ""
-            stderr = exc.stderr or ""
+        elapsed = time.time() - start
+        files_changed = count_changed_yaml_files(before, workspace_root)
+
+        if timed_out:
             raw = "[TIMEOUT]\n" + stdout + "\n" + stderr
             return ActorResult(
                 success=False,
@@ -83,21 +129,13 @@ class KimiActor(Actor):
                 elapsed_s=elapsed,
                 error=f"Timeout after {self.timeout}s",
             )
-        except Exception as exc:
-            return ActorResult(
-                success=False,
-                raw_output="",
-                files_written=0,
-                elapsed_s=0.0,
-                error=str(exc),
-            )
 
-        files_changed = count_changed_yaml_files(before, workspace_root)
+        raw = stdout + "\n" + stderr
         error = None
         success = True
-        if result.returncode != 0:
+        if returncode != 0:
             success = False
-            error = f"Kimi CLI exited with code {result.returncode}"
+            error = f"Kimi CLI exited with code {returncode}"
         elif "auth.login_required" in raw or "OAuth provider credentials were rejected" in raw:
             success = False
             error = "Kimi CLI authentication failed"

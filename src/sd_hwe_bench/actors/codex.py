@@ -13,7 +13,13 @@ import subprocess
 import time
 from pathlib import Path
 
-from sd_hwe_bench.actors.base import Actor, ActorResult, count_changed_yaml_files, snapshot_yaml_files
+from sd_hwe_bench.actors.base import (
+    Actor,
+    ActorResult,
+    count_changed_yaml_files,
+    snapshot_yaml_files,
+)
+from sd_hwe_bench.actors.sandbox_exec import maybe_wrap
 from sd_hwe_bench.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -55,6 +61,7 @@ class CodexActor(Actor):
             self.model,
             *settings.CODEX_EXTRA_ARGS,
         ]
+        cmd = maybe_wrap(cmd, workspace_root, settings.ACTOR_SANDBOX)
 
         before = snapshot_yaml_files(workspace_root)
 

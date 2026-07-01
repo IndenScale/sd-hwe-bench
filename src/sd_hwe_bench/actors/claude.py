@@ -14,7 +14,13 @@ import subprocess
 import time
 from pathlib import Path
 
-from sd_hwe_bench.actors.base import Actor, ActorResult, count_changed_yaml_files, snapshot_yaml_files
+from sd_hwe_bench.actors.base import (
+    Actor,
+    ActorResult,
+    count_changed_yaml_files,
+    snapshot_yaml_files,
+)
+from sd_hwe_bench.actors.sandbox_exec import maybe_wrap
 from sd_hwe_bench.settings import settings
 
 
@@ -102,6 +108,7 @@ class ClaudeActor(Actor):
             *settings.CLAUDE_EXTRA_ARGS,
             prompt,
         ]
+        cmd = maybe_wrap(cmd, workspace_root, settings.ACTOR_SANDBOX)
 
         before = snapshot_yaml_files(workspace_root)
         env = build_claude_env(self.model)

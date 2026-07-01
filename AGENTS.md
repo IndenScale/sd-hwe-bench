@@ -1,6 +1,6 @@
 # SD-HWE-Bench Agent Instructions
 
-本文件记录 SD-HWE-Bench 项目当前阶段的关键概念、目标与开发约定。最后更新：2026-06-29（v7.2：AIDC 60MW 三阶段统一为 `canonical/aidc-60mw` git-lineage——概念→详细→施工排程单一事实源，经 `extract_tasks.py` 抽取出 `aidc-60mw-001/002/003`）。
+本文件记录 SD-HWE-Bench 项目当前阶段的关键概念、目标与开发约定。最后更新：2026-06-30（v7.3：actor 级硬隔离——工作区迁出仓库 + macOS seatbelt 内核级 deny 参考解读取；Kimi actor 改 Popen 流式捕获，修复 timeout bytes 崩溃、失败可诊断）。
 
 ## 全局约束
 
@@ -207,14 +207,26 @@ L0(Syntax) → L1(Schema) → L2(Reference Integrity) → L3(Static Constraints)
 - piki 几何规则（碰撞、U 位、间距）继续作为 L5 基础。
 - `ConstructabilityCritic` 对 detailed-design / epc 任务检查吊装方案、主吊车租赁、VDC 工作面。
 
+### 3.4 Actor 级隔离与健壮性（v7.3）
+
+**为什么**：actor 工作区原先建在仓库内的 `runs/<run>/workspace`，agent 可经 `../../tasks/**/solution` 或 Bash `cat/find` 读到参考解，任何 PASS 都不可信。现改为**两层硬隔离**（`src/sd_hwe_bench/actors/sandbox_exec.py` + `sandbox/workspace.py`）：
+
+1. **工作区迁出仓库**：`ACTOR_ISOLATE=True`（默认）时，actor 的 live `workspace/` 建在 `ISOLATED_WORK_ROOT`（默认系统临时目录，**仓库之外**），只含 scaffold；`prompt.md/trajectory.jsonl/actor_output.log/manifest.json` 仍留在 `runs/<run>/`。评分完成后 `Workspace.archive_project_dir()` 把产物拷回 `runs/<run>/workspace`，归档自洽（`ArchiveManager`/`audit_runs.py` 不变）。
+2. **macOS seatbelt 内核级 deny**：`ACTOR_SANDBOX=auto`（默认，macOS 有 `sandbox-exec` 即启用）用 profile `(allow default)(deny file-read* (subpath "<repo>"))` 包裹 actor 子进程，从内核阻断对整个仓库的读取（含 `tasks/**/solution`、`canonical/`、`runs/`、`leaderboard/`），连 Bash `cat/find` 也挡。因工作区已迁出仓库、scaffold 已拷入，actor 运行期不需读仓库 → 整仓 read-deny 安全。**安全护栏**：若工作区仍在仓库内（`--no-isolate`），`maybe_wrap` 会跳过 seatbelt 并告警，避免 `process.cwd()` EPERM。
+3. **相关 setting**：`SD_HWE_ACTOR_ISOLATE` / `SD_HWE_ISOLATED_WORK_ROOT` / `SD_HWE_ISOLATED_WORK_CLEANUP` / `SD_HWE_ACTOR_SANDBOX`。CLI：`run` 与 `run-repair` 均有 `--isolate/--no-isolate` 与 `--actor-sandbox auto|seatbelt|none`。`batch` 经 CLI 子进程调用，自动继承默认值。
+
+**Kimi actor 健壮性**（`src/sd_hwe_bench/actors/kimi.py`）：改用 `subprocess.Popen`+`communicate` 流式捕获（`start_new_session` + `killpg` 收尾 node 子进程）；`base.to_text()` 统一把 `bytes|None` 转 `str`，修掉 `TimeoutExpired.stdout` 为 bytes 时的 `TypeError`；超时/失败仍保留部分 transcript，全量写入 `runs/<run>/actor_output.log`（trajectory 只存 2000 字 preview）。
+
+> **非目标**：暂不做"文件稳定 + scorer pass 后提前 kill CLI"的 tail-wait 收尾策略（会改变正式样本语义），仅保证超时可诊断。
+
 ---
 
 ## 4. CLI 速查
 
 ```bash
 sd-hwe-bench list [--domain telecom]
-sd-hwe-bench run <task-id|prefix> --actor <spec> [--passes N] [--jobs N] [--sandbox docker]
-sd-hwe-bench run-repair <task-id> --actor <spec> [--max-repair N]
+sd-hwe-bench run <task-id|prefix> --actor <spec> [--passes N] [--jobs N] [--sandbox docker] [--isolate/--no-isolate] [--actor-sandbox auto|seatbelt|none]
+sd-hwe-bench run-repair <task-id> --actor <spec> [--max-repair N] [--isolate/--no-isolate] [--actor-sandbox auto|seatbelt|none]
 sd-hwe-bench score <task-id> <output-dir> [--sandbox docker]
 sd-hwe-bench archive [--format json]
 sd-hwe-bench leaderboard [--update]
@@ -225,7 +237,8 @@ sd-hwe-bench batch --matrix <matrix.yaml> [--dry-run] [--max-workers N]
 
 ## 5. 开发约定
 
-- 测试目标：保持 ≥110 tests 通过（当前 145 passed / 2 skipped）
+- 测试目标：保持 ≥110 tests 通过（当前 160 passed / 2 skipped）
+- **正式实验必须启用 actor 隔离**（默认开）：`ACTOR_ISOLATE` + macOS `ACTOR_SANDBOX=auto`（seatbelt），确保 actor 读不到参考解，PASS 才可进 leaderboard。见 §3.4。
 - 新增任务含完整 `task.yaml`、`scaffold/`、`solution/`
 - 所有 solution 必须通过 `piki check`
 - `scoring_layers` 可从 task.yaml 覆盖
