@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Assemble the Engineering AI Gaps Chinese paper from section files.
+"""Assemble the EaC evaluation substrate Chinese paper from section files.
 
 Usage:
-  uv run scripts/assemble_engineering_ai_gaps.py
+  uv run scripts/assemble_eac_eval_substrate.py
 
 Output:
-  papers/engineering-ai-gaps/src/dist/draft-full.zh.md
+  papers/engineering-as-code-eval-substrate/src/dist/draft-full.zh.md
 """
 
 from pathlib import Path
@@ -14,7 +14,7 @@ import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SECTIONS_DIR = REPO_ROOT / "papers/engineering-ai-gaps/src/sections-zh"
+SECTIONS_DIR = REPO_ROOT / "papers/engineering-as-code-eval-substrate/src/sections-zh"
 DIST_DIR = SECTIONS_DIR.parent / "dist"
 
 SECTION_ORDER = [
