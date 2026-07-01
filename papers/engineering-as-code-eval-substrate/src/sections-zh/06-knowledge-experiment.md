@@ -2,6 +2,8 @@
 
 知识实验关注的不是能否通过规则检查，而是知识是否改变设计选择和优化上限。我们以 AI Data Center Design 作为 probe，测试当设备曲线、气候、电价、水价、负载、成本和施工风险被转化为模型参数、目标函数和搜索空间后，agent 是否能从合规方案走向前沿方案。
 
+本实验在论文中的角色是 frontier probe，而不是唯一主结果。第 5 章的约束实验支撑“evaluation substrate 改变 failure attribution 和 repair dynamics”；本章进一步探索：当正确性已经可执行之后，情境化知识是否会改变 Pareto frontier。
+
 ## 6.1 第一性问题
 
 “知识”这个词太宽。工程知识可以指规范条文、设备参数、施工经验、供应商报价、气候数据、电价曲线、材料工艺窗口，也可以指模型训练语料中的一般常识。本文关注的不是“给 agent 更多资料是否更好”，而是：
@@ -43,7 +45,7 @@ AIDC probe 还需要按可优化变量分层，观察知识进入后是否真的
 
 如果 Joint DTCO 明显支配单独优化条件，说明可优化知识的价值来自跨层组合，而不是某一条规则或某一个参数。
 
-## 6.5 指标与判断标准
+## 6.5 指标与结果表占位
 
 本实验不以 pass rate 为主指标。pass/fail 只用于确保方案处于可行域内，真正的观测对象是 frontier 和目标权衡：
 
@@ -58,9 +60,32 @@ AIDC probe 还需要按可优化变量分层，观察知识进入后是否真的
 - **Frontier shift**：Dynamic Knowledge 相对 Static Compliance 的 Pareto frontier 外移程度。
 - **Decision shift**：设备组合、储能容量、冷却策略、调度策略是否发生可解释变化。
 
-可优化知识的重要性可以通过三类证据证明：同可行性下性能提升，设计决策发生可解释变化，以及 Dynamic Knowledge 或 Joint DTCO 条件产生的非支配解集相对静态条件外移。
+正式结果表使用如下模板：
 
-## 6.6 与 PDK 的类比
+| 知识条件 | Feasibility | TCO | CAPEX | OPEX | PUE | SLA Violation | Frontier Shift | Decision Shift |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Static Compliance | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+| Static + Cost | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+| Static + Curves | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+| Dynamic Knowledge | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+| Oracle Optimizer | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+
+优化权限结果使用如下模板：
+
+| 优化权限 | Feasible Solutions | Non-dominated Solutions | Best TCO | Best SLA Risk | 主要设计变化 |
+|---|---:|---:|---:|---:|---|
+| Fixed Design | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+| Equipment-only | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+| Schedule-only | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+| Joint DTCO | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 | 【TBD】 |
+
+## 6.6 趋势性分析占位
+
+预期趋势是：Static Compliance 条件能够生成满足基本容量、冗余和间距规则的方案，但不同方案之间的优劣主要停留在规则合规层；Static + Cost 可能改变设备组合和 CAPEX/OPEX 权衡；Static + Curves 可能改变冷却、储能和负载调度策略；Dynamic Knowledge 预计会在同一可行域内产生更清晰的 TCO/PUE/SLA tradeoff；Joint DTCO 若相对 Equipment-only 和 Schedule-only 产生非支配解集外移，则说明知识价值来自设计变量、运营策略和场景参数的组合。
+
+如果实验只观察到小幅 frontier shift，也不是负面结果。它可能说明当前任务的可行域太窄、设备库区分度不足、模型搜索能力不足，或知识条件未覆盖真实决定性变量。这类归因正是 E&D 语境下有价值的 evaluation finding：它说明 benchmark 结论受哪些评估假设控制。
+
+## 6.7 与 PDK 的类比
 
 半导体行业之所以能进行快速 DTCO，是因为 PDK 把工艺能力、规则和模型传递给设计工具。许多系统级工程没有类似机制：设备厂商、材料供应商、施工单位、业主和运营方的知识被分散保存，难以被 agent 或优化器统一消费。
 

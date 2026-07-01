@@ -10,11 +10,13 @@
 
 本文用三重鸿沟解释为什么这样的 substrate 必要。**表征鸿沟**使工程任务难以变成稳定提交对象；**约束鸿沟**使自然语言规范无法阻止 pseudo-correctness；**知识鸿沟**使 agent 即使满足保守规则，也难以触及前沿工程实践中的跨层优化上限。三者不是并列困难，而是 evaluation substrate 的三个设计要求：状态必须可表征，正确性必须可执行，知识必须可优化。
 
-我们以 AI Data Center Design 作为 reference domain。AIDC 同时包含设备选型、供配电、冷却、储能、光伏、机柜布局、施工可建性、EPC 排程、气候、电价、负载和生命周期成本，是测试工程 agent 是否具备系统级闭环能力的高耦合场景。SD-HWE-Bench 则提供当前实现：ADL 工程声明、DTS 分层 critic、canonical lineage 任务抽取、actor 隔离运行和可归档评分结果。
+我们以 AI Data Center Design 作为 reference domain，而不是把 EaC 的适用边界限定为数据中心。AIDC 有用，是因为它把多类系统级工程困难压缩到同一场景中：设备选型、供配电、冷却、储能、光伏、机柜布局、施工可建性、EPC 排程、气候、电价、负载和生命周期成本。这使它成为测试 representation、executable constraints 和 optimizable knowledge 的压力测试域。相同的 substrate pattern 可以通过替换对象词汇、约束库和领域模型迁移到其他工程领域：通信站点将机柜和冷机替换为天线、RRU、机柜、电源和站址布局约束；机械装配将设备连接替换为零件、配合、公差、载荷和干涉检查；能源系统将数据中心负载替换为发电设备、储能、并网、调度策略和可靠性约束。SD-HWE-Bench 则提供当前实现：ADL 工程声明、DTS 分层 critic、canonical lineage 任务抽取、actor 隔离运行和可归档评分结果。
+
+本文按 NeurIPS Evaluations & Datasets Track 的口径组织贡献：evaluation 本身是研究对象，而不是模型论文的附属实验。我们关心的是：当系统级工程任务被组织为不同的提交对象、约束反馈和知识条件时，agent 的成功率、失败模式、修复曲线和优化上限会如何变化。因此，本文的实验不以“某个模型最好”为主线，而以 evaluation design 如何改变可支持的科学结论为主线。
 
 本文贡献如下：
 
 1. 提出 Engineering as Code 作为面向 engineering agents 的 executable evaluation substrate，而不是单纯的工程设计表示或工具接口。
 2. 将 representation、constraint、knowledge gaps 重新表述为 substrate 的三个必要能力：可闭环表征、可执行约束、可优化知识。
-3. 给出基于 SD-HWE-Bench 与 AI Data Center Design 的三组实验协议，用于测量表征闭环能力、pseudo-correctness 与 repair 饱和、以及可优化知识对 Pareto frontier 的影响。
-4. 讨论这种 substrate 如何把工程 agent 评估从“看起来正确”的自然语言方案，推进到“可验证正确”的工程闭合，并进一步推进到“前沿最优”的知识驱动协同设计。
+3. 给出基于 SD-HWE-Bench 与 AI Data Center Design 的三组受控实验，用于测量表征闭环能力、pseudo-correctness 与 repair 饱和、以及可优化知识对 Pareto frontier 的影响。本文当前保留结果表占位，所有具体数字将在正式实验归档后由 run artifacts 填充。
+4. 给出 evaluation claims、assumptions、artifact contract 与 failure-mode taxonomy，讨论这种 substrate 如何把工程 agent 评估从“看起来正确”的自然语言方案，推进到“可验证正确”的工程闭合，并进一步推进到“前沿最优”的知识驱动协同设计。
