@@ -2,13 +2,13 @@
 
 ## 7.1 软件工程 Agent 评测
 
-SWE-bench 及其后续工作证明，真实软件 issue 可以被转化为可执行评测任务。其成功依赖代码作为可提交表征、测试套件作为可执行约束、GitHub 作为真实任务来源，以及 patch/review/test 形成的高频闭环。本文并不简单将 SWE-bench 迁移到硬件或工程领域，而是抽象其底层机制：agent 评估需要一个稳定的 substrate。系统级工程缺少的，正是代码、测试和版本控制在软件工程中共同扮演的角色。
+HumanEval 将代码生成评估从表面相似度推进到由单元测试定义的 functional correctness [Chen et al., 2021]。SWE-bench 进一步证明，真实软件 issue 可以被转化为 repository-level patch 任务，并用项目测试判断 agent 是否解决问题 [Jimenez et al., 2023]。这类工作成功依赖代码作为可提交表征、测试套件作为可执行约束、GitHub 作为真实任务来源，以及 patch/review/test 形成的高频闭环。本文并不简单将 SWE-bench 迁移到硬件或工程领域，而是抽象其底层机制：agent 评估需要一个稳定的 substrate。系统级工程缺少的，正是代码、测试和版本控制在软件工程中共同扮演的角色。
 
 ## 7.2 ML Evaluation Infrastructure
 
-本文也位于 ML evaluation infrastructure 的演化线上。早期 NLP 自动评估大量依赖 reference-based static metrics，例如机器翻译中的 BLEU 和摘要任务中的 ROUGE。这类指标使大规模比较成为可能，但也暴露了静态相似度指标难以刻画真实任务成功的问题。代码生成和软件 agent 评估随后把评估单元从表面相似度转向 executable correctness：HumanEval 用单元测试度量函数正确性，SWE-bench 用真实 GitHub issue、repository patch 和测试结果评估 agent 是否解决真实软件问题。
+本文也位于 ML evaluation infrastructure 的演化线上。早期 NLP 自动评估大量依赖 reference-based static metrics，例如机器翻译中的 BLEU 和摘要任务中的 ROUGE [Papineni et al., 2002; Lin, 2004]。这类指标使大规模比较成为可能，但也暴露了静态相似度指标难以刻画真实任务成功的问题。代码生成和软件 agent 评估随后把评估单元从表面相似度转向 executable correctness：HumanEval 用单元测试度量函数正确性，SWE-bench 用真实 GitHub issue、repository patch 和测试结果评估 agent 是否解决真实软件问题 [Chen et al., 2021; Jimenez et al., 2023]。
 
-强化学习领域更早形成了 environment interface 传统。Gym-style 环境将 state、action、reward、termination 和 benchmark protocol 标准化，使 agent 能在可复现实验环境中交互、学习和比较。这个传统说明，评估不只是指标函数，也可以是一个可执行环境；环境的状态表示、动作空间、反馈延迟和奖励结构会塑造科学结论。
+强化学习领域更早形成了 environment interface 传统。Gym-style 环境将 observation/action、reward、termination 和 benchmark protocol 标准化，使 agent 能在可复现实验环境中交互、学习和比较 [Brockman et al., 2016]。这个传统说明，评估不只是指标函数，也可以是一个可执行环境；环境的状态表示、动作空间、反馈延迟和奖励结构会塑造科学结论。
 
 EaC 沿着这条演化线前进，但面对的是一个 evaluation substrate 并非天然存在的领域。在软件中，代码仓和测试定义了自然的 patch-and-check loop；在 RL 中，环境暴露了标准交互 API；在 IC/EDA-oriented HWE benchmarks 中，RTL、schematic、simulator、testbench 和 datasheet 已经提供局部可执行底座。系统级工程领域则缺少这样的统一底座：状态、约束和知识分散在 CAD/BIM、表格、PDF、GUI、供应商手册、仿真软件和人工审查流程中。因此，EaC 关心的是当软件式测试套件、RL 式环境接口和 EDA 式验证流都不是默认存在时，engineering agents 的 evaluation substrate 应该提供什么。
 
@@ -16,15 +16,19 @@ EaC 沿着这条演化线前进，但面对的是一个 evaluation substrate 并
 
 现有 AI for Engineering benchmark 常聚焦数学题、设计问答、CAD 生成、仿真代理模型或特定优化问题。它们各自有价值，但往往缺少完整工程提交、跨文件引用、可执行约束、结构化诊断和 repair loop。本文强调 pseudo-correctness：自然语言方案或孤立几何模型可能看起来合理，却没有完成工程闭合。EaC substrate 的目标是把工程任务变成可执行、可诊断、可复现的 agent evaluation。
 
+更具体地说，Software 外的 engineering-agent 评测并非无人关注，而是热度和成熟度分布很不均匀。IC/EDA 方向受益于 RTL/Verilog 的文本性、仿真与形式验证的可执行性，以及成熟的 testbench/EDA workflow；AEC、CAD 和 mechanical design 方向则更多处于 multimodal document understanding、coordination workflow、compliance checking 或 component-level CAD generation 阶段。DesignQA 评估模型理解工程需求文档、CAD 图像和工程图纸，并覆盖 rule extraction、rule comprehension 与 rule compliance [Doris et al., 2024]。AEC-Bench 面向真实 AEC coordination workflows，包含 196 个任务实例和 9 个任务族，并强调 construction documents 上的 multimodal agent evaluation [Mankodiya et al., 2026]。CADBench 则评估 multimodal CAD program generation，覆盖多类输入模态以及 geometric fidelity、executability 和 program compactness 等指标 [Doris et al., 2026]。这些工作推进了非软件工程评测，但多数评估对象仍是文档理解、协调输出或部件级 CAD 程序，而不是可提交的系统级 physical engineering design。
+
 ## 7.4 为什么现有 HWE Benchmark 能成立
 
-近期硬件工程 benchmark，尤其是 IC/EDA 和板级电路方向的 HWE-Bench，提供了一个重要正例：当某个工程领域已经拥有 code-like representation、executable verification 和 tool-consumable knowledge 时，agent benchmark 可以成立。第 2 章已将它们作为 positive control 纳入 failure analysis；本节只补充其与本文的关系。
+近期硬件工程 benchmark，尤其是 IC/EDA 和板级电路方向的 HWE-Bench，提供了一个重要正例：当某个工程领域已经拥有 code-like representation、executable verification 和 tool-consumable knowledge 时，agent benchmark 可以成立。ChipBench 将 AI-aided chip design 扩展到 Verilog generation、Verilog debugging 和 reference model generation [Yu et al., 2026]；SLDB 则面向 heterogeneous SoC 的 system-level integration and configuration，试图超越低复杂度、部件级 RTL 设计 [Alvanaki et al., 2025]。第 2 章已将这些方向作为 positive control 纳入 failure analysis；本节只补充其与本文的关系。
 
 Repository-level RTL bug repair HWE-Bench 将真实硬件 bug-fix PR 转化为任务，覆盖 Verilog/SystemVerilog/Chisel 项目，并在容器化环境中通过项目原生仿真与回归流程验证修复。这类任务天然拥有可提交对象：agent 输出 repository patch；也天然拥有可执行 critic：编译、仿真、testbench 和 fail-to-pass regression；还拥有可被工具链消费的知识：RTL 语义、配置、验证组件、ISA/spec、EDA flow 和项目文档。
 
 Board-level schematic HWE-Bench 则让模型基于功能需求和 IC datasheets 生成原理图，再通过 static electrical rules 和 circuit simulation 检查动态行为。这里同样存在局部闭环：schematic/netlist 是提交对象，ERC 与仿真是 critic，datasheet 和电路模型提供知识来源。
 
 因此，已有 HWE benchmark 不应被视为本文的反例，而应被视为动机证据。它们在窄而重要的硬件任务中实例化了本文所说的 substrate 条件；本文的问题是如何在没有天然 EDA/PDK/testbench substrate 的系统级工程中，显式构造类似的 evaluation substrate。
+
+这也界定了本文与现有工程 benchmark 的差异：已有工作已经覆盖 hardware description languages、CAD reconstruction、engineering document understanding 和 AEC coordination workflows；但其中相当一部分要么受益于 RTL/EDA 这类 code-like artifacts，要么评估 perception、retrieval、compliance 或 component-level generation。仍然缺少一种面向 parametrized physical systems 的 agent benchmark：agent 需要提交系统级设计工件，接受跨专业可执行约束，获得可定位诊断，并在 repair loop 中迭代改进。SD-HWE-Bench 试图填补的正是这个 artifact granularity gap。
 
 ## 7.5 Tool Use、MCP 与 CUA
 

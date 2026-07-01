@@ -2187,6 +2187,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "adl" },
+    { name = "jinja2" },
     { name = "piki" },
     { name = "pydantic" },
     { name = "pyyaml" },
@@ -2207,6 +2208,7 @@ judge = [
 requires-dist = [
     { name = "adl", editable = "../piki/adl" },
     { name = "deepeval", marker = "extra == 'judge'", specifier = ">=4.0" },
+    { name = "jinja2", specifier = ">=3.1" },
     { name = "piki", editable = "../piki" },
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },

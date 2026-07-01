@@ -1,0 +1,25 @@
+# {{ meta.title }}
+
+> {{ meta.subtitle }}
+> {{ stage }}
+
+## 摘要
+
+{{ meta.abstract.strip() }}
+
+**关键词**：{{ keywords }}
+
+{% for section in sections -%}
+{{ section.content }}
+
+{% endfor -%}
+{% if appendix_sections -%}
+---
+
+## 附录
+
+{% for section in appendix_sections -%}
+{{ section.content }}
+
+{% endfor -%}
+{% endif -%}

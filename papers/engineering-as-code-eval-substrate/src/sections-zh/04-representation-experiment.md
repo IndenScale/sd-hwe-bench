@@ -1,8 +1,10 @@
 # 4. 实验一：可闭环表征
 
-本实验验证不同工程表征路径能否支持 engineering agents 的严肃自动化评估闭环。实验并不试图证明 ADL 在所有工程场景中优于 CAD、BIM 或参数化设计；它要拆解的是：在同等工程意图下，哪些表征能力决定任务能否被提交、检查、定位、修复和复现。
+本实验验证不同工程表征路径能否支持 engineering agents 的严肃自动化评估闭环。研究问题只有一个：**在同等工程意图下，什么样的表征接口能让 agent 的输出变成可提交、可检查、可诊断、可修复、可复现的评估对象？**
 
-## 4.1 第一性问题
+投稿版应在本章开头直接给出主结果表或主图，然后再解释表征差异造成的机制。当前中文稿中的表格是用于对抗性审稿模拟的 stub；正式数字必须由隔离 runs、score artifacts 和表格生成脚本重建。若某一表征路径无法完整复现，应在主文中明确降级为 case study 或 appendix protocol。
+
+## 4.1 主结果应回答的问题
 
 如果本文只说“工程缺少可计算表征”，很容易被参数化设计反驳。OpenSCAD、Revit family、Grasshopper、Dynamo、Excel 配置表和企业内部模板都已经能够用变量生成工程工件。因此本实验真正要问的是：
 
@@ -38,7 +40,7 @@
 | Gen + Documented   | 新人或 agent 无需作者解释即可修改 | 测试个人-组织闭环的价值       |
 | Full closed-loop   | 五重闭环均保留                    | 测试完整 EaC substrate 的上限 |
 
-## 4.4 指标、结果表与占位
+## 4.4 主结果表与证据要求
 
 本实验不以 pass rate 为唯一指标，而关注 substrate 能力：
 
@@ -52,21 +54,19 @@
 - **可迁移成本**：同一表征应用到新地点、新设备库或新规范所需调整量。
 - **交接成本**：新成员或 agent 在没有原作者解释时复现和修改表征所需轮次。
 
-正式结果表使用如下模板：
+投稿版的正式结果表必须放在本章前半部分，由脚本从 artifacts 生成，并至少对应一个可复现的 case study 或任务集合。读者应先看到不同表征路径在形式化成本、确定性、诊断和 repair 上的差异，再进入 protocol 细节。当前表格模式：**{{ data.eval_substrate.artifact.result_label }}**。{{ data.eval_substrate.artifact.result_note }}
 
 | 表征路径   | 形式化成本 | 提交确定性 | 反馈延迟 | 定位粒度 | Repair 成功率 | 评分覆盖度 | 跨专业冲突检出 | 交接成本 |
 | ---------- | ---------: | ---------: | -------: | -------- | ------------: | ---------: | -------------: | -------: |
-| NL-only    |    【TBD】 |    【TBD】 |  【TBD】 | 【TBD】  |       【TBD】 |    【TBD】 |        【TBD】 |  【TBD】 |
-| CUA/GUI    |    【TBD】 |    【TBD】 |  【TBD】 | 【TBD】  |       【TBD】 |    【TBD】 |        【TBD】 |  【TBD】 |
-| MCP/Tool   |    【TBD】 |    【TBD】 |  【TBD】 | 【TBD】  |       【TBD】 |    【TBD】 |        【TBD】 |  【TBD】 |
-| Parametric |    【TBD】 |    【TBD】 |  【TBD】 | 【TBD】  |       【TBD】 |    【TBD】 |        【TBD】 |  【TBD】 |
-| ADL/EaC    |    【TBD】 |    【TBD】 |  【TBD】 | 【TBD】  |       【TBD】 |    【TBD】 |        【TBD】 |  【TBD】 |
+{% for row in data.eval_substrate.experiments.representation.summary_rows -%}
+| {{ row.condition }} | {{ row.formalization_cost }} | {{ row.submission_determinism }} | {{ row.feedback_latency }} | {{ row.localization }} | {{ row.repair_success_rate }} | {{ row.scoring_coverage }} | {{ row.cross_domain_detection }} | {{ row.handoff_cost }} |
+{% endfor %}
 
-## 4.5 趋势性分析占位
+## 4.5 结果解释规则
 
-预期趋势是：低耦合任务中，Parametric 与 ADL/EaC 的质量差距可能不显著，差异主要体现在可审计性、诊断粒度和交接成本；中高耦合任务中，NL-only、CUA/GUI 和 MCP/Tool 更容易出现跨文件引用遗漏、局部工具状态不可复现、以及本专业正确但跨专业失败的情况；当加入设计-建造闭环时，只有能表达对象、空间、资源、活动和交付物关系的表征，才容易形成稳定 repair loop。
+本实验不得用“ADL 必然更好”作为预设结论。低耦合任务中，Parametric 与 ADL/EaC 的质量差距可能不显著，差异可能主要体现在可审计性、诊断粒度和交接成本；这不是反例，而是说明低耦合生成任务不需要完整 substrate。中高耦合任务中，如果 NL-only、CUA/GUI 或 MCP/Tool 出现跨文件引用遗漏、局部工具状态不可复现、或本专业正确但跨专业失败，分析必须回到具体 failed layer、对象和诊断记录。
 
-正式分析将按任务复杂度分层报告，避免用单一平均值掩盖机制差异。低耦合任务若快速饱和，不构成对 EaC 的反例；它说明在简单生成任务中，多种表征都足够。真正能区分 evaluation substrate 的，是跨专业耦合、动态调度、施工可建性和知识迁移条件下的失败归因能力。
+正式分析将按任务复杂度分层报告，避免用单一平均值掩盖机制差异。真正能区分 evaluation substrate 的，不是“谁在一个简单任务上得分更高”，而是跨专业耦合、动态调度、施工可建性和知识迁移条件下，哪种表征能保留提交确定性、错误定位和局部 repair 能力。若结果与这一机制不一致，应优先修改论文解释，而不是选择性展示任务。
 
 ## 4.6 本实验支撑的结论
 

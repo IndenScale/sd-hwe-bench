@@ -12,6 +12,6 @@
 
 第五，本文没有直接提出新的模型训练算法。我们的贡献在于 evaluation substrate、实验协议和 failure mode 分解；后续可以基于 DTS 反馈构建 repair policy、RLVR 环境、主动约束发现或跨层优化 agent。
 
-第六，当前中文稿中的实验数字仍以 `【TBD】` 占位。正式投稿版必须从隔离运行的 run artifacts、score artifacts 和生成脚本中自动填充结果表，不能用手工估计或单次非隔离样本替代。若 artifact 与趋势性分析冲突，应优先修改分析，不能反向调整结果。
+第六，当前中文稿中的实验数字是 **{{ data.eval_substrate.artifact.result_label }}**，仅用于对抗性审稿模拟和结果叙事压力测试。正式投稿版必须从隔离运行的 run artifacts、score artifacts 和生成脚本中自动填充结果表，不能用手工估计、synthetic stub 或单次非隔离样本替代。若 artifact 与趋势性分析冲突，应优先修改分析，不能反向调整结果。
 
-第七，E&D artifact 需要处理匿名化与长期可用性。SD-HWE-Bench 作为可执行 artifact，原则上需要在投稿时提供匿名代码、任务、数据卡、运行说明和小样本检查路径；如果某些 AIDC 参数来自非公开来源，必须替换为合成或可公开参数，并明确说明其对外部效度的影响。
+第七，E&D artifact 需要处理匿名化、长期可用性和机器可读元数据。SD-HWE-Bench 作为可执行 artifact，原则上需要在投稿时提供匿名代码、任务、数据卡、运行说明、30 分钟小样本检查路径、完整复现实验路径、license、expected output、scorer determinism 说明和 actor isolation 说明；如果某些 AIDC 参数来自非公开来源，必须替换为合成或可公开参数，并明确说明其对外部效度的影响。若按 dataset/benchmark 类 submission 提交，还需要准备 Croissant core 与 Responsible AI metadata，并保证 reviewer 可以通过公开或匿名 URL 访问 artifact。
