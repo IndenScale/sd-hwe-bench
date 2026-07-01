@@ -2,9 +2,9 @@
 
 本文仍有若干局限。
 
-第一，SD-HWE-Bench 目前主要覆盖 telecom 与 AIDC 场景，尚不能代表机械、HVAC、管道、机器人、航空航天等全部系统级工程领域。本文提出的是 substrate 设计原则和 reference implementation，而不是宣称任务覆盖已经完整。
+第一，SD-HWE-Bench 目前主要覆盖 telecom 与 AIDC 场景，尚不能代表机械、HVAC、管道、机器人、航空航天等全部系统级工程领域。本文提出的是 substrate 设计原则和 reference implementation，并不宣称任务覆盖已经完整。
 
-第二，ADL 是一种研究型工程表征，并非成熟工业标准。本文比较的是 agent evaluation 所需的闭环能力，而不是声称 ADL 可以替代 CAD/BIM/PLM/EDA 等工业软件。实际工业部署可能需要把 EaC 与现有工具链双向同步。
+第二，ADL 是一种研究型工程表征，并非成熟工业标准。本文比较的是 agent evaluation 所需的闭环能力，不声称 ADL 可以替代 CAD/BIM/PLM/EDA 等工业软件。实际工业部署可能需要把 EaC 与现有工具链双向同步。
 
 第三，约束实验中的 pseudo-correctness 需要人工标注协议辅助定义。虽然可执行 critic 能发现大量错误，但“看起来合理”这一维度仍包含主观判断，需要明确标注指南和一致性统计。
 
@@ -12,6 +12,6 @@
 
 第五，本文没有直接提出新的模型训练算法。我们的贡献在于 evaluation substrate、实验协议和 failure mode 分解；后续可以基于 DTS 反馈构建 repair policy、RLVR 环境、主动约束发现或跨层优化 agent。
 
-第六，当前中文稿中的实验数字仍以 `【TBD】` 占位。正式投稿版必须从隔离运行的 run artifacts、score artifacts 和生成脚本中自动填充结果表，不能用手工估计或单次非隔离样本替代。若 artifact 与趋势性分析冲突，应优先修改分析而不是修改结果。
+第六，当前中文稿中的实验数字仍以 `【TBD】` 占位。正式投稿版必须从隔离运行的 run artifacts、score artifacts 和生成脚本中自动填充结果表，不能用手工估计或单次非隔离样本替代。若 artifact 与趋势性分析冲突，应优先修改分析，不能反向调整结果。
 
 第七，E&D artifact 需要处理匿名化与长期可用性。SD-HWE-Bench 作为可执行 artifact，原则上需要在投稿时提供匿名代码、任务、数据卡、运行说明和小样本检查路径；如果某些 AIDC 参数来自非公开来源，必须替换为合成或可公开参数，并明确说明其对外部效度的影响。
