@@ -56,8 +56,9 @@
 
 投稿版的正式结果表必须放在本章前半部分，由脚本从 artifacts 生成，并至少对应一个可复现的 case study 或任务集合。读者应先看到不同表征路径在形式化成本、确定性、诊断和 repair 上的差异，再进入 protocol 细节。当前表格模式：**{{ data.eval_substrate.artifact.result_label }}**。{{ data.eval_substrate.artifact.result_note }}
 
-| 表征路径   | 形式化成本 | 提交确定性 | 反馈延迟 | 定位粒度 | Repair 成功率 | 评分覆盖度 | 跨专业冲突检出 | 交接成本 |
-| ---------- | ---------: | ---------: | -------: | -------- | ------------: | ---------: | -------------: | -------: |
+| 表征路径 | 形式化成本 | 提交确定性 | 反馈延迟 | 定位粒度 | Repair 成功率 | 评分覆盖度 | 跨专业冲突检出 | 交接成本 |
+| -------- | ---------: | ---------: | -------: | -------- | ------------: | ---------: | -------------: | -------: |
+
 {% for row in data.eval_substrate.experiments.representation.summary_rows -%}
 | {{ row.condition }} | {{ row.formalization_cost }} | {{ row.submission_determinism }} | {{ row.feedback_latency }} | {{ row.localization }} | {{ row.repair_success_rate }} | {{ row.scoring_coverage }} | {{ row.cross_domain_detection }} | {{ row.handoff_cost }} |
 {% endfor %}
