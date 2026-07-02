@@ -1,10 +1,10 @@
-# P0 constraint-gap experiment matrix.
-# Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-p0.yaml
-# Preview:   uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-p0.yaml --dry-run
+# Constraint-gap experiment matrix.
+# Run with:  uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-core.yaml
+# Preview:   uv run sd-hwe-bench batch --matrix scripts/batch/constraint-gap-core.yaml --dry-run
 #
 # Compares context, executable coverage, and diagnostic verbosity conditions on
 # hard/coupled tasks. Start with one stable model before broadening.
-run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-p0-filtered-clean-diagnostics-v2-20260701
+run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-core-filtered-clean-diagnostics-v2-20260701
 passes: 3
 sandbox: none
 timeout: 1800

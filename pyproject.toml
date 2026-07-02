@@ -53,6 +53,9 @@ dev = [
 judge = [
     "deepeval>=4.0",
 ]
+representation = [
+    "mcp>=1.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/indenscale/sd-hwe-bench"

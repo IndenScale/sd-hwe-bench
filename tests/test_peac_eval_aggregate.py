@@ -93,7 +93,7 @@ def test_build_payload_records_artifact_assumptions(tmp_path):
 
     payload = mod.build_payload(run_root)
 
-    assert payload["artifact"]["result_status"] == "partial_real_constraint_p0"
+    assert payload["artifact"]["result_status"] == "partial_real_constraint"
     assert payload["artifact"]["assumptions"]["conditions"] == 1
     assert payload["artifact"]["assumptions"]["attempts"] == 1
     assert payload["experiments"]["constraint"]["summary_rows"][0]["condition"] == "docs-only"

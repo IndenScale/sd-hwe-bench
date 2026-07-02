@@ -1,6 +1,6 @@
 artifact:
-  result_status: "partial_real_constraint_p0_frozen"
-  result_label: "Frozen P0 AIDC diagnostic-contract rerun"
+  result_status: "partial_real_constraint_frozen"
+  result_label: "Frozen AIDC diagnostic-contract rerun"
   result_note: "约束实验数字来自隔离 run artifacts；表征与知识实验仍为待补协议，不进入当前实证主张。Pseudo-correctness 仍需人工标注。"
   assumptions:
     models: 1
@@ -18,8 +18,16 @@ artifact:
     matrix: "scripts/batch/constraint-gap-aidc-diagnostic-contract-rerun.yaml"
 experiments:
   representation:
+    protocol:
+      main_conditions:
+        - "OpenSCAD code-only"
+        - "OpenSCAD MCP / tool-mediated"
+        - "ADL + OpenSCAD"
+      excluded_condition: "CUA / GUI"
+      excluded_condition_treatment: "作为相关工作和威胁讨论中的交互层，不进入主实验分母"
+      rationale: "CUA 评测主要混入视觉能力、焦点控制和 GUI 状态复现问题；本文主实验关注 artifact-bearing representation 是否形成 evaluation loop。"
     summary_rows:
-      - condition: "NL / document prompt"
+      - condition: "OpenSCAD code-only"
         formalization_cost: "待实验"
         submission_determinism: "待实验"
         feedback_latency: "待实验"
@@ -28,7 +36,16 @@ experiments:
         scoring_coverage: "待实验"
         cross_domain_detection: "待实验"
         handoff_cost: "待实验"
-      - condition: "ADL / EaC substrate"
+      - condition: "OpenSCAD MCP / tool-mediated"
+        formalization_cost: "待实验"
+        submission_determinism: "待实验"
+        feedback_latency: "待实验"
+        localization: "待实验"
+        repair_success_rate: "待实验"
+        scoring_coverage: "待实验"
+        cross_domain_detection: "待实验"
+        handoff_cost: "待实验"
+      - condition: "ADL + OpenSCAD"
         formalization_cost: "待实验"
         submission_determinism: "待实验"
         feedback_latency: "待实验"

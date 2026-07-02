@@ -2,7 +2,7 @@
 """Aggregate PEaC evaluation-substrate experiment runs into paper data.
 
 Usage:
-  uv run scripts/aggregate_peac_eval_substrate.py --run-dir /tmp/sd-hwe-bench-runs/constraint-gap-p0-20260630
+  uv run scripts/aggregate_peac_eval_substrate.py --run-dir /tmp/sd-hwe-bench-runs/constraint-gap-core-20260630
   uv run scripts/aggregate_peac_eval_substrate.py --run-dir /tmp/... --update-paper-data
 """
 
@@ -233,8 +233,8 @@ def build_payload(run_root: Path) -> dict[str, Any]:
     conditions = sorted({c for c, _p, _m in manifests})
     return {
         "artifact": {
-            "result_status": "partial_real_constraint_p0",
-            "result_label": "P0 constraint-gap run artifacts",
+            "result_status": "partial_real_constraint",
+            "result_label": "constraint-gap run artifacts",
             "result_note": (
                 "约束实验表由隔离 run manifest 自动聚合；pseudo-correctness 仍需人工标注。"
                 "表征与知识实验若未重跑，仍不得视为正式结果。"

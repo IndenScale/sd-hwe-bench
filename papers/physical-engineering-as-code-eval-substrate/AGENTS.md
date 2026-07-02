@@ -63,11 +63,11 @@ PEaC-Bench 在本论文中是 PEaC substrate 的当前实现和证据载体。
 
 因此，本论文必须避免写成“我们提出一个小规模 benchmark”。正确叙事是：**我们提出 Physical Engineering as Code 作为 physical engineering evaluation 的 executable substrate，并用 AI Data Center Design 展示它如何 bridge representation, constraint, and knowledge gaps。**
 
-## 实验优先级
+## 实验轴
 
-### P0：约束鸿沟实验
+### 约束鸿沟实验
 
-这是最关键、最容易形成硬证据的一组实验。优先完成：
+这是当前最容易形成硬证据的一组实验，但它不是“优先级编号”，而是三重鸿沟中的一个实证轴：
 
 - NL-only：仅任务描述中的自然语言约束。
 - Docs-only：任务描述 + 多部规范目录，但无提交前自动检查。
@@ -81,14 +81,13 @@ PEaC-Bench 在本论文中是 PEaC substrate 的当前实现和证据载体。
 - top omission constraints。
 - repair saturation curve。
 
-### P1：表征鸿沟实验
+### 表征鸿沟实验
 
-目标不是证明 ADL 全面优于所有工具，而是证明不同表征是否能形成可复现工程评估闭环。对比：
+目标不是证明 ADL 全面优于所有工具，而是证明不同表征是否能形成可复现工程评估闭环。当前收敛为一个单零件 / 工装夹具 OpenSCAD 建模任务：MCP、CUA 与 ADL + OpenSCAD 都应能完成任务，差异体现在提交确定性、语义约束覆盖、错误定位、repair 和归档重评能力。
 
-- MCP：外部工具/API/文档接口。
-- CUA：GUI 操作路径。
-- OpenSCAD：code-like geometry。
-- ADL：声明式工程对象 + 引用 + DTS。
+- MCP：通过工具/API 查询、生成或检查 OpenSCAD 工件。
+- CUA：通过 GUI/CAD-like 交互完成几何建模并导出工件。
+- ADL + OpenSCAD：用 ADL 描述规格语义和工程约束，再生成或约束 OpenSCAD 几何。
 
 必须报告：
 
@@ -99,7 +98,7 @@ PEaC-Bench 在本论文中是 PEaC substrate 的当前实现和证据载体。
 - repairability。
 - scoring coverage。
 
-### P2：知识鸿沟 / AIDC DTCO probe
+### 知识鸿沟 / AIDC DTCO probe
 
 作为前沿价值 case study，不要求一开始做大。对比：
 

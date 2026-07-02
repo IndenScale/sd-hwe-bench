@@ -2,7 +2,7 @@
 
 本实验是本文的主实验。研究问题只有一个：**把工程规则从自然语言和文档转化为可执行、可定位、可归因的 critic，是否会改变 pseudo-correctness、failure attribution 和 repair loop？** 核心不在于 agent 是否“知道”工程规则，而在于规则是否进入了可执行反馈系统。
 
-本章报告当前已经冻结的 P0 AIDC diagnostic-contract rerun。该 run 不是完整投稿矩阵：它只覆盖 1 个模型、2 个 AIDC 长程任务和 2 个可执行反馈条件；NL-only、Docs-only、表征实验和知识实验仍需后续补齐。因此，本章的实证主张被刻意收窄为：在 AIDC detailed-design 与 EPC 排程压力测试中，可执行 repair loop 是否能把首轮失败转化为可评分通过样本，并降低遗漏密度。
+本章报告当前已经冻结的 AIDC diagnostic-contract rerun。该 run 不是完整投稿矩阵：它只覆盖 1 个模型、2 个 AIDC 长程任务和 2 个可执行反馈条件；NL-only、Docs-only、表征实验和知识实验仍需后续补齐。因此，本章的实证主张被刻意收窄为：在 AIDC detailed-design 与 EPC 排程压力测试中，可执行 repair loop 是否能把首轮失败转化为可评分通过样本，并降低遗漏密度。
 
 ## 5.1 主结果应回答的问题
 
@@ -27,7 +27,7 @@
 
 关键控制原则是：最终评分始终使用完整约束集合。NL-only 和 Docs-only 条件不降低工程正确性标准；它们只限制 agent 在生成阶段能看到和消费的反馈。这样，实验测量的是 evaluation environment 的差异，避免把评分器宽松程度混入对比。
 
-当前 P0 矩阵优先覆盖 hard/coupled 任务，包括跨专业任务、涌现约束任务、AIDC detailed-design 和 EPC 排程任务。正式投稿版可扩展到更多模型、更多 pass 和 repair ablation；但主结论应先来自这组可解释、可归因的高耦合任务。
+当前约束实验切片优先覆盖 hard/coupled 任务，包括跨专业任务、涌现约束任务、AIDC detailed-design 和 EPC 排程任务。正式投稿版可扩展到更多模型、更多 pass 和 repair ablation；但主结论应先来自这组可解释、可归因的高耦合任务。
 
 ## 5.3 轴 B：诊断信息粒度
 

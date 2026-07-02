@@ -1,0 +1,24 @@
+# Representation-gap smoke matrix.
+# Run:
+#   uv run python tools/representation/run_representation_experiment.py --matrix scripts/batch/representation-gap-smoke.yaml
+# Aggregate:
+#   uv run python scripts/aggregate_representation_gap.py --run-dir runs/representation-gap-smoke-20260702
+#
+# This is a no-model infrastructure smoke for the three artifact-bearing main
+# representation paths. It checks whether each path can produce an archived,
+# re-checkable artifact. It is not yet a statistical pass-rate experiment.
+run_dir: runs/representation-gap-main-smoke-20260702
+fixture_id: single-part-fixture-v0
+attempts: 1
+openscad_bin: openscad
+blender_bin: /opt/homebrew/bin/blender
+conditions:
+  - name: mcp
+    kind: mcp
+    actor: no-model
+  - name: openscad-only
+    kind: openscad-only
+    actor: no-model
+  - name: adl-openscad
+    kind: adl-openscad
+    actor: no-model
