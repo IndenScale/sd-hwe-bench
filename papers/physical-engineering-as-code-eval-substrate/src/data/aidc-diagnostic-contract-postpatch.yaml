@@ -1,0 +1,54 @@
+artifact:
+  run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-aidc-diagnostic-contract-rerun-postpatch-20260702
+  frozen_baseline_dir: /tmp/sd-hwe-bench-runs/constraint-gap-aidc-diagnostic-contract-rerun-20260701
+  frozen_baseline_available_in_current_fs: false
+  matrix: scripts/batch/constraint-gap-aidc-diagnostic-contract-rerun.yaml
+  model: claude:deepseek-v4-flash
+  tasks:
+    - telecom/aidc-60mw-002
+    - telecom/aidc-60mw-003
+  passes_per_condition_task: 3
+  total_attempts: 12
+  generated_at: 2026-07-02
+summary:
+  executable:
+    attempts: 6
+    initial_pass: 0
+    final_pass: 6
+    pass_at_1: 0%
+    pass_after_repair: 100%
+    avg_score: 1.00
+    median_repair_rounds_success: 2
+    rounds: [2, 3, 3, 2, 2, 2]
+  partial_executable_l3_muted:
+    attempts: 6
+    initial_pass: 0
+    final_pass: 4
+    pass_at_1: 0%
+    pass_after_repair: 67%
+    avg_score: 0.78
+    median_repair_rounds_success: 2
+    rounds: [2, 1, 5, 2, 4, 2]
+    final_failed_layers: [L1, L5]
+failures:
+  - condition: partial-executable-l3-muted
+    task: telecom/aidc-60mw-003
+    attempt: 0
+    termination_reason: score_error
+    score_error: "TypeError: cannot use 'dict' as a set element (unhashable type: 'dict')"
+  - condition: partial-executable-l3-muted
+    task: telecom/aidc-60mw-002
+    attempt: 1
+    termination_reason: budget_exceeded
+    overall_score: 0.70
+    failed_layers: [L1, L5]
+interpretation:
+  expected_alignment:
+    - Full executable localized diagnostics converted all initially failing AIDC attempts to passing outputs within repair budget.
+    - Median successful repair depth was two rounds, matching the expected 2-3 round convergence range.
+    - Field-level CPML and constructability diagnostics became visible in repair prompts and were acted on by the agent.
+  caveats:
+    - This is a 2-task, 12-attempt postpatch sanity slice, not a replacement for the frozen diagnostic-contract baseline or the main repair ablation.
+    - The frozen baseline directory is not available in the current filesystem, so this file records only the postpatch rerun.
+    - One failure is a scorer/runtime TypeError, so harness robustness remains part of the error budget.
+    - Muting L3 feedback reduced final pass rate to 67%, but the slice is too small to attribute the drop solely to L3 feedback visibility.

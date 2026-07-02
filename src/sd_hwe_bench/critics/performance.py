@@ -7,7 +7,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -99,9 +98,11 @@ class PerformanceCritic(Critic):
         if lcc_baseline:
             artifacts["lcc_baseline"] = lcc_baseline.summary()
 
-        comments = [json.dumps(details, ensure_ascii=False, indent=2)]
+        comments = [
+            f"Performance score: {perf_score:.2%}; objective={details.get('objective', self.objective)}"
+        ]
         if not compliance["passed"]:
-            comments = compliance["violations"] + comments
+            comments = compliance["violations"]
 
         return CriticResult(
             name=self.name,

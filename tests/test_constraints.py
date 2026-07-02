@@ -214,3 +214,39 @@ def test_diagnostic_summary_reports_muted_violation_rate():
     assert summary["omission_density"] == 0.5
     assert summary["muted_constraint_violation_rate"] == 1.0
     assert summary["hidden_failed_constraints"] == ["C1"]
+
+
+def test_collect_diagnostics_keeps_field_level_contract_items_distinct():
+    meta = TaskMetadata(
+        task_id="telecom/aidc",
+        domain=Domain.TELECOM,
+        task_type=TaskType.EPC,
+        difficulty=Difficulty.HARD,
+        requirement="Do the task.",
+        evaluation=[{"critic": "epc", "layer": "L4"}],
+    )
+    catalog = build_constraint_catalog(_task_with_meta(meta))
+    score = TaskScore(
+        task_id="telecom/aidc",
+        success=False,
+        critic_results=[
+            CriticResult(
+                name="epc",
+                passed=False,
+                comments=[
+                    "schedule.yaml activities[A01]: missing required field 'resources' mapping",
+                    "resource-plan.yaml resources[crew-main]: missing required field 'daily_cost_cny'",
+                    "contingency-policy.yaml decisions[A01]: missing required field 'decision'",
+                ],
+            )
+        ],
+    )
+
+    diagnostics = collect_score_diagnostics(score, catalog)
+    rendered = render_diagnostics(diagnostics, verbosity="localized")
+
+    assert len(diagnostics) == 3
+    keyed = {(item.get("file"), item.get("object_id"), item.get("field")) for item in rendered}
+    assert ("schedule.yaml", "A01", "resources") in keyed
+    assert ("resource-plan.yaml", "crew-main", "daily_cost_cny") in keyed
+    assert ("contingency-policy.yaml", "A01", "decision") in keyed

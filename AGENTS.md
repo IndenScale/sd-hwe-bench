@@ -101,7 +101,7 @@
 | 论文 | 位置 | 状态 |
 |------|------|------|
 | A: EaC 概念篇 | `papers/engineering-as-code/` | arXiv PDF 完成；FSE 缩写版待做 |
-| B: SD-HWE-Bench 实验篇 | `papers/sd-hwe-bench/` | 38-task + L0–L6 层体系 + AIDC lifecycle pivot 同步中；四配置 baseline 待重跑；英文待翻译 |
+| B: PEaC evaluation substrate | `papers/physical-engineering-as-code-eval-substrate/` | 以 Physical Engineering as Code / PEaC-Bench 口径重构，旧 `papers/sd-hwe-bench/` 已删除 |
 
 ---
 
@@ -116,9 +116,9 @@
 | `tasks/telecom/aidc-60mw-001/002/003` | 由 lineage 抽取的概念/详细/EPC 三独立任务，参考解全 PASS（overall 115%），reference 用 PerformanceCritic 实测自洽 |
 | 退役 | 旧 `aidc-conceptual-design-001/aidc-detailed-design-001/aidc-epc-001` → `tasks/telecom/_legacy/`；旧 `canonical/datacenter-hall-60mw`、`canonical/aidc-detailed` → `canonical/_legacy/` |
 | 内容归一 | 三阶段共用权威物理设计（液冷/8 冷机 N+1/5MWp/20MWh/标准变压器/300kW 机柜），修正旧概念 canonical 风冷+30kW 与液冷服务器矛盾的遗留 bug |
-| 测试/文档 | `tests/{test_aidc_simulation_60mw,test_critic_registry,test_batch}.py` 改用新 id；`scripts/{verify_aidc_benchmark,assemble_paper}.py`、`AGENTS.md` 同步；145 passed/2 skipped |
+| 测试/文档 | `tests/{test_aidc_simulation_60mw,test_critic_registry,test_batch}.py` 改用新 id；`scripts/verify_aidc_benchmark.py`、`AGENTS.md` 同步；145 passed/2 skipped |
 
-> 待办（文档同步）：`papers/sd-hwe-bench/src/sections-zh/*`、`docs/evaluation/methodology.md`、`docs/adr/0006-*.md` 中对旧任务 id/canonical 的散文引用与任务计数尚需一次编辑性同步并重跑 `assemble_paper.py`。
+> 论文入口已转为 `papers/physical-engineering-as-code-eval-substrate/`；修改 section 后运行 `uv run scripts/assemble_peac_eval_substrate.py`。
 
 ### 2.1b 上一会话（2026-06-29 v7，历史记录）
 
@@ -248,4 +248,4 @@ sd-hwe-bench batch --matrix <matrix.yaml> [--dry-run] [--max-workers N]
 - AIDC 设计任务需在 `l7_config` 中提供 `reference` 以支持合理 score 区分度；EPC 任务需在 `l7_config` 中提供 `deadline_days`、`resource_limits`、`contingency_policy` 等 CPML 参数；detailed-design 任务需包含 `construction/` 吊装与 VDC 交付物；conceptual-design 任务需在 `scenario` 提供 `criteria_weights` 与场景标量、在 `l7_config.scheme_library` 内嵌逐方案确定性准则与 `feasible` 标志（答案键，Agent 不可见），交付 `comparison.yaml` + `recommendation.yaml`
 - 实验数据归档到 `runs/`
 - 论文源文件在 `papers/*/src/`；`dist/` 为生成产物
-- **论文编译**：`dist/draft-full.zh.md` 由 sections 源文件通过 `scripts/assemble_paper.py` 聚合生成，禁止手写占位符。修改 section 后运行 `uv run scripts/assemble_paper.py` 即可更新。所有数字必须来自代码库实测数据
+- **论文编译**：`papers/physical-engineering-as-code-eval-substrate/src/dist/draft-full.zh.md` 由 sections 源文件通过 `scripts/assemble_peac_eval_substrate.py` 聚合生成，禁止手写占位符。修改 section 后运行 `uv run scripts/assemble_peac_eval_substrate.py` 即可更新。所有数字必须来自代码库实测数据

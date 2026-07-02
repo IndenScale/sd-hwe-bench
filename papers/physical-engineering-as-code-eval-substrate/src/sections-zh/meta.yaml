@@ -1,0 +1,19 @@
+title: "Physical Engineering as Code: An Executable Substrate for Physical Engineering Evaluation"
+subtitle: "Bridging Representation, Constraint, and Knowledge Gaps with AI Data Center Design"
+authors:
+  - name: "IndenScale"
+    affiliation: "IndenScale"
+abstract: |
+  大语言模型和 Agent 系统在软件工程、数学推理与开放域工具使用中快速进步，但系统级物理工程设计尚未形成类似代码任务的高频评估闭环。本文主张，physical engineering evaluation 的瓶颈不能只归结为模型能力；更基础的问题，是物理工程缺少一种可提交、可检查、可诊断、可修复、可优化的 executable substrate。我们提出 Physical Engineering as Code (PEaC)：将 Engineering as Code 范式实例化为物理工程评估底座，用文本原生的工程设计语言表示对象、连接、布局、调度和交付物；用分层 critic 执行语法、schema、引用、静态约束、动态模型、几何与可建造性检查；用结构化诊断支持 repair loop；并将设备曲线、气候、电价、成本和施工风险等情境化知识纳入优化目标。本文将贡献收窄为三条可验证主张：可闭环表征影响 repair 稳定性；可执行约束降低 pseudo-correctness 并改变 failure attribution；可优化知识在 AIDC probe 中改变 TCO/PUE/SLA tradeoff。本文以 AI Data Center Design 作为 reference domain，设计三组受控实验对应上述 claims，并给出 reviewer-facing artifact contract。本文的目标不是展示一个更大的任务集，而是提出一种可复现、可诊断、可扩展的物理工程评估底座。
+keywords:
+  - Engineering as Code
+  - Physical Engineering as Code
+  - Engineering AI
+  - Physical Engineering Evaluation
+  - Evaluation
+  - Executable Evaluation
+  - Representation Gap
+  - Constraint Gap
+  - Knowledge Gap
+  - AI Data Center Design
+  - PEaC-Bench

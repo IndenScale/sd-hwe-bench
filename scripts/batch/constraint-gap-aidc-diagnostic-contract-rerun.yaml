@@ -7,7 +7,7 @@
 # This matrix intentionally reruns only feedback-bearing localized conditions.
 # NL-only and docs-only do not receive repair diagnostics, so schema-diagnostic
 # fixes are not a visible treatment for those conditions.
-run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-aidc-diagnostic-contract-rerun-20260701
+run_dir: /tmp/sd-hwe-bench-runs/constraint-gap-aidc-diagnostic-contract-rerun-postpatch-20260702
 passes: 3
 sandbox: none
 timeout: 1800

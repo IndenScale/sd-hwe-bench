@@ -57,6 +57,11 @@ class ConstructabilityCritic(Critic):
             if not isinstance(entry, dict):
                 continue
             eid = entry.get("equipment_id")
+            if not eid and "equipment" in entry:
+                comments.append(
+                    "hoisting-plan.yaml hoist entry: expected field 'equipment_id' "
+                    "matching facility id; found 'equipment'"
+                )
             if eid:
                 hoists_by_id[eid] = entry
             try:
@@ -188,6 +193,11 @@ class ConstructabilityCritic(Critic):
                 "equipment-rental.yaml: expected root key 'equipment' as a list; "
                 "found 'equipment_rental'"
             )
+        if isinstance(rental, dict) and "equipment" not in rental:
+            comments.append("equipment-rental.yaml: missing root key 'equipment' as a list")
+        if equipment and not isinstance(equipment, list):
+            comments.append("equipment-rental.yaml: 'equipment' must be a list")
+            equipment = []
         main_crane = next(
             (
                 e
@@ -202,8 +212,17 @@ class ConstructabilityCritic(Critic):
                 "under 'equipment' with type: main-crane; found root key 'main-crane'"
             )
         if main_crane is None:
-            comments.append("equipment-rental.yaml: missing main-crane entry")
+            comments.append(
+                "equipment-rental.yaml: missing equipment list item with type: main-crane, "
+                "start_day, end_day, crane_ton"
+            )
             return
+
+        for field in ("type", "start_day", "end_day", "crane_ton"):
+            if field not in main_crane:
+                comments.append(
+                    f"equipment-rental.yaml main-crane: missing required field '{field}'"
+                )
 
         try:
             start_day = int(main_crane.get("start_day"))
@@ -211,6 +230,12 @@ class ConstructabilityCritic(Critic):
         except (TypeError, ValueError):
             comments.append("main-crane: start_day and end_day must be integers")
             return
+
+        try:
+            if float(main_crane.get("crane_ton")) <= 0:
+                comments.append("equipment-rental.yaml main-crane: crane_ton must be > 0")
+        except (TypeError, ValueError):
+            comments.append("equipment-rental.yaml main-crane: crane_ton must be numeric")
 
         if max_day > end_day or start_day > max_day:
             comments.append(
@@ -277,6 +302,37 @@ class ConstructabilityCritic(Critic):
         if not isinstance(value, list):
             comments.append(f"{path.name}: '{key}' must be a list")
             return []
+        for idx, item in enumerate(value):
+            if not isinstance(item, dict):
+                comments.append(f"{path.name}: {key}[{idx}] must be a mapping")
+                continue
+            if key == "hoists":
+                label = str(item.get("equipment_id") or item.get("equipment") or idx)
+                for field in (
+                    "equipment_id",
+                    "day",
+                    "crane_ton",
+                    "radius_m",
+                    "clearance_mm",
+                    "hoist_point",
+                ):
+                    if field not in item:
+                        comments.append(
+                            f"{path.name} hoists[{label}]: missing required field '{field}'"
+                        )
+            elif key == "workfaces":
+                label = str(item.get("id") or idx)
+                for field in (
+                    "id",
+                    "zone",
+                    "access_gate",
+                    "max_wind_speed_m_s",
+                    "isolation_distance_mm",
+                ):
+                    if field not in item:
+                        comments.append(
+                            f"{path.name} workfaces[{label}]: missing required field '{field}'"
+                        )
         return value
 
     def _safe_load(self, path: Path, comments: list[str]) -> Any:

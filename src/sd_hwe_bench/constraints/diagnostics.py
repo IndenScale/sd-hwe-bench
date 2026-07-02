@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -234,7 +235,14 @@ def _diagnostic_from_message(
     field: str = "",
     object_id: str = "",
 ) -> Diagnostic:
-    cid = constraint_id or _constraint_id_from_message(message, layer, catalog)
+    structured = _parse_structured_contract_message(message)
+    if structured:
+        file = file or structured.get("file", "")
+        field = field or structured.get("field", "")
+        object_id = object_id or structured.get("object_id", "")
+    cid = constraint_id or _structured_constraint_id(structured, layer, critic)
+    if cid is None:
+        cid = _constraint_id_from_message(message, layer, catalog)
     spec = _lookup_spec(cid, layer, critic, catalog)
     return Diagnostic(
         constraint_id=cid,
@@ -247,6 +255,61 @@ def _diagnostic_from_message(
         field=field,
         localization=_localization(file=file, field=field, object_id=object_id, default=spec.localization),
     )
+
+
+def _parse_structured_contract_message(message: str) -> dict[str, str]:
+    """Extract file/field/object hints from stable critic contract messages."""
+
+    first_line = message.splitlines()[0]
+    out: dict[str, str] = {}
+    file_match = re.match(r"(?P<file>[\w./-]+\.ya?ml)\b", first_line)
+    if file_match:
+        out["file"] = file_match.group("file")
+
+    field_patterns = (
+        r"missing required field '(?P<field>[^']+)'",
+        r"expected (?:root key|field) '(?P<field>[^']+)'",
+        r"'(?P<field>[^']+)' must be a (?:list|mapping)",
+        r"(?P<field>[\w.-]+): expected mapping",
+    )
+    for pattern in field_patterns:
+        match = re.search(pattern, first_line)
+        if match:
+            out["field"] = match.group("field")
+            break
+
+    object_patterns = (
+        r"activities\[(?P<object_id>[^\]]+)\]",
+        r"resources\[(?P<object_id>[^\]]+)\]",
+        r"decisions\[(?P<object_id>[^\]]+)\]",
+        r"hoists\[(?P<object_id>[^\]]+)\]",
+        r"workfaces\[(?P<object_id>[^\]]+)\]",
+        r"Facility (?P<object_id>[^:]+):",
+        r"decision (?P<object_id>[^:]+):",
+        r"workface (?P<object_id>[^:]+):",
+    )
+    for pattern in object_patterns:
+        match = re.search(pattern, first_line)
+        if match:
+            out["object_id"] = match.group("object_id")
+            break
+    return out
+
+
+def _structured_constraint_id(
+    structured: dict[str, str], layer: str, critic: str
+) -> str | None:
+    if not structured:
+        return None
+    parts = [
+        layer,
+        critic or "critic",
+        structured.get("file", "file"),
+        structured.get("object_id", ""),
+        structured.get("field", ""),
+    ]
+    suffix = ":".join(part for part in parts if part)
+    return suffix or None
 
 
 def _lookup_spec(cid: str, layer: str, critic: str, catalog: ConstraintCatalog) -> ConstraintSpec:

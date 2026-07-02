@@ -103,6 +103,31 @@ class TestAIDCSchemaDiagnostics:
         assert "expected field 'resources'; found 'resource_requirements' in activities A01" in comments
         assert "expected field 'weather_limits'" in comments
         assert "expected root key 'decisions' as a list; found 'contingency_policy'" in comments
+        assert "contingency-policy.yaml: missing root key 'decisions' as a list" in comments
+
+    def test_epc_reports_missing_cpml_required_fields(self, tmp_path):
+        (tmp_path / "schedule.yaml").write_text(
+            yaml.safe_dump({"activities": [{"id": "A01", "duration_days": 1}]}),
+            encoding="utf-8",
+        )
+        (tmp_path / "resource-plan.yaml").write_text(
+            yaml.safe_dump({"resources": [{"id": "crew-main", "capacity": 1}]}),
+            encoding="utf-8",
+        )
+        (tmp_path / "contingency-policy.yaml").write_text(
+            yaml.safe_dump({"decisions": [{"activity_id": "A01", "type": "wait"}]}),
+            encoding="utf-8",
+        )
+        task = SimpleNamespace(metadata=SimpleNamespace(l7_config={"deadline_days": 10}))
+
+        result = EPCCritic(deadline_days=10, n_scenarios=1).evaluate(tmp_path, task)
+
+        assert not result.passed
+        comments = "\n".join(result.comments)
+        assert "schedule.yaml activities[A01]: missing required field 'resources' mapping" in comments
+        assert "resource-plan.yaml resources[crew-main]: missing required field 'daily_cost_cny'" in comments
+        assert "contingency-policy.yaml decisions[A01]: missing required field 'decision'" in comments
+        assert "contingency-policy.yaml decisions[A01]: missing required field 'params'" in comments
 
     def test_constructability_reports_construction_schema_contract_mismatches(self, tmp_path):
         facilities = tmp_path / "facilities"
@@ -164,6 +189,44 @@ class TestAIDCSchemaDiagnostics:
         assert "expected root key 'hoists' as a list; found 'hoisting_plan'" in comments
         assert "expected root key 'equipment' as a list; found 'equipment_rental'" in comments
         assert "expected root key 'workfaces' as a list; found 'vdc_workfaces'" in comments
+
+    def test_constructability_reports_required_construction_fields(self, tmp_path):
+        facilities = tmp_path / "facilities"
+        models = tmp_path / "models" / "facilities"
+        construction = tmp_path / "construction"
+        facilities.mkdir()
+        models.mkdir(parents=True)
+        construction.mkdir()
+        (facilities / "CHILLER-01.yaml").write_text(
+            yaml.safe_dump({"id": "CHILLER-01", "model": "chiller-10mw-facility"}),
+            encoding="utf-8",
+        )
+        (models / "chiller-10mw-facility.yaml").write_text(
+            yaml.safe_dump({"weight_kg": 15000}),
+            encoding="utf-8",
+        )
+        (construction / "hoisting-plan.yaml").write_text(
+            yaml.safe_dump({"hoists": [{"equipment": "CHILLER-01", "day": 1}]}),
+            encoding="utf-8",
+        )
+        (construction / "equipment-rental.yaml").write_text(
+            yaml.safe_dump({"equipment": [{"type": "main-crane", "start_day": 0, "end_day": 1}]}),
+            encoding="utf-8",
+        )
+        (construction / "vdc-workface.yaml").write_text(
+            yaml.safe_dump({"workfaces": [{"id": "WF-1", "zone": "north"}]}),
+            encoding="utf-8",
+        )
+
+        result = ConstructabilityCritic().evaluate(tmp_path, SimpleNamespace())
+
+        assert not result.passed
+        comments = "\n".join(result.comments)
+        assert "hoisting-plan.yaml hoists[CHILLER-01]: missing required field 'equipment_id'" in comments
+        assert "hoisting-plan.yaml hoists[CHILLER-01]: missing required field 'crane_ton'" in comments
+        assert "hoisting-plan.yaml hoist entry: expected field 'equipment_id' matching facility id; found 'equipment'" in comments
+        assert "equipment-rental.yaml main-crane: missing required field 'crane_ton'" in comments
+        assert "vdc-workface.yaml workfaces[WF-1]: missing required field 'access_gate'" in comments
 
     def test_constructability_reports_facility_file_list_without_crashing(self, tmp_path):
         facilities = tmp_path / "facilities"

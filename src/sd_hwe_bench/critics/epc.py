@@ -41,6 +41,7 @@ class EPCCritic(Critic):
 
         schema_violations = self._schema_contract_violations(
             schedule_path=schedule_path,
+            resource_path=resource_path,
             contingency_path=contingency_path,
         )
 
@@ -169,6 +170,7 @@ class EPCCritic(Critic):
     def _schema_contract_violations(
         self,
         schedule_path: Path,
+        resource_path: Path,
         contingency_path: Path,
     ) -> list[str]:
         """Return field-level CPML schema diagnostics for common alias drift."""
@@ -185,6 +187,12 @@ class EPCCritic(Critic):
                     if not isinstance(item, dict):
                         continue
                     activity_id = str(item.get("id", idx))
+                    for field in ("id", "duration_days"):
+                        if field not in item:
+                            violations.append(
+                                f"schedule.yaml activities[{activity_id}]: missing required field "
+                                f"'{field}'"
+                            )
                     if "predecessors" not in item and "prerequisites" in item:
                         prerequisites_ids.append(activity_id)
                     if "resources" not in item and "resource_requirements" in item:
@@ -195,6 +203,19 @@ class EPCCritic(Critic):
                         or "weather_sensitive" in item
                     ):
                         weather_alias_ids.append(activity_id)
+                    if "resources" not in item:
+                        violations.append(
+                            f"schedule.yaml activities[{activity_id}]: missing required field "
+                            "'resources' mapping"
+                        )
+                    elif not isinstance(item.get("resources"), dict):
+                        violations.append(
+                            f"schedule.yaml activities[{activity_id}].resources: expected mapping"
+                        )
+                    if "weather_limits" in item and not isinstance(item.get("weather_limits"), dict):
+                        violations.append(
+                            f"schedule.yaml activities[{activity_id}].weather_limits: expected mapping"
+                        )
                 if prerequisites_ids:
                     violations.append(
                         "schedule.yaml: expected field 'predecessors'; found "
@@ -213,20 +234,61 @@ class EPCCritic(Critic):
                         f"weather thresholds in activities {_format_ids(weather_alias_ids)}"
                     )
 
+        resource_data = self._safe_load_mapping(resource_path, violations)
+        if resource_data is not None:
+            resources = resource_data.get("resources", [])
+            if "resources" not in resource_data:
+                violations.append("resource-plan.yaml: missing root key 'resources' as a list")
+            elif not isinstance(resources, list):
+                violations.append("resource-plan.yaml: 'resources' must be a list")
+            if isinstance(resources, list):
+                for idx, item in enumerate(resources):
+                    if not isinstance(item, dict):
+                        violations.append(f"resource-plan.yaml resources[{idx}]: expected mapping")
+                        continue
+                    resource_id = str(item.get("id", idx))
+                    for field in ("id", "capacity", "daily_cost_cny"):
+                        if field not in item:
+                            violations.append(
+                                f"resource-plan.yaml resources[{resource_id}]: missing required "
+                                f"field '{field}'"
+                            )
+
         contingency_data = self._safe_load_mapping(contingency_path, violations)
         if contingency_data is not None:
-            if "decisions" not in contingency_data and "contingency_policy" in contingency_data:
-                violations.append(
-                    "contingency-policy.yaml: expected root key 'decisions' as a list; "
-                    "found 'contingency_policy'"
-                )
+            root_aliases = (
+                "contingency_policy",
+                "contingency",
+                "contingency_policies",
+                "policies",
+            )
+            for alias in root_aliases:
+                if "decisions" not in contingency_data and alias in contingency_data:
+                    violations.append(
+                        "contingency-policy.yaml: expected root key 'decisions' as a list; "
+                        f"found '{alias}'"
+                    )
             decisions = contingency_data.get("decisions", [])
+            if "decisions" not in contingency_data:
+                violations.append("contingency-policy.yaml: missing root key 'decisions' as a list")
             if isinstance(decisions, list):
                 for idx, item in enumerate(decisions):
                     if not isinstance(item, dict):
+                        violations.append(f"contingency-policy.yaml decisions[{idx}]: expected mapping")
                         continue
+                    activity_id = str(item.get("activity_id", idx))
+                    for field in ("activity_id", "decision", "params"):
+                        if field not in item:
+                            violations.append(
+                                f"contingency-policy.yaml decisions[{activity_id}]: missing "
+                                f"required field '{field}'"
+                            )
+                    if "params" in item and not isinstance(item.get("params"), dict):
+                        violations.append(
+                            f"contingency-policy.yaml decisions[{activity_id}].params: "
+                            "expected mapping"
+                        )
                     if "decision" not in item and "type" in item:
-                        activity_id = item.get("activity_id", idx)
                         violations.append(
                             f"contingency-policy.yaml decision {activity_id}: expected "
                             "field 'decision'; found 'type'"
