@@ -76,7 +76,11 @@ def resolve_task_ids(dataset: Dataset, task_id: Optional[str]) -> list[str]:
     if not task_id:
         return all_ids
 
-    matched = [tid for tid in all_ids if tid == task_id or tid.startswith(task_id)]
+    matched = [
+        tid
+        for tid in all_ids
+        if tid == task_id or tid.startswith(task_id) or tid.split("/", 1)[-1].startswith(task_id)
+    ]
     if not matched:
         for tid in all_ids:
             task = dataset.load_task(tid)

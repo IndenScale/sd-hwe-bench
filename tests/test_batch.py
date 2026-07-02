@@ -139,6 +139,9 @@ def test_expand_tasks_glob_and_prefix():
     # Exact id passes through; dedup keeps a single entry.
     ids2 = expand_tasks(ds, ["telecom/aidc-60mw-003", "telecom/aidc-60mw-003"])
     assert ids2 == ["telecom/aidc-60mw-003"]
+    # Bare task directory prefixes resolve across domains for CLI ergonomics.
+    ids3 = expand_tasks(ds, ["aidc-60mw-003"])
+    assert ids3 == ["telecom/aidc-60mw-003"]
 
 
 def test_dry_run_plan_count(tmp_path):
